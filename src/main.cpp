@@ -132,6 +132,26 @@ int main() {
         SDL_FreeSurface(surface4);
         SDL_DestroyTexture(texture4);
 
+        // Game info panel - dark brown
+        SDL_SetRenderDrawColor(renderer, 60, 30, 10, 255);
+        SDL_Rect infoPanel = {740, 120, 284, 648};
+        SDL_RenderFillRect(renderer, &infoPanel);
+
+        // statistics pannel
+        SDL_Surface* dateSurface = TTF_RenderText_Solid(font, "May 2, 1312", white);
+        SDL_Texture* dateTexture = SDL_CreateTextureFromSurface(renderer, dateSurface);
+        SDL_Rect dateRect = {750, 600, dateSurface->w, dateSurface->h};
+        SDL_RenderCopy(renderer, dateTexture, NULL, &dateRect);
+        SDL_FreeSurface(dateSurface);
+        SDL_DestroyTexture(dateTexture);
+
+        SDL_Surface* scoreSurface = TTF_RenderText_Solid(font, "Score: 1000", white);
+        SDL_Texture* scoreTexture = SDL_CreateTextureFromSurface(renderer, scoreSurface);
+        SDL_Rect scoreRect = {750, 640, scoreSurface->w, scoreSurface->h};
+        SDL_RenderCopy(renderer, scoreTexture, NULL, &scoreRect);
+        SDL_FreeSurface(scoreSurface);
+        SDL_DestroyTexture(scoreTexture);
+        
         // draw ui
         SDL_RenderPresent(renderer);
     }
