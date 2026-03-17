@@ -5,6 +5,8 @@
 SDL_Color green = {0, 200, 0, 255};
 SDL_Color red   = {220, 0, 0, 255};
 SDL_Color blue  = {0, 0, 220, 255};
+SDL_Color yellow = {255, 215, 0, 255};
+SDL_Color white = {255, 255, 255, 255};
 
 struct TaskSlot {
     std::string label;
@@ -106,8 +108,7 @@ int main() {
 
         // Add labels for tasks
         // stock task
-        SDL_Color white = {255, 255, 255, 255};
-        SDL_Surface* surface = TTF_RenderText_Solid(font, "STOCK", white);
+        SDL_Surface* surface = TTF_RenderText_Solid(font, "STOCK", yellow);
         SDL_Texture* texture = SDL_CreateTextureFromSurface(renderer, surface);
         SDL_Rect textRect =  {750, 430, surface->w,  surface->h};
         SDL_RenderCopy(renderer, texture, NULL, &textRect);
@@ -115,7 +116,7 @@ int main() {
         SDL_DestroyTexture(texture);
 
         // army task
-        SDL_Surface* surface2 = TTF_RenderText_Solid(font, "ARMY", white);
+        SDL_Surface* surface2 = TTF_RenderText_Solid(font, "ARMY", yellow);
         SDL_Texture* texture2 = SDL_CreateTextureFromSurface(renderer, surface2);
         SDL_Rect textRect2 = {820, 430, surface2->w, surface2->h};
         SDL_RenderCopy(renderer, texture2, NULL, &textRect2);
@@ -131,7 +132,7 @@ int main() {
         SDL_DestroyTexture(texture3);
 
         // game options
-        SDL_Surface* surface4 = TTF_RenderText_Solid(font, "OPTS", white);
+        SDL_Surface* surface4 = TTF_RenderText_Solid(font, "OPTS", yellow);
         SDL_Texture* texture4 = SDL_CreateTextureFromSurface(renderer, surface4);
         SDL_Rect textRect4 = {960, 430, surface4->w, surface4->h};
         SDL_RenderCopy(renderer, texture4, NULL, &textRect4);
@@ -150,7 +151,7 @@ int main() {
 
         // statistics pannel
         //date
-        SDL_Surface* dateSurface = TTF_RenderText_Solid(font, "May 2, 1312", white);
+        SDL_Surface* dateSurface = TTF_RenderText_Solid(font, "May 2, 1312", yellow);
         SDL_Texture* dateTexture = SDL_CreateTextureFromSurface(renderer, dateSurface);
         SDL_Rect dateRect = {750, 600, dateSurface->w, dateSurface->h};
         SDL_RenderCopy(renderer, dateTexture, NULL, &dateRect);
@@ -158,7 +159,7 @@ int main() {
         SDL_DestroyTexture(dateTexture);
 
         // score
-        SDL_Surface* scoreSurface = TTF_RenderText_Solid(font, "Score: 1000", white);
+        SDL_Surface* scoreSurface = TTF_RenderText_Solid(font, "Score: 1000", yellow);
         SDL_Texture* scoreTexture = SDL_CreateTextureFromSurface(renderer, scoreSurface);
         SDL_Rect scoreRect = {750, 640, scoreSurface->w, scoreSurface->h};
         SDL_RenderCopy(renderer, scoreTexture, NULL, &scoreRect);
@@ -166,7 +167,7 @@ int main() {
         SDL_DestroyTexture(scoreTexture);
 
         // title
-        SDL_Surface* titleSurface = TTF_RenderText_Solid(font, "Castles II", white);
+        SDL_Surface* titleSurface = TTF_RenderText_Solid(font, "Castles II", yellow);
         SDL_Texture* titleTexture = SDL_CreateTextureFromSurface(renderer, titleSurface);
         SDL_Rect titleRect = {750, 500, titleSurface->w, titleSurface->h};
         SDL_RenderCopy(renderer, titleTexture, NULL, &titleRect);
@@ -218,7 +219,7 @@ int main() {
                 SDL_Rect progressFill = {745, 118 + (i * 55), (int)(274 * taskSlots[i].progress), 8};
                 SDL_RenderFillRect(renderer, &progressFill);
 
-                SDL_Surface* labelSurface = TTF_RenderText_Solid(font, taskSlots[i].label.c_str(), white);
+                SDL_Surface* labelSurface = TTF_RenderText_Solid(font, taskSlots[i].label.c_str(), yellow);
                 SDL_Texture* labelTexture = SDL_CreateTextureFromSurface(renderer, labelSurface);
                 SDL_Rect labelRect = {820, 97 + (i * 55), labelSurface->w, labelSurface->h};
                 SDL_RenderCopy(renderer, labelTexture, NULL, &labelRect);
