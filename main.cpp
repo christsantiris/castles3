@@ -1,5 +1,4 @@
 #include <SDL2/SDL.h>
-#include <iostream>
 
 int main() {
     SDL_Init(SDL_INIT_VIDEO);
@@ -14,16 +13,29 @@ int main() {
 
     SDL_Renderer* renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
 
-    SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
-    SDL_RenderClear(renderer);
-    SDL_RenderPresent(renderer);
-
     SDL_Event event;
     bool running = true;
     while (running) {
         while (SDL_PollEvent(&event)) {
             if (event.type == SDL_QUIT) running = false;
         }
+
+        // Top bar - dark gray
+        SDL_SetRenderDrawColor(renderer, 60, 60, 60, 255);
+        SDL_Rect topBar = {0, 0, 1024, 80};
+        SDL_RenderFillRect(renderer, &topBar);
+
+        // Main map area - dark green
+        SDL_SetRenderDrawColor(renderer, 34, 85, 34, 255);
+        SDL_Rect mapArea = {0, 80, 740, 688};
+        SDL_RenderFillRect(renderer, &mapArea);
+
+        // Right sidebar - gray stone color
+        SDL_SetRenderDrawColor(renderer, 120, 120, 120, 255);
+        SDL_Rect sidebar = {740, 80, 284, 688};
+        SDL_RenderFillRect(renderer, &sidebar);
+
+        SDL_RenderPresent(renderer);
     }
 
     SDL_DestroyRenderer(renderer);
