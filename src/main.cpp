@@ -1,7 +1,6 @@
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_ttf.h>
-#include "ui.h"
-#include "map.h"
+#include "game.h"
 
 int main() {
     SDL_Init(SDL_INIT_VIDEO);
@@ -23,35 +22,23 @@ int main() {
 
     SDL_Renderer* renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
 
-    Map map;
-    map.load("data/map.json");
+    Game game;
+    game.init();
 
     SDL_Event event;
     bool running = true;
-    int activeTab = 0;
 
     while (running) {
         while (SDL_PollEvent(&event)) {
             if (event.type == SDL_QUIT) running = false;
-
-            if (event.type == SDL_MOUSEBUTTONDOWN) {
-                int x = event.button.x;
-                int y = event.button.y;
-
-                if (y >= 424 && y <= 464) {
-                    if (x >= 740 && x < 811) activeTab = 0;
-                    else if (x >= 811 && x < 882) activeTab = 1;
-                    else if (x >= 882 && x < 953) activeTab = 2;
-                    else if (x >= 953 && x < 1024) activeTab = 3;
-                }
-            }
+            game.handleEvent(event);
         }
 
         SDL_SetRenderDrawColor(renderer, 180, 180, 180, 255);
         SDL_RenderClear(renderer);
 
-        renderUI(renderer, font, activeTab);
-        map.render(renderer);
+        game.render(renderer, font);
+
         SDL_RenderPresent(renderer);
     }
 

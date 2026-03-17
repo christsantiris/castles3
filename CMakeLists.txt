@@ -7,7 +7,7 @@ find_package(SDL2 REQUIRED)
 find_package(SDL2_ttf REQUIRED)
 find_package(nlohmann_json REQUIRED)
 
-add_executable(castles2 src/main.cpp src/ui.cpp src/map.cpp)
+add_executable(castles2 src/main.cpp src/ui.cpp src/map.cpp src/game.cpp)
 
 file(COPY ${CMAKE_SOURCE_DIR}/data DESTINATION ${CMAKE_BINARY_DIR}) # add data folder to build directory
 
