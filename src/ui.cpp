@@ -274,3 +274,45 @@ void renderLanding(SDL_Renderer* renderer, TTF_Font* font) {
     SDL_FreeSurface(loadGame);
     SDL_DestroyTexture(loadGameTex);
 }
+
+void renderDynastySelect(SDL_Renderer* renderer, TTF_Font* font) {
+    SDL_Color gold = {255, 215, 0, 255};
+    SDL_Color gray = {150, 150, 150, 255};
+
+    // Background
+    SDL_SetRenderDrawColor(renderer, 20, 20, 20, 255);
+    SDL_Rect bg = {0, 0, 1024, 768};
+    SDL_RenderFillRect(renderer, &bg);
+
+    // Title
+    SDL_Surface* title = TTF_RenderText_Solid(font, "Choose Your Dynasty", gold);
+    SDL_Texture* titleTex = SDL_CreateTextureFromSurface(renderer, title);
+    SDL_Rect titleRect = {512 - title->w / 2, 80, title->w, title->h};
+    SDL_RenderCopy(renderer, titleTex, NULL, &titleRect);
+    SDL_FreeSurface(title);
+    SDL_DestroyTexture(titleTex);
+
+    // Dynasty options
+    const char* dynasties[] = {
+        "Kantakouzenos - Starts in Bulgaria",
+        "Doukas        - Starts in Morea",
+        "Palaiologos   - Starts in Achaia",
+        "Phokas        - Starts in Cappadocia",
+        "Komnenos      - Starts in Pontus"
+    };
+
+    for (int i = 0; i < 5; i++) {
+        SDL_Rect btn = {212, 200 + (i * 90), 600, 60};
+        SDL_SetRenderDrawColor(renderer, 60, 30, 10, 255);
+        SDL_RenderFillRect(renderer, &btn);
+        SDL_SetRenderDrawColor(renderer, 255, 215, 0, 255);
+        SDL_RenderDrawRect(renderer, &btn);
+
+        SDL_Surface* s = TTF_RenderText_Solid(font, dynasties[i], gold);
+        SDL_Texture* t = SDL_CreateTextureFromSurface(renderer, s);
+        SDL_Rect r = {512 - s->w / 2, 220 + (i * 90), s->w, s->h};
+        SDL_RenderCopy(renderer, t, NULL, &r);
+        SDL_FreeSurface(s);
+        SDL_DestroyTexture(t);
+    }
+}
