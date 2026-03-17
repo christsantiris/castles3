@@ -53,7 +53,7 @@ void Map::render(SDL_Renderer* renderer, TTF_Font* font) {
         if (p.name == "Aegean Sea") { // Creating ocean as province to make rendering simpler
             SDL_SetRenderDrawColor(renderer, 30, 80, 150, 255);
         } else if (p.isSelected) {
-            SDL_SetRenderDrawColor(renderer, 255, 255, 0, 255);
+            SDL_SetRenderDrawColor(renderer, 144, 238, 144, 255);
         } else {
             SDL_SetRenderDrawColor(renderer, 34, 85, 34, 255);
         }
@@ -92,8 +92,8 @@ void Map::render(SDL_Renderer* renderer, TTF_Font* font) {
         cx /= p.polygon.size();
         cy /= p.polygon.size();
 
-        SDL_Color yellow = {255, 215, 0, 255};
-        SDL_Surface* s = TTF_RenderText_Solid(font, p.name.c_str(), yellow);
+        SDL_Color color = (p.isSelected) ? SDL_Color{255, 255, 255, 255} : SDL_Color{255, 215, 0, 255};
+        SDL_Surface* s = TTF_RenderText_Solid(font, p.name.c_str(), color);
         SDL_Texture* t = SDL_CreateTextureFromSurface(renderer, s);
         SDL_Rect r = {cx - s->w / 2, cy - s->h / 2, s->w, s->h};
         SDL_RenderCopy(renderer, t, NULL, &r);

@@ -16,7 +16,10 @@ void Game::handleEvent(SDL_Event& event) {
             else if (x >= 953 && x < 1024) activeTab = 3;
         }
 
-        map.handleClick(x, y);
+        // Only handle map clicks within the map area
+        if (x >= 6 && x <= 728 && y >= 86 && y <= 761) {
+            map.handleClick(x, y);
+        }
     }
 }
 
