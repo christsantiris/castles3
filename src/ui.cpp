@@ -83,8 +83,8 @@ void drawShape(SDL_Renderer* renderer, IconShape shape, int x, int y) {
 void renderUI(SDL_Renderer* renderer, TTF_Font* font, int activeTab) {
 
     // Clear screen
-    SDL_SetRenderDrawColor(renderer, 180, 180, 180, 255);
-    SDL_RenderClear(renderer);
+    // SDL_SetRenderDrawColor(renderer, 180, 180, 180, 255);
+    // SDL_RenderClear(renderer);
 
     // Top bar
     SDL_SetRenderDrawColor(renderer, 60, 60, 60, 255);
@@ -236,5 +236,5 @@ void renderUI(SDL_Renderer* renderer, TTF_Font* font, int activeTab) {
         }
     }
 
-    SDL_RenderPresent(renderer);
+    // SDL_RenderPresent(renderer);
 }

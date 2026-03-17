@@ -1,6 +1,7 @@
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_ttf.h>
 #include "ui.h"
+#include "map.h"
 
 int main() {
     SDL_Init(SDL_INIT_VIDEO);
@@ -21,6 +22,9 @@ int main() {
     );
 
     SDL_Renderer* renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
+
+    Map map;
+    map.load("data/map.json");
 
     SDL_Event event;
     bool running = true;
@@ -43,7 +47,12 @@ int main() {
             }
         }
 
+        SDL_SetRenderDrawColor(renderer, 180, 180, 180, 255);
+        SDL_RenderClear(renderer);
+
         renderUI(renderer, font, activeTab);
+        map.render(renderer);
+        SDL_RenderPresent(renderer);
     }
 
     SDL_DestroyRenderer(renderer);
