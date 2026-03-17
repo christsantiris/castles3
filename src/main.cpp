@@ -178,6 +178,17 @@ int main() {
             SDL_Rect taskRow = {745, 90 + (i * 55), 274, 45};
             SDL_RenderFillRect(renderer, &taskRow);
         }
+
+        for (int i = 0; i < 6; i++) {
+            if (taskSlots[i].unlocked) {
+                SDL_Surface* taskSurface = TTF_RenderText_Solid(font, taskSlots[i].label.c_str(), white);
+                SDL_Texture* taskTexture = SDL_CreateTextureFromSurface(renderer, taskSurface);
+                SDL_Rect taskTextRect = {760, 105 + (i * 55), taskSurface->w, taskSurface->h};
+                SDL_RenderCopy(renderer, taskTexture, NULL, &taskTextRect);
+                SDL_FreeSurface(taskSurface);
+                SDL_DestroyTexture(taskTexture);
+            }
+        }
         
         // draw ui
         SDL_RenderPresent(renderer);
