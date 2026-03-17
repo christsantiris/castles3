@@ -13,7 +13,7 @@ int main() {
     }
 
     SDL_Window* window = SDL_CreateWindow(
-        "Castles II: Siege & Conquest",
+        "Castles III: Siege & Conquest",
         SDL_WINDOWPOS_CENTERED,
         SDL_WINDOWPOS_CENTERED,
         1024, 768,

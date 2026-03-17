@@ -40,6 +40,7 @@ void Map::load(const std::string& path) {
 void Map::handleClick(int x, int y) {
     for (auto& p : provinces) p.isSelected = false;
     for (auto& p : provinces) {
+        if (p.name == "Aegean Sea") continue;
         if (p.containsPoint(x, y)) {
             p.isSelected = true;
             break;
@@ -50,10 +51,22 @@ void Map::handleClick(int x, int y) {
 void Map::render(SDL_Renderer* renderer, TTF_Font* font) {
     // Fill provinces
     for (auto& p : provinces) {
-        if (p.name == "Aegean Sea") { // Creating ocean as province to make rendering simpler
+        if (p.name == "Aegean Sea") { // creating as province to simplify rendering.
             SDL_SetRenderDrawColor(renderer, 30, 80, 150, 255);
         } else if (p.isSelected) {
             SDL_SetRenderDrawColor(renderer, 144, 238, 144, 255);
+        } else if (p.owner == "Baldwin II") {
+            SDL_SetRenderDrawColor(renderer, 128, 0, 128, 255);
+        } else if (p.owner == "Kantakouzenos") {
+            SDL_SetRenderDrawColor(renderer, 180, 30, 30, 255);
+        } else if (p.owner == "Doukas") {
+            SDL_SetRenderDrawColor(renderer, 180, 0, 180, 255);
+        } else if (p.owner == "Palaiologos") {
+            SDL_SetRenderDrawColor(renderer, 200, 100, 0, 255);
+        } else if (p.owner == "Phokas") {
+            SDL_SetRenderDrawColor(renderer, 139, 69, 19, 255);
+        } else if (p.owner == "Komnenos") {
+            SDL_SetRenderDrawColor(renderer, 0, 139, 139, 255);
         } else {
             SDL_SetRenderDrawColor(renderer, 34, 85, 34, 255);
         }

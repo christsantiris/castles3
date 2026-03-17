@@ -4,6 +4,8 @@
 #include "ui.h"
 #include "map.h"
 
+enum GameScreen { LANDING, DYNASTY_SELECT, PLAYING };
+
 class Game {
 public:
     int activeTab = 0;

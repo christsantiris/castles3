@@ -36,7 +36,7 @@
         {
             "id": 3,
             "name": "Anatolia",
-            "owner": "Palaiologos",
+            "owner": "neautral",
             "polygon": [
                 {"x": 382, "y": 86},
                 {"x": 530, "y": 86},
@@ -91,7 +91,7 @@
         {
             "id": 8,
             "name": "Cappadocia",
-            "owner": "Phokas",
+            "owner": "neutral",
             "polygon": [
                 {"x": 532, "y": 223},
                 {"x": 728, "y": 223},
@@ -113,7 +113,7 @@
         {
             "id": 10,
             "name": "Achaia",
-            "owner": "neutral",
+            "owner": "Palaiologos",
             "polygon": [
                 {"x": 138, "y": 358},
                 {"x": 258, "y": 358},
@@ -168,7 +168,7 @@
         {
             "id": 15,
             "name": "Judaea",
-            "owner": "neutral",
+            "owner": "Phokas",
             "polygon": [
                 {"x": 382, "y": 493},
                 {"x": 728, "y": 493},

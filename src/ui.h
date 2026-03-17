@@ -34,3 +34,4 @@ extern TaskSlot taskSlots[];
 
 void drawShape(SDL_Renderer* renderer, IconShape shape, int x, int y);
 void renderUI(SDL_Renderer* renderer, TTF_Font* font, int activeTab);
+void renderLanding(SDL_Renderer* renderer, TTF_Font* font);

@@ -1,5 +1,8 @@
 #include "game.h"
 
+GameScreen screen = LANDING;
+std::string playerDynasty = "";
+
 void Game::init() {
     map.load("data/map.json");
 }
@@ -28,6 +31,12 @@ void Game::update() {
 }
 
 void Game::render(SDL_Renderer* renderer, TTF_Font* font) {
-    renderUI(renderer, font, activeTab);
-    map.render(renderer, font);
+    if (screen == LANDING) {
+        renderLanding(renderer, font);
+    } else if (screen == DYNASTY_SELECT) {
+        // coming next
+    } else if (screen == PLAYING) {
+        renderUI(renderer, font, activeTab);
+        map.render(renderer, font);
+    }
 }

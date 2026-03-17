@@ -131,7 +131,7 @@ void renderUI(SDL_Renderer* renderer, TTF_Font* font, int activeTab) {
     SDL_RenderFillRect(renderer, &infoPanel);
 
     // Title, date, score
-    const char* infoLabels[] = {"Castles II", "May 2, 1312", "Score: 1000"};
+    const char* infoLabels[] = {"Castles III", "May 2, 1204", "Score: 0"};
     int infoY[] = {500, 600, 640};
     for (int i = 0; i < 3; i++) {
         SDL_Surface* s = TTF_RenderText_Solid(font, infoLabels[i], yellow);
@@ -230,4 +230,47 @@ void renderUI(SDL_Renderer* renderer, TTF_Font* font, int activeTab) {
             SDL_DestroyTexture(tt);
         }
     }
+}
+
+void renderLanding(SDL_Renderer* renderer, TTF_Font* font) {
+    // Background
+    SDL_SetRenderDrawColor(renderer, 20, 20, 20, 255);
+    SDL_Rect bg = {0, 0, 1024, 768};
+    SDL_RenderFillRect(renderer, &bg);
+
+    // Title
+    SDL_Color gold = {255, 215, 0, 255};
+    SDL_Surface* title = TTF_RenderText_Solid(font, "Castles III: Siege & Conquest", gold);
+    SDL_Texture* titleTex = SDL_CreateTextureFromSurface(renderer, title);
+    SDL_Rect titleRect = {512 - title->w / 2, 200, title->w, title->h};
+    SDL_RenderCopy(renderer, titleTex, NULL, &titleRect);
+    SDL_FreeSurface(title);
+    SDL_DestroyTexture(titleTex);
+
+    // New Game button
+    SDL_SetRenderDrawColor(renderer, 60, 30, 10, 255);
+    SDL_Rect newGameBtn = {412, 350, 200, 50};
+    SDL_RenderFillRect(renderer, &newGameBtn);
+    SDL_SetRenderDrawColor(renderer, 255, 215, 0, 255);
+    SDL_RenderDrawRect(renderer, &newGameBtn);
+    SDL_Surface* newGame = TTF_RenderText_Solid(font, "New Game", gold);
+    SDL_Texture* newGameTex = SDL_CreateTextureFromSurface(renderer, newGame);
+    SDL_Rect newGameTextRect = {512 - newGame->w / 2, 365, newGame->w, newGame->h};
+    SDL_RenderCopy(renderer, newGameTex, NULL, &newGameTextRect);
+    SDL_FreeSurface(newGame);
+    SDL_DestroyTexture(newGameTex);
+
+    // Load Game button
+    SDL_SetRenderDrawColor(renderer, 40, 40, 40, 255);
+    SDL_Rect loadGameBtn = {412, 430, 200, 50};
+    SDL_RenderFillRect(renderer, &loadGameBtn);
+    SDL_SetRenderDrawColor(renderer, 150, 150, 150, 255);
+    SDL_RenderDrawRect(renderer, &loadGameBtn);
+    SDL_Color gray = {150, 150, 150, 255};
+    SDL_Surface* loadGame = TTF_RenderText_Solid(font, "Load Game", gray);
+    SDL_Texture* loadGameTex = SDL_CreateTextureFromSurface(renderer, loadGame);
+    SDL_Rect loadGameTextRect = {512 - loadGame->w / 2, 445, loadGame->w, loadGame->h};
+    SDL_RenderCopy(renderer, loadGameTex, NULL, &loadGameTextRect);
+    SDL_FreeSurface(loadGame);
+    SDL_DestroyTexture(loadGameTex);
 }
