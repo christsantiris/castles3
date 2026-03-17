@@ -38,14 +38,19 @@ void Map::load(const std::string& path) {
 }
 
 void Map::handleClick(int x, int y) {
-    for (auto& p : provinces) p.isSelected = false;
     for (auto& p : provinces) {
         if (p.name == "Aegean Sea") continue;
         if (p.containsPoint(x, y)) {
-            p.isSelected = true;
-            break;
+            p.isSelected = !p.isSelected;
+            // deselect all others
+            for (auto& other : provinces) {
+                if (other.id != p.id) other.isSelected = false;
+            }
+            return;
         }
     }
+    // Clicked empty area - deselect all
+    for (auto& p : provinces) p.isSelected = false;
 }
 
 void Map::render(SDL_Renderer* renderer, TTF_Font* font) {

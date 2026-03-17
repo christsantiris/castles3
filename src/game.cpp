@@ -61,5 +61,13 @@ void Game::render(SDL_Renderer* renderer, TTF_Font* font) {
     } else if (screen == PLAYING) {
         renderUI(renderer, font, activeTab);
         map.render(renderer, font);
+
+        // Show province info if one is selected
+        for (auto& p : map.provinces) {
+            if (p.isSelected) {
+                renderProvinceInfo(renderer, font, p, playerDynasty);
+                break;
+            }
+        }
     }
 }

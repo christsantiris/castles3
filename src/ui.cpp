@@ -1,4 +1,5 @@
 #include "ui.h"
+#include "map.h"
 
 SDL_Color green  = {0, 200, 0, 255};
 SDL_Color red    = {220, 0, 0, 255};
@@ -315,4 +316,66 @@ void renderDynastySelect(SDL_Renderer* renderer, TTF_Font* font) {
         SDL_FreeSurface(s);
         SDL_DestroyTexture(t);
     }
+}
+
+void renderProvinceInfo(SDL_Renderer* renderer, TTF_Font* font, const Province &province, const std::string& playerDynasty) {
+    // Clear info panel area
+    SDL_SetRenderDrawColor(renderer, 60, 30, 10, 255);
+    SDL_Rect clearRect = {745, 464, 274, 299};
+    SDL_RenderFillRect(renderer, &clearRect);
+
+    SDL_Color gold = {255, 215, 0, 255};
+    SDL_Color white = {255, 255, 255, 255};
+    SDL_Color gray = {150, 150, 150, 255};
+
+    // Province name
+    SDL_Surface* name = TTF_RenderText_Solid(font, province.name.c_str(), gold);
+    SDL_Texture* nameTex = SDL_CreateTextureFromSurface(renderer, name);
+    SDL_Rect nameRect = {750, 470, name->w, name->h};
+    SDL_RenderCopy(renderer, nameTex, NULL, &nameRect);
+    SDL_FreeSurface(name);
+    SDL_DestroyTexture(nameTex);
+
+    // Owner
+    std::string ownerText = "Owner: " + province.owner;
+    SDL_Surface* owner = TTF_RenderText_Solid(font, ownerText.c_str(), white);
+    SDL_Texture* ownerTex = SDL_CreateTextureFromSurface(renderer, owner);
+    SDL_Rect ownerRect = {750, 500, owner->w, owner->h};
+    SDL_RenderCopy(renderer, ownerTex, NULL, &ownerRect);
+    SDL_FreeSurface(owner);
+    SDL_DestroyTexture(ownerTex);
+
+    // Status
+    std::string statusText = "Status: " + std::string(province.owner == playerDynasty ? "Yours" : "Enemy");
+    SDL_Surface* status = TTF_RenderText_Solid(font, statusText.c_str(), white);
+    SDL_Texture* statusTex = SDL_CreateTextureFromSurface(renderer, status);
+    SDL_Rect statusRect = {750, 530, status->w, status->h};
+    SDL_RenderCopy(renderer, statusTex, NULL, &statusRect);
+    SDL_FreeSurface(status);
+    SDL_DestroyTexture(statusTex);
+
+    // Resource
+    std::string resourceText = "Resource: " + province.resource;
+    SDL_Surface* resource = TTF_RenderText_Solid(font, resourceText.c_str(), gray);
+    SDL_Texture* resourceTex = SDL_CreateTextureFromSurface(renderer, resource);
+    SDL_Rect resourceRect = {750, 560, resource->w, resource->h};
+    SDL_RenderCopy(renderer, resourceTex, NULL, &resourceRect);
+    SDL_FreeSurface(resource);
+    SDL_DestroyTexture(resourceTex);
+
+    // Action button
+    bool isOwned = province.owner == playerDynasty;
+    SDL_Rect actionBtn = {750, 600, 250, 45};
+    SDL_SetRenderDrawColor(renderer, isOwned ? 0 : 150, isOwned ? 100 : 0, 0, 255);
+    SDL_RenderFillRect(renderer, &actionBtn);
+    SDL_SetRenderDrawColor(renderer, 255, 215, 0, 255);
+    SDL_RenderDrawRect(renderer, &actionBtn);
+
+    const char* actionLabel = isOwned ? "Manage" : "Attack";
+    SDL_Surface* action = TTF_RenderText_Solid(font, actionLabel, gold);
+    SDL_Texture* actionTex = SDL_CreateTextureFromSurface(renderer, action);
+    SDL_Rect actionTextRect = {875 - action->w / 2, 613, action->w, action->h};
+    SDL_RenderCopy(renderer, actionTex, NULL, &actionTextRect);
+    SDL_FreeSurface(action);
+    SDL_DestroyTexture(actionTex);
 }

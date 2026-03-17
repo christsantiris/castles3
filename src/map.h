@@ -8,6 +8,7 @@ struct Province {
     int id;
     std::string name;
     std::string owner;
+    std::string resource = "Unknown";
     std::vector<SDL_Point> polygon;
     bool isSelected = false;
 
