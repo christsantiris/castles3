@@ -26,7 +26,7 @@ void Game::render(SDL_Renderer* renderer, TTF_Font* font, bool musicOn) {
 
         for (auto& p : map.provinces) {
             if (p.isSelected) {
-                renderProvinceInfo(renderer, font, p, playerDynasty, combat);
+                renderProvinceInfo(renderer, font, p, playerDynasty, combat, pendingMilitary[0]);
                 break;
             }
         }

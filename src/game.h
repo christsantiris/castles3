@@ -48,6 +48,8 @@ class Game {
 public:
     int activeTab = -1;
     int score     = 0;
+
+    //resource related vars
     int resources[4] = {8, 9, 10, 8}; // Food, Timber, Iron, Gold starting values
     int totalWorkers     = 4;
     int availableWorkers = 4;
@@ -56,6 +58,9 @@ public:
     // combat related vars
     CombatTask combat;
     int playerStrength = 10;
+    int totalMilitary     = 4;
+    int availableMilitary = 4;
+    int pendingMilitary[2] = {1, 1};
 
     GameDate date = {2, 5, 1312};
 
@@ -77,7 +82,7 @@ public:
     void startTask(ResourceType res, int workers);
     void cancelTask();
     // combat
-    void startCombat(int provinceId);
+    void startCombat(int provinceId, int units);
     void resolveCombat();
     void cancelCombat();
 };

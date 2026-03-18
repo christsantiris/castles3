@@ -9,12 +9,11 @@ int getDynastyStrength(const std::string& dynasty) {
     return 10; // all named dynasties start at 10
 }
 
-void Game::startCombat(int provinceId) {
+void Game::startCombat(int provinceId, int units) {
     auto& p = map.provinces[provinceId];
     if (p.name == "Constantinople") return;
     if (combat.active) return;
 
-    // Check adjacency - target must neighbor a player owned province
     bool adjacent = false;
     for (auto& owned : map.provinces) {
         if (owned.owner != playerDynasty) continue;
@@ -28,10 +27,15 @@ void Game::startCombat(int provinceId) {
     }
     if (!adjacent) return;
 
+    int w = std::min(units, 8) - 1;
+    int provinceCount = std::min((int)map.provinces.size(), 5) - 1;
+
     combat.active          = true;
     combat.targetProvince  = provinceId;
+    combat.unitsAssigned   = units;
     combat.daysAccumulated = 0;
-    combat.daysRequired    = (p.owner == "neutral") ? 5 : 10;
+    combat.daysRequired    = daysToCollect[w][provinceCount];
+    availableMilitary     -= units;
 }
 
 void Game::resolveCombat() {
@@ -42,9 +46,11 @@ void Game::resolveCombat() {
     if (attackRoll >= defendRoll)
         p.owner = playerDynasty;
 
+    availableMilitary += combat.unitsAssigned;
     combat = CombatTask{};
 }
 
 void Game::cancelCombat() {
+    availableMilitary += combat.unitsAssigned;
     combat = CombatTask{};
 }
