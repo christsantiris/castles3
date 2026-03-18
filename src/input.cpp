@@ -77,9 +77,23 @@ GameAction handleInput(SDL_Event& event, Game& game) {
             if (x >= 750 && x <= 1000 && y >= 600 && y <= 645) {
                 for (auto& p : game.map.provinces) {
                     if (p.isSelected && p.owner != playerDynasty && p.name != "Constantinople") {
-                        game.startCombat(p.id);
+                        game.startCombat(p.id, game.pendingMilitary[0]);
                         break;
                     }
+                }
+            }
+            // Military +/- buttons in province info panel
+            for (auto& p : game.map.provinces) {
+                if (p.isSelected && p.owner != playerDynasty) {
+                    if (x >= 750 && x <= 772 && y >= 652 && y <= 674) {
+                        if (game.pendingMilitary[0] > 1)
+                            game.pendingMilitary[0]--;
+                    }
+                    if (x >= 794 && x <= 816 && y >= 652 && y <= 674) {
+                        if (game.pendingMilitary[0] < game.availableMilitary)
+                            game.pendingMilitary[0]++;
+                    }
+                    break;
                 }
             }
         }

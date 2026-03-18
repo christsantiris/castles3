@@ -6,6 +6,7 @@ struct CombatTask {
     int targetProvince = -1;
     int daysRequired   = 0;
     int daysAccumulated = 0;
+    int unitsAssigned = 1;
 
     float progress() const {
         if (daysRequired == 0) return 0.0f;

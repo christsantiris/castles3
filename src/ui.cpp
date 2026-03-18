@@ -218,8 +218,12 @@ void renderUI(SDL_Renderer* renderer, TTF_Font* font, int activeTab, const char*
 
     for (int i = 0; i < 10; i++) {
         if (i == 0) {
-            topBarIcons[i].used  = game.totalWorkers - game.availableWorkers;
+            topBarIcons[i].used  = game.availableWorkers;
             topBarIcons[i].total = game.totalWorkers;
+        }
+        if (i == 1) {
+            topBarIcons[i].used  = game.availableMilitary;
+            topBarIcons[i].total = game.totalMilitary;
         }
         if (i >= 6 && i <= 9) {
             topBarIcons[i].total = game.resources[i - 6];
@@ -350,8 +354,9 @@ void renderDynastySelect(SDL_Renderer* renderer, TTF_Font* font) {
     }
 }
 
-void renderProvinceInfo(SDL_Renderer* renderer, TTF_Font* font, const Province &province, const std::string& playerDynasty, const CombatTask& combat) {
+void renderProvinceInfo(SDL_Renderer* renderer, TTF_Font* font, const Province &province, const std::string& playerDynasty, const CombatTask& combat, int& pendingMilitary) {
     bool isCombatTarget = combat.active && combat.targetProvince == province.id;
+
     // Clear info panel area
     SDL_SetRenderDrawColor(renderer, 60, 30, 10, 255);
     SDL_Rect clearRect = {745, 464, 274, 299};
@@ -411,6 +416,7 @@ void renderProvinceInfo(SDL_Renderer* renderer, TTF_Font* font, const Province &
     SDL_RenderCopy(renderer, actionTex, NULL, &actionTextRect);
     SDL_FreeSurface(action);
     SDL_DestroyTexture(actionTex);
+
     if (isCombatTarget) {
         SDL_SetRenderDrawColor(renderer, 30, 15, 5, 255);
         SDL_Rect pbg = {750, 650, 250, 10};
@@ -418,6 +424,40 @@ void renderProvinceInfo(SDL_Renderer* renderer, TTF_Font* font, const Province &
         SDL_SetRenderDrawColor(renderer, 220, 0, 0, 255);
         SDL_Rect pfill = {750, 650, (int)(250 * combat.progress()), 10};
         SDL_RenderFillRect(renderer, &pfill);
+    }
+
+    if (!isOwned && !isCombatTarget) {
+        SDL_SetRenderDrawColor(renderer, 120, 0, 0, 255);
+        SDL_Rect minBtn = {750, 652, 22, 22};
+        SDL_RenderFillRect(renderer, &minBtn);
+        SDL_SetRenderDrawColor(renderer, 255, 215, 0, 255);
+        SDL_RenderDrawRect(renderer, &minBtn);
+        SDL_Surface* ms = TTF_RenderText_Solid(font, "-", gold);
+        SDL_Texture* mt = SDL_CreateTextureFromSurface(renderer, ms);
+        SDL_Rect mr = {756, 654, ms->w, ms->h};
+        SDL_RenderCopy(renderer, mt, NULL, &mr);
+        SDL_FreeSurface(ms);
+        SDL_DestroyTexture(mt);
+
+        std::string uLabel = std::to_string(pendingMilitary);
+        SDL_Surface* us = TTF_RenderText_Solid(font, uLabel.c_str(), white);
+        SDL_Texture* ut = SDL_CreateTextureFromSurface(renderer, us);
+        SDL_Rect ur = {778, 654, us->w, us->h};
+        SDL_RenderCopy(renderer, ut, NULL, &ur);
+        SDL_FreeSurface(us);
+        SDL_DestroyTexture(ut);
+
+        SDL_SetRenderDrawColor(renderer, 0, 120, 0, 255);
+        SDL_Rect plusBtn = {794, 652, 22, 22};
+        SDL_RenderFillRect(renderer, &plusBtn);
+        SDL_SetRenderDrawColor(renderer, 255, 215, 0, 255);
+        SDL_RenderDrawRect(renderer, &plusBtn);
+        SDL_Surface* ps = TTF_RenderText_Solid(font, "+", gold);
+        SDL_Texture* pt = SDL_CreateTextureFromSurface(renderer, ps);
+        SDL_Rect pr = {800, 654, ps->w, ps->h};
+        SDL_RenderCopy(renderer, pt, NULL, &pr);
+        SDL_FreeSurface(ps);
+        SDL_DestroyTexture(pt);
     }
 }
 
