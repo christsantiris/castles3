@@ -17,19 +17,10 @@ TopBarIcon topBarIcons[] = {
     {{150, 0, 0, 255},   0,  4, UNIT,     SWORD},    // infantry
     {{150, 0, 0, 255},   0,  4, UNIT,     ARROW},    // archers
     {{150, 0, 0, 255},   0,  4, UNIT,     SHIELD},   // knights
-    {{0, 120, 0, 255},   4,  4, RESOURCE, CIRCLE},   // food
-    {{0, 120, 0, 255},   4,  6, RESOURCE, TRIANGLE}, // timber
-    {{0, 120, 0, 255},   6,  6, RESOURCE, DIAMOND},  // iron
-    {{0, 120, 0, 255},   6,  6, RESOURCE, CIRCLE},   // gold
-};
-
-TaskSlot taskSlots[] = {
-    {"Mine Iron",  true,  0, 4, 3, 3, 0.6f},
-    {"",           false, 0, 0, 0, 0, 0.0f},
-    {"Archers",    true,  1, 0, 5, 0, 0.3f},
-    {"",           false, 1, 0, 0, 0, 0.0f},
-    {"Merchant",   true,  2, 0, 0, 3, 0.5f},
-    {"",           false, 2, 0, 0, 0, 0.0f}
+    {{0, 120, 0, 255},   0,  0, RESOURCE, CIRCLE},   // food
+    {{0, 120, 0, 255},   0,  0, RESOURCE, TRIANGLE}, // timber
+    {{0, 120, 0, 255},   0,  0, RESOURCE, DIAMOND},  // iron
+    {{0, 120, 0, 255},   0,  0, RESOURCE, CIRCLE},   // gold
 };
 
 void drawShape(SDL_Renderer* renderer, IconShape shape, int x, int y) {
@@ -81,7 +72,7 @@ void drawShape(SDL_Renderer* renderer, IconShape shape, int x, int y) {
     }
 }
 
-void renderUI(SDL_Renderer* renderer, TTF_Font* font, int activeTab, const char* dateStr) {
+void renderUI(SDL_Renderer* renderer, TTF_Font* font, int activeTab, const char* dateStr, Game& game) {
     // Top bar
     SDL_SetRenderDrawColor(renderer, 60, 60, 60, 255);
     SDL_Rect topBar = {5, 5, 1014, 70};
@@ -143,55 +134,37 @@ void renderUI(SDL_Renderer* renderer, TTF_Font* font, int activeTab, const char*
         SDL_DestroyTexture(t);
     }
 
-    // Task slot rows
-    for (int i = 0; i < 6; i++) {
-        SDL_SetRenderDrawColor(renderer, taskSlots[i].unlocked ? 80 : 180, taskSlots[i].unlocked ? 45 : 180, taskSlots[i].unlocked ? 10 : 180, 255);
-        SDL_Rect taskRow = {745, 90 + (i * 55), 274, 45};
-        SDL_RenderFillRect(renderer, &taskRow);
+    // Task slot row
+    SDL_SetRenderDrawColor(renderer, game.task.active ? 80 : 180, game.task.active ? 45 : 180, game.task.active ? 10 : 180, 255);
+    SDL_Rect taskRow = {745, 90, 274, 45};
+    SDL_RenderFillRect(renderer, &taskRow);
 
-        if (taskSlots[i].unlocked) {
-            SDL_Surface* v1 = TTF_RenderText_Solid(font, std::to_string(taskSlots[i].val1).c_str(), green);
-            SDL_Texture* t1 = SDL_CreateTextureFromSurface(renderer, v1);
-            SDL_Rect r1 = {747, 97 + (i * 55), v1->w, v1->h};
-            SDL_RenderCopy(renderer, t1, NULL, &r1);
-            SDL_FreeSurface(v1);
-            SDL_DestroyTexture(t1);
+    if (game.task.active) {
+        const char* resNames[] = {"Food", "Timber", "Iron", "Gold"};
 
-            SDL_Surface* v2 = TTF_RenderText_Solid(font, std::to_string(taskSlots[i].val2).c_str(), red);
-            SDL_Texture* t2 = SDL_CreateTextureFromSurface(renderer, v2);
-            SDL_Rect r2 = {770, 97 + (i * 55), v2->w, v2->h};
-            SDL_RenderCopy(renderer, t2, NULL, &r2);
-            SDL_FreeSurface(v2);
-            SDL_DestroyTexture(t2);
+        SDL_Surface* ls = TTF_RenderText_Solid(font, resNames[game.task.res], yellow);
+        SDL_Texture* lt = SDL_CreateTextureFromSurface(renderer, ls);
+        SDL_Rect lr = {820, 97, ls->w, ls->h};
+        SDL_RenderCopy(renderer, lt, NULL, &lr);
+        SDL_FreeSurface(ls);
+        SDL_DestroyTexture(lt);
 
-            SDL_Surface* v3 = TTF_RenderText_Solid(font, std::to_string(taskSlots[i].val3).c_str(), blue);
-            SDL_Texture* t3 = SDL_CreateTextureFromSurface(renderer, v3);
-            SDL_Rect r3 = {793, 97 + (i * 55), v3->w, v3->h};
-            SDL_RenderCopy(renderer, t3, NULL, &r3);
-            SDL_FreeSurface(v3);
-            SDL_DestroyTexture(t3);
+        SDL_SetRenderDrawColor(renderer, 30, 15, 5, 255);
+        SDL_Rect progressBg = {745, 118, 274, 8};
+        SDL_RenderFillRect(renderer, &progressBg);
 
-            SDL_SetRenderDrawColor(renderer, 30, 15, 5, 255);
-            SDL_Rect progressBg = {745, 118 + (i * 55), 274, 8};
-            SDL_RenderFillRect(renderer, &progressBg);
-
-            SDL_SetRenderDrawColor(renderer, 0, 200, 0, 255);
-            SDL_Rect progressFill = {745, 118 + (i * 55), (int)(274 * taskSlots[i].progress), 8};
-            SDL_RenderFillRect(renderer, &progressFill);
-
-            SDL_Surface* ls = TTF_RenderText_Solid(font, taskSlots[i].label.c_str(), yellow);
-            SDL_Texture* lt = SDL_CreateTextureFromSurface(renderer, ls);
-            SDL_Rect lr = {820, 97 + (i * 55), ls->w, ls->h};
-            SDL_RenderCopy(renderer, lt, NULL, &lr);
-            SDL_FreeSurface(ls);
-            SDL_DestroyTexture(lt);
-        }
+        SDL_SetRenderDrawColor(renderer, 0, 200, 0, 255);
+        SDL_Rect progressFill = {745, 118, (int)(274 * game.task.progress()), 8};
+        SDL_RenderFillRect(renderer, &progressFill);
     }
 
     // Top bar icons
     int iconX[] = {5, 65, 135, 195, 265, 325, 395, 455, 515, 585, 645, 705, 765};
 
     for (int i = 0; i < 13; i++) {
+        if (i >= 9 && i <= 12) {
+            topBarIcons[i].total = game.resources[i - 9];
+        }
         if (topBarIcons[i].type == TASK) {
             SDL_SetRenderDrawColor(renderer, topBarIcons[i].bgColor.r, topBarIcons[i].bgColor.g, topBarIcons[i].bgColor.b, 255);
             SDL_Rect iconBg = {iconX[i], 5, 35, 65};
@@ -408,5 +381,88 @@ void renderOptsPanel(SDL_Renderer* renderer, TTF_Font* font, bool musicOn) {
         SDL_RenderCopy(renderer, t, NULL, &r);
         SDL_FreeSurface(s);
         SDL_DestroyTexture(t);
+    }
+}
+
+void renderStockTab(SDL_Renderer* renderer, TTF_Font* font, Game& game) {
+    SDL_Color gold = {255, 215, 0, 255};
+    SDL_Color gray = {150, 150, 150, 255};
+
+    // Clear panel
+    SDL_SetRenderDrawColor(renderer, 60, 30, 10, 255);
+    SDL_Rect panel = {745, 464, 274, 299};
+    SDL_RenderFillRect(renderer, &panel);
+
+    const char* resNames[] = {"Food", "Timber", "Iron", "Gold"};
+
+    for (int i = 0; i < 4; i++) {
+        int rowY = 474 + (i * 60);
+
+        SDL_SetRenderDrawColor(renderer, 80, 40, 10, 255);
+        SDL_Rect row = {748, rowY, 270, 50};
+        SDL_RenderFillRect(renderer, &row);
+
+        std::string label = std::string(resNames[i]) + ": " + std::to_string(game.resources[i]);
+        SDL_Surface* s = TTF_RenderText_Solid(font, label.c_str(), gold);
+        SDL_Texture* t = SDL_CreateTextureFromSurface(renderer, s);
+        SDL_Rect r = {752, rowY + 4, s->w, s->h};
+        SDL_RenderCopy(renderer, t, NULL, &r);
+        SDL_FreeSurface(s);
+        SDL_DestroyTexture(t);
+
+        int ownedProvinces = game.countOwnedProvinces((ResourceType)i);
+        bool canStart = !game.task.active && ownedProvinces > 0 && game.availableWorkers >= 1;
+        bool isActive = game.task.active && game.task.res == (ResourceType)i;
+        bool grayed = !isActive && !canStart;
+
+        SDL_SetRenderDrawColor(renderer, grayed ? 50 : 30, grayed ? 50 : 60, grayed ? 50 : 10, 255);
+        SDL_Rect btn = {750, rowY + 28, 100, 22};
+        SDL_RenderFillRect(renderer, &btn);
+        SDL_SetRenderDrawColor(renderer, 255, 215, 0, 255);
+        SDL_RenderDrawRect(renderer, &btn);
+
+        const char* btnLabel = isActive ? "Cancel" : "Collect";
+        SDL_Surface* bs = TTF_RenderText_Solid(font, btnLabel, grayed ? gray : gold);
+        SDL_Texture* bt = SDL_CreateTextureFromSurface(renderer, bs);
+        SDL_Rect br = {800 - bs->w / 2, rowY + 30, bs->w, bs->h};
+        SDL_RenderCopy(renderer, bt, NULL, &br);
+        SDL_FreeSurface(bs);
+        SDL_DestroyTexture(bt);
+        if (!game.task.active && canStart) {
+            // - button
+            SDL_SetRenderDrawColor(renderer, 120, 0, 0, 255);
+            SDL_Rect minBtn = {862, rowY + 28, 22, 22};
+            SDL_RenderFillRect(renderer, &minBtn);
+            SDL_SetRenderDrawColor(renderer, 255, 215, 0, 255);
+            SDL_RenderDrawRect(renderer, &minBtn);
+            SDL_Surface* ms = TTF_RenderText_Solid(font, "-", gold);
+            SDL_Texture* mt = SDL_CreateTextureFromSurface(renderer, ms);
+            SDL_Rect mr = {868, rowY + 30, ms->w, ms->h};
+            SDL_RenderCopy(renderer, mt, NULL, &mr);
+            SDL_FreeSurface(ms);
+            SDL_DestroyTexture(mt);
+
+            // Worker count
+            std::string wLabel = std::to_string(game.pendingWorkers[i]);
+            SDL_Surface* ws = TTF_RenderText_Solid(font, wLabel.c_str(), white);
+            SDL_Texture* wt = SDL_CreateTextureFromSurface(renderer, ws);
+            SDL_Rect wr = {890, rowY + 30, ws->w, ws->h};
+            SDL_RenderCopy(renderer, wt, NULL, &wr);
+            SDL_FreeSurface(ws);
+            SDL_DestroyTexture(wt);
+
+            // + button
+            SDL_SetRenderDrawColor(renderer, 0, 120, 0, 255);
+            SDL_Rect plusBtn = {906, rowY + 28, 22, 22};
+            SDL_RenderFillRect(renderer, &plusBtn);
+            SDL_SetRenderDrawColor(renderer, 255, 215, 0, 255);
+            SDL_RenderDrawRect(renderer, &plusBtn);
+            SDL_Surface* ps = TTF_RenderText_Solid(font, "+", gold);
+            SDL_Texture* pt = SDL_CreateTextureFromSurface(renderer, ps);
+            SDL_Rect pr = {912, rowY + 30, ps->w, ps->h};
+            SDL_RenderCopy(renderer, pt, NULL, &pr);
+            SDL_FreeSurface(ps);
+            SDL_DestroyTexture(pt);
+        }
     }
 }
