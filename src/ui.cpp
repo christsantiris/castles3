@@ -393,8 +393,8 @@ void renderDynastySelect(SDL_Renderer* renderer, TTF_Font* font) {
     }
 }
 
-void renderProvinceInfo(SDL_Renderer* renderer, TTF_Font* font, const Province &province, const std::string& playerDynasty, const CombatTask& combat, int& pendingMilitary) {
-    bool isCombatTarget = combat.active && combat.targetProvince == province.id;
+void renderProvinceInfo(SDL_Renderer* renderer, TTF_Font* font, const Province &province, Game& game) {
+    bool isCombatTarget = game.combat.active && game.combat.targetProvince == province.id;
 
     // Clear info panel area
     SDL_SetRenderDrawColor(renderer, 60, 30, 10, 255);
@@ -423,6 +423,7 @@ void renderProvinceInfo(SDL_Renderer* renderer, TTF_Font* font, const Province &
     SDL_DestroyTexture(ownerTex);
 
     // Status
+    extern std::string playerDynasty;
     std::string statusText = "Status: " + std::string(province.owner == playerDynasty ? "Yours" : "Enemy");
     SDL_Surface* status = TTF_RenderText_Solid(font, statusText.c_str(), white);
     SDL_Texture* statusTex = SDL_CreateTextureFromSurface(renderer, status);
@@ -442,13 +443,15 @@ void renderProvinceInfo(SDL_Renderer* renderer, TTF_Font* font, const Province &
 
     // Action button
     bool isOwned = province.owner == playerDynasty;
+    bool isLocked = province.name == "Constantinople" && !game.canAttackConstantinople();
     SDL_Rect actionBtn = {750, 600, 250, 45};
-    SDL_SetRenderDrawColor(renderer, isOwned ? 0 : 150, isOwned ? 100 : 0, 0, 255);
+    SDL_SetRenderDrawColor(renderer, isLocked ? 40 : (isOwned ? 0 : 150), isLocked ? 40 : (isOwned ? 100 : 0), isLocked ? 40 : 0, 255);
     SDL_RenderFillRect(renderer, &actionBtn);
     SDL_SetRenderDrawColor(renderer, 255, 215, 0, 255);
     SDL_RenderDrawRect(renderer, &actionBtn);
 
-    const char* actionLabel = isOwned ? "Manage" : "Attack";
+    const char* actionLabel = isLocked ? "Locked" : (isOwned ? "Manage" : "Attack");
+
     SDL_Surface* action = TTF_RenderText_Solid(font, actionLabel, gold);
     SDL_Texture* actionTex = SDL_CreateTextureFromSurface(renderer, action);
     SDL_Rect actionTextRect = {875 - action->w / 2, 613, action->w, action->h};
@@ -461,7 +464,7 @@ void renderProvinceInfo(SDL_Renderer* renderer, TTF_Font* font, const Province &
         SDL_Rect pbg = {750, 650, 250, 10};
         SDL_RenderFillRect(renderer, &pbg);
         SDL_SetRenderDrawColor(renderer, 220, 0, 0, 255);
-        SDL_Rect pfill = {750, 650, (int)(250 * combat.progress()), 10};
+        SDL_Rect pfill = {750, 650, (int)(250 * game.combat.progress()), 10};
         SDL_RenderFillRect(renderer, &pfill);
     }
 
@@ -478,7 +481,7 @@ void renderProvinceInfo(SDL_Renderer* renderer, TTF_Font* font, const Province &
         SDL_FreeSurface(ms);
         SDL_DestroyTexture(mt);
 
-        std::string uLabel = std::to_string(pendingMilitary);
+        std::string uLabel = std::to_string(game.pendingMilitary[0]);
         SDL_Surface* us = TTF_RenderText_Solid(font, uLabel.c_str(), white);
         SDL_Texture* ut = SDL_CreateTextureFromSurface(renderer, us);
         SDL_Rect ur = {778, 654, us->w, us->h};

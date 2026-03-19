@@ -49,7 +49,7 @@ GameAction handleInput(SDL_Event& event, Game& game) {
                     int rowY = 474 + (i * 60);
                     ResourceType res = (ResourceType)i;
                     bool eitherTaskInactive = !game.task.active || !game.task2.active;
-                    SDL_Log("task.active=%d task2.active=%d eitherTaskInactive=%d", game.task.active, game.task2.active, eitherTaskInactive);
+                    // SDL_Log("task.active=%d task2.active=%d eitherTaskInactive=%d", game.task.active, game.task2.active, eitherTaskInactive);
                     if (x >= 750 && x <= 850 && y >= rowY + 28 && y <= rowY + 50) {
                         if (game.task.active && game.task.res == res)
                             game.cancelTask();
@@ -61,17 +61,14 @@ GameAction handleInput(SDL_Event& event, Game& game) {
                             game.startTask2(res, game.pendingWorkers[i]);
                     }
 
-                    if (!game.task.active) {
-                        bool eitherTaskInactive = !game.task.active || !game.task2.active;
-                        if (eitherTaskInactive) {
-                            if (x >= 862 && x <= 884 && y >= rowY + 28 && y <= rowY + 50) {
-                                if (game.pendingWorkers[i] > 1)
-                                    game.pendingWorkers[i]--;
-                            }
-                            if (x >= 906 && x <= 928 && y >= rowY + 28 && y <= rowY + 50) {
-                                if (game.pendingWorkers[i] < game.totalWorkers)
-                                    game.pendingWorkers[i]++;
-                            }
+                    if (eitherTaskInactive) {
+                        if (x >= 862 && x <= 884 && y >= rowY + 28 && y <= rowY + 50) {
+                            if (game.pendingWorkers[i] > 1)
+                                game.pendingWorkers[i]--;
+                        }
+                        if (x >= 906 && x <= 928 && y >= rowY + 28 && y <= rowY + 50) {
+                            if (game.pendingWorkers[i] < game.totalWorkers)
+                                game.pendingWorkers[i]++;
                         }
                     }
                 }
