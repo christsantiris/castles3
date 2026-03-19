@@ -1,5 +1,5 @@
 #include "game.h"
-#include "ui.h"
+#include "ui/ui.h"
 #include "input.h"
 
 GameScreen screen = LANDING;

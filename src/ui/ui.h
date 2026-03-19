@@ -2,9 +2,9 @@
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_ttf.h>
 #include <string>
-#include "map.h"
-#include "game.h"
-#include "combat.h"
+#include "../map.h"
+#include "../game.h"
+#include "../combat.h"
 
 class Game; // forward declare
 
@@ -43,3 +43,8 @@ void renderDynastySelect(SDL_Renderer* renderer, TTF_Font* font); // Render Char
 void renderProvinceInfo(SDL_Renderer* renderer, TTF_Font* font, const Province& province, Game& game); //Render province info
 void renderOptsPanel(SDL_Renderer* renderer, TTF_Font* font, bool musicOn); // Render options pannel
 void renderStockTab(SDL_Renderer* renderer, TTF_Font* font, Game& game);
+void renderTopBar(SDL_Renderer* renderer, TTF_Font* font, Game& game);
+void renderTaskRows(SDL_Renderer* renderer, TTF_Font* font, Game& game);
+void renderTabBar(SDL_Renderer* renderer, TTF_Font* font, int activeTab);
+void renderInfoPanel(SDL_Renderer* renderer, TTF_Font* font, const char* dateStr, Game& game);
+void renderCombatRow(SDL_Renderer* renderer, TTF_Font* font, Game& game);
