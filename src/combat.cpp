@@ -11,7 +11,7 @@ int getDynastyStrength(const std::string& dynasty) {
 
 void Game::startCombat(int provinceId, int units) {
     auto& p = map.provinces[provinceId];
-    if (p.name == "Constantinople") return;
+    if (p.name == "Constantinople" && !canAttackConstantinople()) return;
     if (combat.active) return;
 
     bool adjacent = false;

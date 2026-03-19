@@ -40,6 +40,6 @@ void drawShape(SDL_Renderer* renderer, IconShape shape, int x, int y); // Used f
 void renderUI(SDL_Renderer* renderer, TTF_Font* font, int activeTab, const char* dateStr, Game& game); // Render main game. 
 void renderLanding(SDL_Renderer* renderer, TTF_Font* font); // Render landing page. 
 void renderDynastySelect(SDL_Renderer* renderer, TTF_Font* font); // Render Character select page.
-void renderProvinceInfo(SDL_Renderer* renderer, TTF_Font* font, const Province& province, const std::string& playerDynasty, const CombatTask& combat, int& pendingMilitary);
+void renderProvinceInfo(SDL_Renderer* renderer, TTF_Font* font, const Province& province, Game& game); //Render province info
 void renderOptsPanel(SDL_Renderer* renderer, TTF_Font* font, bool musicOn); // Render options pannel
 void renderStockTab(SDL_Renderer* renderer, TTF_Font* font, Game& game);
