@@ -14,4 +14,16 @@ struct CombatTask {
     }
 };
 
-int getDynastyStrength(const std::string& dynasty);
+struct Army {
+    int infantry = 0;
+    int archers  = 0;
+    int knights  = 0;
+
+    int attackStrength() const {
+        return (infantry * 3) + (archers * 1) + (knights * 4);
+    }
+
+    int defenseStrength() const {
+        return (infantry * 1) + (archers * 3) + (knights * 4);
+    }
+};

@@ -5,8 +5,9 @@
 #include "map.h"
 #include "collection.h"
 #include "combat.h"
+#include <map>
 
-enum GameScreen { LANDING, DYNASTY_SELECT, PLAYING };
+enum GameScreen { LANDING, DYNASTY_SELECT, PLAYING, VICTORY };
 enum GameAction { NONE, QUIT, TOGGLE_MUSIC };
 
 struct GameDate {
@@ -57,7 +58,7 @@ public:
 
     // combat related vars
     CombatTask combat;
-    int playerStrength = 10;
+
     int totalMilitary     = 4;
     int availableMilitary = 4;
     int pendingMilitary[2] = {1, 1};
@@ -68,6 +69,10 @@ public:
     bool hasSecondRelationsSlot() const { return score >= 600; }
     bool hasKnights()             const { return score >= 800; }
     bool canAttackConstantinople() const { return score >= 1000; }
+
+    // army variables used for advanced combat
+    Army playerArmy = {4, 2, 0};
+    std::map<std::string, Army> dynastyArmies;
 
     GameDate date = {2, 5, 1312};
 
@@ -95,4 +100,5 @@ public:
     void startCombat(int provinceId, int units);
     void resolveCombat();
     void cancelCombat();
+    void initArmies();
 };
