@@ -1,5 +1,5 @@
 #include "ui.h"
-#include "map.h"
+#include "../map.h"
 
 SDL_Color green  = {0, 200, 0, 255};
 SDL_Color red    = {220, 0, 0, 255};

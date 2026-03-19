@@ -1,5 +1,5 @@
 #include "input.h"
-#include "ui.h"
+#include "ui/ui.h"
 
 extern GameScreen screen;
 extern std::string playerDynasty;
