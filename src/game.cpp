@@ -7,6 +7,7 @@ std::string playerDynasty = "";
 
 void Game::init() {
     map.load("data/map.json");
+    initArmies();
 }
 
 void Game::render(SDL_Renderer* renderer, TTF_Font* font, bool musicOn) {
