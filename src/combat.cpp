@@ -6,6 +6,7 @@ extern std::string playerDynasty;
 extern GameScreen screen;
 
 void Game::startCombat(int provinceId, int units) {
+    SDL_Log("startCombat: availableMilitary=%d unitsAssigned=%d", availableMilitary, units);
     auto& p = map.provinces[provinceId];
     if (p.name == "Constantinople" && !canAttackConstantinople()) return;
     if (combat.active) return;
@@ -32,6 +33,7 @@ void Game::startCombat(int provinceId, int units) {
     int daysPerUnit[] = {40, 20, 13, 10, 8, 7, 6, 5};
     combat.daysRequired = daysPerUnit[w] * (p.owner == "neutral" ? 1 : 2);
     availableMilitary     -= units;
+    SDL_Log("after deduction: availableMilitary=%d", availableMilitary);
 }
 
 void Game::resolveCombat() {

@@ -12,6 +12,10 @@ void renderTopBar(SDL_Renderer* renderer, TTF_Font* font, Game& game) {
             topBarIcons[i].used  = game.availableWorkers;
             topBarIcons[i].total = game.totalWorkers;
         }
+        if (i == 1) {
+            topBarIcons[i].used  = game.availableMilitary;
+            topBarIcons[i].total = game.totalMilitary;
+        }
         if (i == 3) topBarIcons[i].total = game.playerArmy.infantry;
         if (i == 4) topBarIcons[i].total = game.playerArmy.archers;
         if (i == 5) topBarIcons[i].total = game.playerArmy.knights;

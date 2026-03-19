@@ -63,6 +63,11 @@ public:
     int availableMilitary = 4;
     int pendingMilitary[2] = {1, 1};
 
+    // v1 AI opponents
+    std::map<std::string, CombatTask> aiCombats;
+    int aiTickCounter  = 0;
+    int aiTickInterval = 10;
+
     // helper funcs for unlocking new features
     bool hasSecondStockSlot()     const { return score >= 200; }
     bool hasSecondMilitarySlot()  const { return score >= 400; }
@@ -104,4 +109,8 @@ public:
 
     std::string battleMessage = "";
     int battleMessageTimer = 0;
+
+    // AI functionality
+    bool isDefeated(const std::string& dynasty) const;
+    void updateAI();
 };

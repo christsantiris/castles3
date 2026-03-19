@@ -76,5 +76,17 @@ void Game::update() {
             if (battleMessageTimer == 0)
                 battleMessage = "";
         }
+
+        aiTickCounter++;
+        updateAI();
+        bool allDefeated = true;
+        const char* aiDynasties[] = {"Kantakouzenos", "Doukas", "Palaiologos", "Phokas", "Komnenos", "Baldwin II"};
+        for (auto& d : aiDynasties) {
+            if (std::string(d) != playerDynasty && !isDefeated(d)) {
+                allDefeated = false;
+                break;
+            }
+        }
+        if (allDefeated) screen = VICTORY;
     }
 }
