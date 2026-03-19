@@ -26,3 +26,4 @@ make run
 - [ ] Special Quests
 - [ ] Upkeep like paying and feeding troops
 - [ ] Recruit additional troops. Infantry costs iron. Archers cost timber.Knights cost 2x Iron
+- [ ] Spying
