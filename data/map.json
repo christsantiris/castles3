@@ -226,11 +226,11 @@
             "name": "Crete",
             "owner": "neutral",
             "resource": "Food",
-            "neighbors": [14, 16, 18],
+            "neighbors": [14, 16, 22],
             "polygon": [
                 {"x": 138, "y": 628},
-                {"x": 380, "y": 628},
-                {"x": 380, "y": 761},
+                {"x": 259, "y": 628},
+                {"x": 259, "y": 761},
                 {"x": 138, "y": 761}
             ]
         },
@@ -239,7 +239,7 @@
             "name": "Egypt",
             "owner": "neutral",
             "resource": "Gold",
-            "neighbors": [15, 17, 21],
+            "neighbors": [15, 21, 22],
             "polygon": [
                 {"x": 382, "y": 628},
                 {"x": 555, "y": 628},
@@ -284,6 +284,19 @@
                 {"x": 728, "y": 628},
                 {"x": 728, "y": 761},
                 {"x": 557, "y": 761}
+            ]
+        },
+        {
+            "id": 22,
+            "name": "Sicily",
+            "owner": "neutral",
+            "resource": "Timber",
+            "neighbors": [17, 18],
+            "polygon": [
+                {"x": 261, "y": 628},
+                {"x": 380, "y": 628},
+                {"x": 380, "y": 761},
+                {"x": 261, "y": 761}
             ]
         }
     ]
