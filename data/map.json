@@ -15,7 +15,7 @@
         },
         {
             "id": 1,
-            "name": "Epirus (1)",
+            "name": "Macedonia (1)",
             "owner": "neutral",
             "resource": "Food",
             "neighbors": [0, 2, 3, 4 ],
@@ -41,7 +41,7 @@
         },
         {
             "id": 3,
-            "name": "Macedonia (3)",
+            "name": "Epirus (3)",
             "owner": "neutral",
             "resource": "Timber",
             "neighbors": [0, 1, 4, 9, 10],
@@ -109,7 +109,7 @@
             "name": "Cappadocia (8)",
             "owner": "neutral",
             "resource": "Iron",
-            "neighbors": [6, 11, 15],
+            "neighbors": [6, 11, 14],
             "polygon": [
                 {"x": 700, "y": 300},
                 {"x": 940, "y": 300},
@@ -184,28 +184,28 @@
         },
         {
             "id": 14,
-            "name": "Judaea (14)",
-            "owner": "neutral",
-            "resource": "Food",
-            "neighbors": [8, 11, 15, 20],
+            "name": "Syria (14)",
+            "owner": "Komnenos",
+            "resource": "Gold",
+            "neighbors": [8, 11, 15],
             "polygon": [
                 {"x": 590, "y": 450},
-                {"x": 700, "y": 450},
-                {"x": 700, "y": 600},
-                {"x": 590, "y": 600}
+                {"x": 940, "y": 450},
+                {"x": 940, "y": 520},
+                {"x": 590, "y": 520}
             ]
         },
         {
             "id": 15,
-            "name": "Syria (15)",
-            "owner": "Komnenos",
-            "resource": "Gold",
-            "neighbors": [8, 14, 19],
+            "name": "Judaea (15)",
+            "owner": "neutral",
+            "resource": "Food",
+            "neighbors": [14, 19, 20],
             "polygon": [
-                {"x": 700, "y": 450},
-                {"x": 940, "y": 450},
+                {"x": 590, "y": 520},
+                {"x": 940, "y": 520},
                 {"x": 940, "y": 600},
-                {"x": 700, "y": 600}
+                {"x": 590, "y": 600}
             ]
         },
         {
@@ -215,10 +215,10 @@
             "resource": "Food",
             "neighbors": [9, 10, 16],
             "polygon": [
-                {"x": 10,  "y": 450},
-                {"x": 200, "y": 450},
-                {"x": 200, "y": 600},
-                {"x": 10,  "y": 600}
+                {"x": 50,  "y": 450},
+                {"x": 230, "y": 450},
+                {"x": 230, "y": 600},
+                {"x": 50,  "y": 600}
             ]
         },
         {
@@ -265,7 +265,7 @@
             "name": "Egypt (20)",
             "owner": "neutral",
             "resource": "Gold",
-            "neighbors": [13, 14, 17, 19, 21],
+            "neighbors": [13, 15, 17, 19, 21],
             "polygon": [
                 {"x": 490, "y": 600},
                 {"x": 700, "y": 600},
