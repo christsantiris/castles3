@@ -1,6 +1,8 @@
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_ttf.h>
-#include <SDL2/SDL_mixer.h>
+#include "core/world.h"
+#include "core/systems/map_system.h"
+#include "renderer/map_renderer.h"
 
 int main() {
     SDL_Init(SDL_INIT_VIDEO);
@@ -13,23 +15,36 @@ int main() {
         1280, 900,
         SDL_WINDOW_SHOWN
     );
-
     SDL_Renderer* renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
+
+    TTF_Font* font = TTF_OpenFont("fonts/MedievalSharp-Regular.ttf", 14);
+    if (!font) {
+        SDL_Log("Failed to load font: %s", TTF_GetError());
+        return 1;
+    }
+
+    World world;
+    MapSystem::load(world, "data/map.json");
 
     SDL_Event event;
     bool running = true;
     while (running) {
-        while (SDL_PollEvent(&event))
+        while (SDL_PollEvent(&event)) {
             if (event.type == SDL_QUIT) running = false;
+            if (event.type == SDL_MOUSEBUTTONDOWN)
+                MapSystem::handleClick(world, event.button.x, event.button.y);
+        }
 
-        SDL_SetRenderDrawColor(renderer, 20, 20, 20, 255);
+        SDL_SetRenderDrawColor(renderer, 210, 180, 140, 255);
         SDL_RenderClear(renderer);
+        MapRenderer::render(renderer, font, world);
         SDL_RenderPresent(renderer);
         SDL_Delay(16);
     }
 
     SDL_DestroyRenderer(renderer);
     SDL_DestroyWindow(window);
+    TTF_CloseFont(font);
     TTF_Quit();
     SDL_Quit();
     return 0;
