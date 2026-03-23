@@ -3,6 +3,7 @@
 #include "core/world.h"
 #include "core/systems/map_system.h"
 #include "renderer/map_renderer.h"
+#include "renderer/panel_renderer.h"
 
 int main() {
     SDL_Init(SDL_INIT_VIDEO);
@@ -38,6 +39,7 @@ int main() {
         SDL_SetRenderDrawColor(renderer, 210, 180, 140, 255);
         SDL_RenderClear(renderer);
         MapRenderer::render(renderer, font, world);
+        PanelRenderer::render(renderer, font, world);
         SDL_RenderPresent(renderer);
         SDL_Delay(16);
     }

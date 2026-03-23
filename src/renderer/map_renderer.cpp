@@ -101,6 +101,6 @@ namespace MapRenderer {
         // Draw labels
         for (auto& p : world.provinces)
             drawLabel(renderer, font, p.name, p.polygon, p.isSelected);
+        SDL_RenderSetClipRect(renderer, nullptr);
     }
-
 }
