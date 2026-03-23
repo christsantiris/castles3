@@ -1,8 +1,34 @@
 {
     "provinces": [
         {
-            "id": 0,
-            "name": "Bulgaria (0)",
+            "id": 1,
+            "name": "Constantinople (0)",
+            "owner": "Baldwin II",
+            "resource": "Gold",
+            "neighbors": [1, 4, 7],
+            "polygon": [
+                {"x": 330, "y": 50},
+                {"x": 490, "y": 50},
+                {"x": 490, "y": 160},
+                {"x": 330, "y": 160}
+            ]
+        },
+        {
+            "id": 1,
+            "name": "Macedonia (1)",
+            "owner": "neutral",
+            "resource": "Food",
+            "neighbors": [0, 2, 3, 4 ],
+            "polygon": [
+                {"x": 180, "y": 10},
+                {"x": 330, "y": 10},
+                {"x": 330, "y": 160},
+                {"x": 180, "y": 160}
+            ]
+        },
+        {
+            "id": 2,
+            "name": "Bulgaria (2)",
             "owner": "neutral",
             "resource": "Timber",
             "neighbors": [1, 3],
@@ -14,41 +40,15 @@
             ]
         },
         {
-            "id": 1,
-            "name": "Macedonia (1)",
-            "owner": "neutral",
-            "resource": "Food",
-            "neighbors": [0, 2, 3, 4 ],
-            "polygon": [
-                {"x": 180, "y": 10},
-                {"x": 360, "y": 10},
-                {"x": 360, "y": 160},
-                {"x": 180, "y": 160}
-            ]
-        },
-        {
-            "id": 2,
-            "name": "Constantinople (2)",
-            "owner": "Baldwin II",
-            "resource": "Gold",
-            "neighbors": [1, 4, 7],
-            "polygon": [
-                {"x": 360, "y": 10},
-                {"x": 490, "y": 10},
-                {"x": 490, "y": 160},
-                {"x": 360, "y": 160}
-            ]
-        },
-        {
             "id": 3,
             "name": "Epirus (3)",
             "owner": "neutral",
             "resource": "Timber",
-            "neighbors": [0, 1, 4, 9, 10],
+            "neighbors": [1, 2, 4, 9, 10],
             "polygon": [
                 {"x": 10,  "y": 160},
-                {"x": 260, "y": 160},
-                {"x": 250, "y": 300},
+                {"x": 230, "y": 160},
+                {"x": 220, "y": 300},
                 {"x": 10,  "y": 300}
             ]
         },
@@ -57,12 +57,12 @@
             "name": "Thrace (4)",
             "owner": "neutral",
             "resource": "Food",
-            "neighbors": [1, 2, 3, 10],
+            "neighbors": [0, 1, 3, 10],
             "polygon": [
-                {"x": 260, "y": 160},
-                {"x": 390, "y": 160},
-                {"x": 390, "y": 300},
-                {"x": 250, "y": 300}
+                {"x": 230, "y": 160},
+                {"x": 375, "y": 160},
+                {"x": 375, "y": 300},
+                {"x": 220, "y": 300}
             ]
         },
         {
@@ -119,7 +119,7 @@
         },
         {
             "id": 9,
-            "name": "Thessaly (9)",
+            "name": "Achaia (9)",
             "owner": "Doukas",
             "resource": "Food",
             "neighbors": [3, 10, 16],
@@ -132,14 +132,14 @@
         },
         {
             "id": 10,
-            "name": "Achaia (10)",
+            "name": "Thessaly (10)",
             "owner": "neutral",
             "resource": "Timber",
-            "neighbors": [3, 4, 9, 16],
+            "neighbors": [3, 4, 16, 19],
             "polygon": [
                 {"x": 180, "y": 300},
-                {"x": 350, "y": 300},
-                {"x": 350, "y": 450},
+                {"x": 320, "y": 300},
+                {"x": 320, "y": 450},
                 {"x": 180, "y": 450}
             ]
         },
@@ -215,10 +215,10 @@
             "resource": "Food",
             "neighbors": [9, 10, 16],
             "polygon": [
-                {"x": 50,  "y": 450},
+                {"x": 100,  "y": 450},
                 {"x": 230, "y": 450},
                 {"x": 230, "y": 600},
-                {"x": 50,  "y": 600}
+                {"x": 100,  "y": 600}
             ]
         },
         {
@@ -228,23 +228,23 @@
             "resource": "Food",
             "neighbors": [16, 18, 20],
             "polygon": [
-                {"x": 100,  "y": 600},
+                {"x": 175,  "y": 600},
                 {"x": 490, "y": 600},
                 {"x": 490, "y": 650},
-                {"x": 100,  "y": 650}
+                {"x": 175,  "y": 650}
             ]
         },
         {
             "id": 18,
-            "name": "Sicily (18)",
+            "name": "Sicilia (22)",
             "owner": "neutral",
             "resource": "Timber",
             "neighbors": [17],
             "polygon": [
-                {"x": 10,  "y": 650},
-                {"x": 190, "y": 650},
-                {"x": 190, "y": 700},
-                {"x": 10,  "y": 700}
+                {"x": 10,  "y": 600},
+                {"x": 100, "y": 600},
+                {"x": 100, "y": 650},
+                {"x": 10,  "y": 650}
             ]
         },
         {
@@ -284,6 +284,19 @@
                 {"x": 700, "y": 750},
                 {"x": 700, "y": 880},
                 {"x": 290, "y": 880}
+            ]
+        },
+        {
+            "id": 22,
+            "name": "Calabria (22)",
+            "owner": "neutral",
+            "resource": "Food",
+            "neighbors": [16, 18],
+            "polygon": [
+                {"x": 10,  "y": 550},
+                {"x": 100, "y": 550},
+                {"x": 100, "y": 600},
+                {"x": 10,  "y": 600}
             ]
         }
     ]
