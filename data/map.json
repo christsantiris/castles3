@@ -2,7 +2,7 @@
     "provinces": [
         {
             "id": 0,
-            "name": "Bulgaria",
+            "name": "Bulgaria (0)",
             "owner": "neutral",
             "resource": "Timber",
             "neighbors": [1, 3],
@@ -15,10 +15,10 @@
         },
         {
             "id": 1,
-            "name": "Epirus",
+            "name": "Epirus (1)",
             "owner": "neutral",
             "resource": "Food",
-            "neighbors": [0, 2, 3],
+            "neighbors": [0, 2, 3, 4 ],
             "polygon": [
                 {"x": 180, "y": 10},
                 {"x": 360, "y": 10},
@@ -28,7 +28,7 @@
         },
         {
             "id": 2,
-            "name": "Constantinople",
+            "name": "Constantinople (2)",
             "owner": "Baldwin II",
             "resource": "Gold",
             "neighbors": [1, 4, 7],
@@ -41,10 +41,10 @@
         },
         {
             "id": 3,
-            "name": "Macedonia",
+            "name": "Macedonia (3)",
             "owner": "neutral",
             "resource": "Timber",
-            "neighbors": [0, 1, 4, 9],
+            "neighbors": [0, 1, 4, 9, 10],
             "polygon": [
                 {"x": 10,  "y": 160},
                 {"x": 260, "y": 160},
@@ -54,10 +54,10 @@
         },
         {
             "id": 4,
-            "name": "Thrace",
+            "name": "Thrace (4)",
             "owner": "neutral",
             "resource": "Food",
-            "neighbors": [2, 3, 9],
+            "neighbors": [1, 2, 3, 10],
             "polygon": [
                 {"x": 260, "y": 160},
                 {"x": 390, "y": 160},
@@ -67,10 +67,10 @@
         },
         {
             "id": 5,
-            "name": "Pontus",
+            "name": "Pontus (5)",
             "owner": "Palaiologos",
             "resource": "Iron",
-            "neighbors": [7, 8],
+            "neighbors": [6, 7],
             "polygon": [
                 {"x": 700, "y": 10},
                 {"x": 940, "y": 10},
@@ -80,10 +80,10 @@
         },
         {
             "id": 6,
-            "name": "Galatia",
+            "name": "Galatia (6)",
             "owner": "Phokas",
             "resource": "Food",
-            "neighbors": [8, 11],
+            "neighbors": [5, 7, 8],
             "polygon": [
                 {"x": 700, "y": 160},
                 {"x": 940, "y": 160},
@@ -93,10 +93,10 @@
         },
         {
             "id": 7,
-            "name": "Anatolia",
+            "name": "Anatolia (7)",
             "owner": "neutral",
             "resource": "Food",
-            "neighbors": [2, 5, 12, 11],
+            "neighbors": [2, 5, 6, 11],
             "polygon": [
                 {"x": 490, "y": 10},
                 {"x": 700, "y": 10},
@@ -106,7 +106,7 @@
         },
         {
             "id": 8,
-            "name": "Cappadocia",
+            "name": "Cappadocia (8)",
             "owner": "neutral",
             "resource": "Iron",
             "neighbors": [6, 11, 15],
@@ -119,10 +119,10 @@
         },
         {
             "id": 9,
-            "name": "Thessaly",
+            "name": "Thessaly (9)",
             "owner": "Doukas",
             "resource": "Food",
-            "neighbors": [3, 4, 12, 10],
+            "neighbors": [3, 10, 16],
             "polygon": [
                 {"x": 10,  "y": 300},
                 {"x": 180, "y": 300},
@@ -132,10 +132,10 @@
         },
         {
             "id": 10,
-            "name": "Achaia",
+            "name": "Achaia (10)",
             "owner": "neutral",
             "resource": "Timber",
-            "neighbors": [9, 12, 13, 16],
+            "neighbors": [3, 4, 9, 16],
             "polygon": [
                 {"x": 180, "y": 300},
                 {"x": 350, "y": 300},
@@ -145,10 +145,10 @@
         },
         {
             "id": 11,
-            "name": "Cilicia",
+            "name": "Cilicia (11)",
             "owner": "neutral",
             "resource": "Iron",
-            "neighbors": [6, 8, 7, 15, 14],
+            "neighbors": [7, 8, 12, 14],
             "polygon": [
                 {"x": 490, "y": 300},
                 {"x": 700, "y": 300},
@@ -158,7 +158,7 @@
         },
         {
             "id": 12,
-            "name": "Chios",
+            "name": "Chios (12)",
             "owner": "Kantakouzenos",
             "resource": "Gold",
             "neighbors": [11],
@@ -171,10 +171,10 @@
         },
         {
             "id": 13,
-            "name": "Cyprus",
+            "name": "Cyprus (13)",
             "owner": "neutral",
             "resource": "Gold",
-            "neighbors": [17],
+            "neighbors": [17, 20],
             "polygon": [
                 {"x": 380, "y": 550},
                 {"x": 520, "y": 550},
@@ -184,10 +184,10 @@
         },
         {
             "id": 14,
-            "name": "Judaea",
+            "name": "Judaea (14)",
             "owner": "neutral",
             "resource": "Food",
-            "neighbors": [11, 15, 20],
+            "neighbors": [8, 11, 15, 20],
             "polygon": [
                 {"x": 590, "y": 450},
                 {"x": 700, "y": 450},
@@ -197,10 +197,10 @@
         },
         {
             "id": 15,
-            "name": "Syria",
+            "name": "Syria (15)",
             "owner": "Komnenos",
             "resource": "Gold",
-            "neighbors": [8, 11, 19],
+            "neighbors": [8, 14, 19],
             "polygon": [
                 {"x": 700, "y": 450},
                 {"x": 940, "y": 450},
@@ -210,10 +210,10 @@
         },
         {
             "id": 16,
-            "name": "Morea",
+            "name": "Morea (16)",
             "owner": "neutral",
             "resource": "Food",
-            "neighbors": [10, 17],
+            "neighbors": [9, 10, 16],
             "polygon": [
                 {"x": 10,  "y": 450},
                 {"x": 200, "y": 450},
@@ -223,10 +223,10 @@
         },
         {
             "id": 17,
-            "name": "Crete",
+            "name": "Crete (17)",
             "owner": "neutral",
             "resource": "Food",
-            "neighbors": [16, 13, 21],
+            "neighbors": [13, 16, 18, 20],
             "polygon": [
                 {"x": 100,  "y": 600},
                 {"x": 490, "y": 600},
@@ -236,10 +236,10 @@
         },
         {
             "id": 18,
-            "name": "Sicily",
+            "name": "Sicily (18)",
             "owner": "neutral",
             "resource": "Timber",
-            "neighbors": [17, 20],
+            "neighbors": [17],
             "polygon": [
                 {"x": 10,  "y": 650},
                 {"x": 190, "y": 650},
@@ -249,10 +249,10 @@
         },
         {
             "id": 19,
-            "name": "Arabia",
+            "name": "Arabia (19)",
             "owner": "neutral",
             "resource": "Iron",
-            "neighbors": [15, 14, 21],
+            "neighbors": [15, 20, 21],
             "polygon": [
                 {"x": 700, "y": 600},
                 {"x": 940, "y": 600},
@@ -262,10 +262,10 @@
         },
         {
             "id": 20,
-            "name": "Egypt",
+            "name": "Egypt (20)",
             "owner": "neutral",
             "resource": "Gold",
-            "neighbors": [14, 18, 21],
+            "neighbors": [13, 14, 17, 19, 21],
             "polygon": [
                 {"x": 490, "y": 600},
                 {"x": 700, "y": 600},
@@ -275,7 +275,7 @@
         },
         {
             "id": 21,
-            "name": "Africa",
+            "name": "Africa (21)",
             "owner": "neutral",
             "resource": "Food",
             "neighbors": [19, 20],
