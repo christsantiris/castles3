@@ -6,4 +6,5 @@ namespace GameSystem {
     void tick(World& world);
     bool isVictory(const World& world);
     bool isDefeat(const World& world);
+    void assignStartingProvinces(World& world);
 }

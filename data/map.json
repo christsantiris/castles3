@@ -55,8 +55,8 @@
         {
             "id": 4,
             "name": "Thrace (4)",
-            "owner": "Iron",
-            "resource": "Food",
+            "owner": "neutral",
+            "resource": "Iron",
             "neighbors": [0, 1, 3, 10],
             "polygon": [
                 {"x": 230, "y": 160},
@@ -68,7 +68,7 @@
         {
             "id": 5,
             "name": "Pontus (5)",
-            "owner": "Palaiologos",
+            "owner": "neutral",
             "resource": "Iron",
             "neighbors": [6, 7],
             "polygon": [
@@ -81,7 +81,7 @@
         {
             "id": 6,
             "name": "Galatia (6)",
-            "owner": "Phokas",
+            "owner": "neutral",
             "resource": "Food",
             "neighbors": [5, 7, 8],
             "polygon": [
@@ -120,7 +120,7 @@
         {
             "id": 9,
             "name": "Achaia (9)",
-            "owner": "Doukas",
+            "owner": "neutral",
             "resource": "Iron",
             "neighbors": [3, 10, 16],
             "polygon": [
@@ -159,7 +159,7 @@
         {
             "id": 12,
             "name": "Chios (12)",
-            "owner": "Kantakouzenos",
+            "owner": "neutral",
             "resource": "Gold",
             "neighbors": [7],
             "polygon": [
@@ -185,7 +185,7 @@
         {
             "id": 14,
             "name": "Syria (14)",
-            "owner": "Komnenos",
+            "owner": "neutral",
             "resource": "Gold",
             "neighbors": [8, 11, 15],
             "polygon": [
