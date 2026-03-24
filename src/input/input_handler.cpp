@@ -27,18 +27,26 @@ namespace InputHandler {
             int tabY = 60 + (36 + 4) * 6 + 4;
             if (y >= tabY && y <= tabY + 40) {
                 int tabIndex = (x - 950) / tabW;
-                if (tabIndex >= 0 && tabIndex < 4)
+                if (tabIndex >= 0 && tabIndex < 4) {
+                    MapSystem::deselectAll(world);
                     world.ctx.activeTab = (world.ctx.activeTab == tabIndex) ? -1 : tabIndex;
-                return;
+                }
             }
         }
 
         // Map clicks
         if (x < 950)
+            world.ctx.activeTab = -1;
             MapSystem::handleClick(world, x, y);
 
         // Stock tab clicks
         if (world.ctx.activeTab == 0 && x >= 950) {
+            int closeX = 950 + 330 - 28;
+            int closeY = 60 + (36 + 4) * 6 + 4 + 40 + 4;
+            if (x >= closeX && x <= closeX + 22 && y >= closeY && y <= closeY + 22) {
+                world.ctx.activeTab = -1;
+                return;
+            }
             int infoY = 60 + (36 + 4) * 6 + 4 + 40;
             int rowH = 54;
             int baseX = 958;

@@ -138,8 +138,15 @@ namespace PanelRenderer {
         }
     }
 
-    static void renderStockTab(SDL_Renderer* r, TTF_Font* font, World& world) {
-        const char* resNames[] = {"Food", "Timber", "Iron", "Gold"};
+static void renderStockTab(SDL_Renderer* r, TTF_Font* font, World& world) {
+    // Close button
+    int closeX = PANEL_X + PANEL_W - 28;
+    int closeY = PANEL_Y + (BAR_H + BAR_MARGIN) * 6 + BAR_MARGIN + TAB_H + 4;
+    drawRect(r, closeX, closeY, 22, 22, {120, 0, 0, 255});
+    drawBorder(r, closeX, closeY, 22, 22, GOLD);
+    drawTextCentered(r, font, "X", closeX, closeY + 2, 22, GOLD);
+
+    const char* resNames[] = {"Food", "Timber", "Iron", "Gold"};
         ResourceType resTypes[] = {
             ResourceType::Food, ResourceType::Timber,
             ResourceType::Iron, ResourceType::Gold
@@ -200,7 +207,7 @@ namespace PanelRenderer {
         }
     }
 
-    static void renderInfoArea(SDL_Renderer* r, TTF_Font* font, const World& world) {
+    static void renderInfoArea(SDL_Renderer* r, TTF_Font* font, World& world) {
         int infoY = PANEL_Y + (BAR_H + BAR_MARGIN) * 6 + BAR_MARGIN + TAB_H;
         int infoH = PANEL_H - infoY;
 
@@ -217,10 +224,13 @@ namespace PanelRenderer {
             drawText(r, font, selected->name, PANEL_X + 10, infoY + 15, GOLD);
             if (selected->isRevealed) {
                 drawText(r, font, "Owner: " + selected->owner,
-                         PANEL_X + 10, infoY + 45, WHITE);
+                        PANEL_X + 10, infoY + 45, WHITE);
                 drawText(r, font, "Resource: " + selected->resource,
-                         PANEL_X + 10, infoY + 75, WHITE);
+                        PANEL_X + 10, infoY + 75, WHITE);
             }
+        } else if (world.ctx.activeTab == 0) {
+            renderStockTab(r, font, world);
+            return;
         } else {
             int dotX = PANEL_X + 10;
 
@@ -255,10 +265,7 @@ namespace PanelRenderer {
         drawRect(renderer, PANEL_X, PANEL_Y, PANEL_W, PANEL_H - PANEL_Y, WOOD_DARK);
         renderTaskBars(renderer, font, world);
         renderTabs(renderer, font, world.ctx.activeTab);
-        if (world.ctx.activeTab == 0)
-            renderStockTab(renderer, font, world);
-        else
-            renderInfoArea(renderer, font, world);
+        renderInfoArea(renderer, font, world);
     }
 
 }
