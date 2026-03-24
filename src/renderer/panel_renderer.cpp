@@ -163,6 +163,9 @@ namespace PanelRenderer {
             int dotX = PANEL_X + 10;
 
             // Date row
+            // if (!world.ctx.playerDynasty.empty())
+            //     drawTextCentered(r, font, "Playing as " + world.ctx.playerDynasty,
+            //                     PANEL_X, infoY + 4, PANEL_W, GOLD);
             drawRect(r, PANEL_X + 4, infoY + 20, PANEL_W - 8, 36, WOOD_MID);
             drawBorder(r, PANEL_X + 4, infoY + 20, PANEL_W - 8, 36, GOLD);
             SDL_SetRenderDrawColor(r, DOT.r, DOT.g, DOT.b, DOT.a);
