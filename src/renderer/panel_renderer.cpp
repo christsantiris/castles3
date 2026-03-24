@@ -1,5 +1,7 @@
 #include "panel_renderer.h"
 #include "../core/systems/date_system.h"
+#include "../core/systems/unlock_system.h"
+#include "../core/systems/combat_system.h"
 
 namespace PanelRenderer {
 
@@ -70,10 +72,13 @@ namespace PanelRenderer {
 
         // Stock bars (green)
         for (int i = 0; i < 2; i++) {
+            if (i == 1 && !UnlockSystem::hasSecondStockSlot(world)) {
+                y += BAR_H + BAR_MARGIN;
+                continue;
+            }
             auto& task = world.collectionTasks.slots[i];
             std::string label = task.active ? "Collecting..." : "Stock slot " + std::to_string(i + 1);
             SDL_Color border  = {0, 200, 0, 255};
-            // Bar background
             drawRect(r, x, y, w, BAR_H, BAR_STOCK);
             drawBorder(r, x, y, w, BAR_H, border);
             if (task.progress() > 0.0f) {
@@ -85,6 +90,10 @@ namespace PanelRenderer {
 
         // Military bars (red)
         for (int i = 0; i < 2; i++) {
+            if (i == 1 && !UnlockSystem::hasSecondMilitarySlot(world)) {
+                y += BAR_H + BAR_MARGIN;
+                continue;
+            }
             auto& task = world.combatTasks.slots[i];
             std::string label = task.active ? "Attack in progress..." : "Military slot " + std::to_string(i + 1);
             SDL_Color border  = {200, 0, 0, 255};
@@ -99,15 +108,19 @@ namespace PanelRenderer {
 
         // Diplomacy bars (blue)
         for (int i = 0; i < 2; i++) {
+            if (i == 1 && !UnlockSystem::hasSecondDiplomacySlot(world)) {
+                y += BAR_H + BAR_MARGIN;
+                continue;
+            }
             auto& bribe = world.bribeTasks.slots[i];
             auto& scout = world.scoutTasks.slots[i];
             bool bribeActive = bribe.active;
             bool scoutActive = scout.active;
             std::string label = bribeActive ? "Bribing..."
-                              : scoutActive ? "Scouting..."
-                              : "Diplomacy slot " + std::to_string(i + 1);
+                            : scoutActive ? "Scouting..."
+                            : "Diplomacy slot " + std::to_string(i + 1);
             float prog = bribeActive ? bribe.progress()
-                       : scoutActive ? scout.progress() : 0.0f;
+                    : scoutActive ? scout.progress() : 0.0f;
             SDL_Color border = {0, 0, 200, 255};
             drawRect(r, x, y, w, BAR_H, BAR_DIPL);
             drawBorder(r, x, y, w, BAR_H, border);
@@ -220,6 +233,36 @@ static void renderStockTab(SDL_Renderer* r, TTF_Font* font, World& world) {
                         PANEL_X + 10, infoY + 45, WHITE);
                 drawText(r, font, "Resource: " + selected->resource,
                         PANEL_X + 10, infoY + 75, WHITE);
+            }
+
+            bool isEnemy = selected->owner != world.ctx.playerDynasty;
+            bool isAdj = CombatSystem::isAdjacent(world, selected->id);
+
+            if (isEnemy && isAdj && world.battle.phase == BattlePhase::None) {
+                bool marching = false;
+                for (int s = 0; s < 2; s++)
+                    if (world.combatTasks.slots[s].active &&
+                        world.combatTasks.slots[s].targetProvinceId == selected->id)
+                        marching = true;
+
+                if (!marching) {
+                    std::string wLabel = "Military: " + std::to_string(world.pendingMilitaryWorkers);
+                    drawText(r, font, wLabel, PANEL_X + 10, infoY + 105, WHITE);
+
+                    drawRect(r, PANEL_X + 170, infoY + 103, 20, 20, {120, 0, 0, 255});
+                    drawBorder(r, PANEL_X + 170, infoY + 103, 20, 20, GOLD);
+                    drawTextCentered(r, font, "-", PANEL_X + 170, infoY + 105, 20, WHITE);
+
+                    drawRect(r, PANEL_X + 196, infoY + 103, 20, 20, {0, 120, 0, 255});
+                    drawBorder(r, PANEL_X + 196, infoY + 103, 20, 20, GOLD);
+                    drawTextCentered(r, font, "+", PANEL_X + 196, infoY + 105, 20, WHITE);
+
+                    drawRect(r, PANEL_X + 10, infoY + 130, 200, 36, {0, 100, 0, 255});
+                    drawBorder(r, PANEL_X + 10, infoY + 130, 200, 36, GOLD);
+                    drawTextCentered(r, font, "ATTACK", PANEL_X + 10, infoY + 140, 200, GOLD);
+                } else {
+                    drawText(r, font, "Marching...", PANEL_X + 10, infoY + 110, GOLD);
+                }
             }
         } else if (world.ctx.activeTab == 0) {
             renderStockTab(r, font, world);
