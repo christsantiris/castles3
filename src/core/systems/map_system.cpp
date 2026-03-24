@@ -1,11 +1,10 @@
-#include <SDL2/SDL.h>
-#include <SDL2/SDL_ttf.h>
 #include "map_system.h"
 #include <nlohmann/json.hpp>
 #include <fstream>
-#include <iostream>
 
 using json = nlohmann::json;
+
+static const int MAP_Y = 60;
 
 namespace MapSystem {
 
@@ -48,12 +47,13 @@ namespace MapSystem {
     }
 
     ProvinceComponent* handleClick(World& world, int x, int y) {
+        float scaleX = 940.0f / 950.0f;
+        float scaleY = 880.0f / 740.0f;
+        int adjustedX = (int)(x * scaleX);
+        int adjustedY = (int)((y - 60) * scaleY);
+
         for (auto& p : world.provinces) {
-            if (p.name == "Aegean Sea") continue;
-            if (!containsPoint(p, x, y)) continue;
-            std::cout << "Province name: " << p.name << '\n';
-            std::cout << "Province name: " << x << '\n';
-            std::cout << "Province name: " << y << '\n';
+            if (!containsPoint(p, adjustedX, adjustedY)) continue;
             bool wasSelected = p.isSelected;
             deselectAll(world);
             if (!wasSelected) {

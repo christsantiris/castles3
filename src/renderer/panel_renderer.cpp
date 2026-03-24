@@ -3,11 +3,12 @@
 
 namespace PanelRenderer {
 
-    static const int PANEL_X    = 950;
-    static const int PANEL_W    = 330;
-    static const int PANEL_H    = 900;
-    static const int TAB_H      = 40;
-    static const int BAR_H      = 36;
+    static const int PANEL_X = 950;
+    static const int PANEL_Y = 60;
+    static const int PANEL_W = 330;
+    static const int PANEL_H = 900;
+    static const int TAB_H = 40;
+    static const int BAR_H = 36;
     static const int BAR_MARGIN = 4;
 
     // Colors
@@ -63,7 +64,7 @@ namespace PanelRenderer {
     }
 
     static void renderTaskBars(SDL_Renderer* r, TTF_Font* font, const World& world) {
-        int y = BAR_MARGIN;
+        int y = PANEL_Y + BAR_MARGIN;
         int x = PANEL_X + BAR_MARGIN;
         int w = PANEL_W - (BAR_MARGIN * 2);
 
@@ -122,7 +123,7 @@ namespace PanelRenderer {
         const char* labels[]    = {"STOCK", "ARMY", "RELAT", "OPTS"};
         SDL_Color   tabColors[] = {TAB_STOCK, TAB_ARMY, TAB_RELAT, TAB_OPTS};
         int tabW = PANEL_W / 4;
-        int tabY = (BAR_H + BAR_MARGIN) * 6 + BAR_MARGIN;
+        int tabY = PANEL_Y + (BAR_H + BAR_MARGIN) * 6 + BAR_MARGIN;
 
         for (int i = 0; i < 4; i++) {
             int tx = PANEL_X + (i * tabW);
@@ -138,7 +139,7 @@ namespace PanelRenderer {
     }
 
     static void renderInfoArea(SDL_Renderer* r, TTF_Font* font, const World& world) {
-        int infoY = (BAR_H + BAR_MARGIN) * 6 + BAR_MARGIN + TAB_H;
+        int infoY = PANEL_Y + (BAR_H + BAR_MARGIN) * 6 + BAR_MARGIN + TAB_H;
         int infoH = PANEL_H - infoY;
 
         // Wood background
@@ -186,7 +187,7 @@ namespace PanelRenderer {
     }
 
     void render(SDL_Renderer* renderer, TTF_Font* font, const World& world) {
-        drawRect(renderer, PANEL_X, 0, PANEL_W, PANEL_H, WOOD_DARK);
+        drawRect(renderer, PANEL_X, PANEL_Y, PANEL_W, PANEL_H - PANEL_Y, WOOD_DARK);
         renderTaskBars(renderer, font, world);
         renderTabs(renderer, font, world.ctx.activeTab);
         renderInfoArea(renderer, font, world);

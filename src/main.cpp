@@ -4,6 +4,7 @@
 #include "core/systems/map_system.h"
 #include "renderer/map_renderer.h"
 #include "renderer/panel_renderer.h"
+#include "renderer/topbar_renderer.h"
 
 int main() {
     SDL_Init(SDL_INIT_VIDEO);
@@ -13,7 +14,7 @@ int main() {
         "Castles III: Siege & Conquest",
         SDL_WINDOWPOS_CENTERED,
         SDL_WINDOWPOS_CENTERED,
-        1280, 900,
+        1280, 800,
         SDL_WINDOW_SHOWN
     );
     SDL_Renderer* renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
@@ -36,10 +37,11 @@ int main() {
                 MapSystem::handleClick(world, event.button.x, event.button.y);
         }
 
-        SDL_SetRenderDrawColor(renderer, 210, 180, 140, 255);
+        SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
         SDL_RenderClear(renderer);
         MapRenderer::render(renderer, font, world);
         PanelRenderer::render(renderer, font, world);
+        TopBarRenderer::render(renderer, font, world);
         SDL_RenderPresent(renderer);
         SDL_Delay(16);
     }
