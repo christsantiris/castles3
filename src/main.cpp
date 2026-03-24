@@ -29,6 +29,7 @@ int main() {
     World world;
     MapSystem::load(world, "data/map.json");
     GameSystem::initArmies(world);
+    GameSystem::assignStartingProvinces(world);
 
     Uint32 lastTick = SDL_GetTicks();
     const Uint32 tickInterval = 2000; // 2 real seconds = 1 game day
