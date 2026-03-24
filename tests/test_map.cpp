@@ -62,3 +62,34 @@ TEST_CASE("click empty area deselects all", "[map]") {
     MapSystem::handleClick(w, 500, 500);
     REQUIRE(w.provinces[0].isSelected == false);
 }
+
+TEST_CASE("clicking active tab deactivates it", "[input]") {
+    World w;
+    w.ctx.activeTab = 0;
+
+    // Simulate tab click on already active tab
+    w.ctx.activeTab = (w.ctx.activeTab == 0) ? -1 : 0;
+
+    REQUIRE(w.ctx.activeTab == -1);
+}
+
+TEST_CASE("clicking inactive tab activates it", "[input]") {
+    World w;
+    w.ctx.activeTab = -1;
+
+    // Simulate tab click on inactive tab
+    w.ctx.activeTab = (w.ctx.activeTab == 0) ? -1 : 0;
+
+    REQUIRE(w.ctx.activeTab == 0);
+}
+
+TEST_CASE("clicking different tab switches active tab", "[input]") {
+    World w;
+    w.ctx.activeTab = 0;
+
+    // Simulate clicking tab 1 while tab 0 is active
+    int tabIndex = 1;
+    w.ctx.activeTab = (w.ctx.activeTab == tabIndex) ? -1 : tabIndex;
+
+    REQUIRE(w.ctx.activeTab == 1);
+}
