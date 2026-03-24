@@ -99,8 +99,21 @@ namespace MapRenderer {
         }
 
         // Draw borders
-        for (auto& p : world.provinces)
-            drawBorder(renderer, offsetPolygon(p.polygon));
+        for (auto& p : world.provinces) {
+            if (p.owner == world.ctx.playerDynasty) {
+                SDL_SetRenderDrawColor(renderer, 255, 215, 0, 255);
+                auto op = offsetPolygon(p.polygon);
+                int n = op.size();
+                for (int i = 0; i < n; i++) {
+                    int j = (i + 1) % n;
+                    SDL_RenderDrawLine(renderer, op[i].x, op[i].y, op[j].x, op[j].y);
+                    SDL_RenderDrawLine(renderer, op[i].x+1, op[i].y, op[j].x+1, op[j].y);
+                    SDL_RenderDrawLine(renderer, op[i].x, op[i].y+1, op[j].x, op[j].y+1);
+                }
+            } else {
+                drawBorder(renderer, offsetPolygon(p.polygon));
+            }
+        }
 
         // Draw labels
         for (auto& p : world.provinces)

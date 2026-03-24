@@ -6,6 +6,7 @@
 #include "renderer/map_renderer.h"
 #include "renderer/panel_renderer.h"
 #include "renderer/topbar_renderer.h"
+#include "renderer/landing_renderer.h"
 
 int main() {
     SDL_Init(SDL_INIT_VIDEO);
@@ -29,36 +30,58 @@ int main() {
     World world;
     MapSystem::load(world, "data/map.json");
     GameSystem::initArmies(world);
-    GameSystem::assignStartingProvinces(world);
 
+    LandingState landingState;
     Uint32 lastTick = SDL_GetTicks();
-    const Uint32 tickInterval = 2000; // 2 real seconds = 1 game day
+    const Uint32 tickInterval = 2000;
 
     SDL_Event event;
     bool running = true;
     while (running) {
         while (SDL_PollEvent(&event)) {
             if (event.type == SDL_QUIT) running = false;
-            if (event.type == SDL_MOUSEBUTTONDOWN)
-                MapSystem::handleClick(world, event.button.x, event.button.y);
+
+            if (event.type == SDL_MOUSEBUTTONDOWN) {
+                int x = event.button.x;
+                int y = event.button.y;
+
+                if (world.ctx.screen == GameScreen::Landing) {
+                    // Cycle dynasty
+                    if (x >= 420 && x <= 860 && y >= 280 && y <= 320)
+                        landingState.dynastyIndex = (landingState.dynastyIndex + 1) % 5;
+                    // PLAY button
+                    if (x >= 440 && x <= 520 && y >= 580 && y <= 620) {
+                        world.ctx.playerDynasty = landingState.selectedDynasty();
+                        GameSystem::assignStartingProvinces(world);
+                        world.ctx.screen = GameScreen::Playing;
+                    }
+                    // EXIT button
+                    if (x >= 680 && x <= 760 && y >= 580 && y <= 620)
+                        running = false;
+                }
+
+                if (world.ctx.screen == GameScreen::Playing)
+                    MapSystem::handleClick(world, x, y);
+            }
         }
 
         Uint32 now = SDL_GetTicks();
-        if (now - lastTick >= tickInterval) {
+        if (world.ctx.screen == GameScreen::Playing && now - lastTick >= tickInterval) {
             lastTick = now;
             GameSystem::tick(world);
-
-            if (GameSystem::isVictory(world))
-                SDL_Log("Victory!");
-            if (GameSystem::isDefeat(world))
-                SDL_Log("Defeat!");
         }
 
         SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
         SDL_RenderClear(renderer);
-        MapRenderer::render(renderer, font, world);
-        PanelRenderer::render(renderer, font, world);
-        TopBarRenderer::render(renderer, font, world);
+
+        if (world.ctx.screen == GameScreen::Landing) {
+            LandingRenderer::render(renderer, font, landingState);
+        } else if (world.ctx.screen == GameScreen::Playing) {
+            MapRenderer::render(renderer, font, world);
+            PanelRenderer::render(renderer, font, world);
+            TopBarRenderer::render(renderer, font, world);
+        }
+
         SDL_RenderPresent(renderer);
         SDL_Delay(16);
     }
