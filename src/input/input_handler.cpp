@@ -4,15 +4,23 @@
 #include "../core/systems/resource_system.h"
 #include "../core/systems/combat_system.h"
 #include "../core/systems/recruit_system.h"
+#include <SDL2/SDL_mixer.h>
 
 static const int PANEL_X = 950;
 
 namespace InputHandler {
 
-    static void handleLandingClick(int x, int y, World& world, LandingState& state) {
+static void handleLandingClick(int x, int y, World& world, LandingState& state, Mix_Music* music) {
         // Cycle dynasty
         if (x >= 420 && x <= 860 && y >= 280 && y <= 320)
             state.dynastyIndex = (state.dynastyIndex + 1) % 5;
+
+        // Music toggle
+        if (x >= 420 && x <= 860 && y >= 380 && y <= 420) {
+            state.musicOn = !state.musicOn;
+            if (state.musicOn) Mix_ResumeMusic();
+            else Mix_PauseMusic();
+        }
 
         // PLAY button
         if (x >= 440 && x <= 520 && y >= 580 && y <= 620) {
@@ -24,7 +32,7 @@ namespace InputHandler {
         // EXIT handled in main
     }
 
-    static void handlePlayingClick(int x, int y, World& world) {
+    static void handlePlayingClick(int x, int y, World& world, LandingState& state, Mix_Music* music) {
         // Tab bar clicks
         if (x >= 950 && y >= 60) {
             int tabW = 330 / 4;
@@ -175,9 +183,31 @@ namespace InputHandler {
                     world.pendingMilitaryWorkers++;
             }
         }
+        // Opts tab clicks
+        if (world.ctx.activeTab == 3 && x >= 950) {
+            int infoY = 60 + (36 + 4) * 6 + 4 + 40;
+            int baseX = PANEL_X + 8;
+            int rowH = 58;
+            int y0 = infoY + 10;
+
+            // Music toggle
+            if (x >= baseX && x <= baseX + 314 &&
+                y >= y0 && y <= y0 + 50) {
+                state.musicOn = !state.musicOn;
+                if (state.musicOn) Mix_ResumeMusic();
+                else Mix_PauseMusic();
+            }
+
+            // Quit button
+            if (x >= baseX && x <= baseX + 314 &&
+                y >= y0 + (3 * rowH) && y <= y0 + (3 * rowH) + 50) {
+                // Signal quit by returning false from handle
+                world.ctx.shouldQuit = true;
+            }
+        }
     }
 
-    bool handle(SDL_Event& event, World& world, LandingState& landingState) {
+    bool handle(SDL_Event& event, World& world, LandingState& landingState, Mix_Music* music) {
         if (event.type == SDL_QUIT) return false;
 
         if (event.type == SDL_MOUSEBUTTONDOWN) {
@@ -188,9 +218,9 @@ namespace InputHandler {
                 // EXIT button
                 if (x >= 680 && x <= 760 && y >= 580 && y <= 620)
                     return false;
-                handleLandingClick(x, y, world, landingState);
+                handleLandingClick(x, y, world, landingState, music);
             } else if (world.ctx.screen == GameScreen::Playing) {
-                handlePlayingClick(x, y, world);
+                handlePlayingClick(x, y, world, landingState, music);
             } else if (world.ctx.screen == GameScreen::Victory) {
                 if (event.type == SDL_MOUSEBUTTONDOWN && event.button.button == SDL_BUTTON_LEFT) {
                     int x = event.button.x;

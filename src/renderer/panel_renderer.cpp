@@ -300,7 +300,7 @@ namespace PanelRenderer {
         drawTextCentered(r, font, "+", x + 148, y + 8, 22, WHITE);
     }
 
-    static void renderInfoArea(SDL_Renderer* r, TTF_Font* font, World& world) {
+    static void renderInfoArea(SDL_Renderer* r, TTF_Font* font, World& world, bool musicOn) {
         int infoY = PANEL_Y + (BAR_H + BAR_MARGIN) * 6 + BAR_MARGIN + TAB_H;
         int infoH = PANEL_H - infoY;
 
@@ -355,6 +355,9 @@ namespace PanelRenderer {
         } else if (world.ctx.activeTab == 1) {
             renderArmyTab(r, font, world);
             return;
+        } else if (world.ctx.activeTab == 3) {
+            renderOptsTab(r, font, world, musicOn);
+            return;
         } else {
             int dotX = PANEL_X + 10;
 
@@ -380,11 +383,39 @@ namespace PanelRenderer {
         }
     }
 
-    void render(SDL_Renderer* renderer, TTF_Font* font, World& world) {
+    void render(SDL_Renderer* renderer, TTF_Font* font, World& world, bool musicOn) {
         drawRect(renderer, PANEL_X, PANEL_Y, PANEL_W, PANEL_H - PANEL_Y, WOOD_DARK);
         renderTaskBars(renderer, font, world);
         renderTabs(renderer, font, world.ctx.activeTab);
-        renderInfoArea(renderer, font, world);
+        renderInfoArea(renderer, font, world, musicOn);
     }
 
+    static void renderOptsTab(SDL_Renderer* r, TTF_Font* font, World& world, bool musicOn) {
+        int infoY = PANEL_Y + (BAR_H + BAR_MARGIN) * 6 + BAR_MARGIN + TAB_H;
+        int y = infoY + 10;
+        int x = PANEL_X + 8;
+        int w = PANEL_W - 16;
+        int rowH = 50;
+
+        const char* labels[] = {
+            musicOn ? "Music: On" : "Music: Off",
+            "Save Game",
+            "Load Game",
+            "Quit"
+        };
+
+        SDL_Color btnColors[] = {
+            {0, 80, 80, 255},
+            {50, 50, 50, 255},
+            {50, 50, 50, 255},
+            {120, 0, 0, 255}
+        };
+
+        for (int i = 0; i < 4; i++) {
+            drawRect(r, x, y, w, rowH, btnColors[i]);
+            drawBorder(r, x, y, w, rowH, GOLD);
+            drawTextCentered(r, font, labels[i], x, y + 16, w, GOLD);
+            y += rowH + 8;
+        }
+    }
 } 
