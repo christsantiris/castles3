@@ -1,5 +1,6 @@
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_ttf.h>
+#include <SDL2/SDL_mixer.h>
 #include "core/world.h"
 #include "core/systems/map_system.h"
 #include "core/systems/game_system.h"
@@ -17,6 +18,11 @@
 int main() {
     SDL_Init(SDL_INIT_VIDEO);
     TTF_Init();
+
+    Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 2048);
+    Mix_Music* music = Mix_LoadMUS("music/theme/medieval.ogg");
+    if (music)
+        Mix_PlayMusic(music, -1);
 
     SDL_Window* window = SDL_CreateWindow(
         "Castles III: Siege & Conquest",
@@ -46,9 +52,10 @@ int main() {
     bool running = true;
     while (running) {
         while (SDL_PollEvent(&event)) {
-            if (!InputHandler::handle(event, world, landingState))
+            if (!InputHandler::handle(event, world, landingState, music))
                 running = false;
         }
+        if (world.ctx.shouldQuit) running = false;
 
         Uint32 now = SDL_GetTicks();
         float deltaTime = (now - lastTick) / 1000.0f;
@@ -81,12 +88,12 @@ int main() {
             LandingRenderer::render(renderer, font, landingState);
         } else if (world.ctx.screen == GameScreen::Playing) {
             MapRenderer::render(renderer, font, world);
-            PanelRenderer::render(renderer, font, world);
+            PanelRenderer::render(renderer, font, world, landingState.musicOn);
             TopBarRenderer::render(renderer, font, world);
             BattleRenderer::render(renderer, font, world);
         } else if (world.ctx.screen == GameScreen::Victory) {
             MapRenderer::render(renderer, font, world);
-            PanelRenderer::render(renderer, font, world);
+            PanelRenderer::render(renderer, font, world, landingState.musicOn);
             TopBarRenderer::render(renderer, font, world);
             VictoryRenderer::render(renderer, font, world, hof);
         }
@@ -98,6 +105,8 @@ int main() {
     SDL_DestroyRenderer(renderer);
     SDL_DestroyWindow(window);
     TTF_CloseFont(font);
+    Mix_FreeMusic(music);
+    Mix_CloseAudio();
     TTF_Quit();
     SDL_Quit();
     return 0;
