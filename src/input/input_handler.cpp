@@ -77,14 +77,14 @@ static void handleLandingClick(int x, int y, World& world, LandingState& state, 
                 }
             }
 
-            // Diplo worker minus
+            // Scout/Bribe worker minus (infoY+206, shared)
             if (x >= PANEL_X + 170 && x <= PANEL_X + 190 &&
                 y >= infoY + 206 && y <= infoY + 226) {
                 if (world.pendingDiplomaticWorkers > 1)
                     world.pendingDiplomaticWorkers--;
             }
 
-            // Diplo worker plus
+            // Scout/Bribe worker plus (infoY+206, shared)
             if (x >= PANEL_X + 196 && x <= PANEL_X + 216 &&
                 y >= infoY + 206 && y <= infoY + 226) {
                 if (world.pendingDiplomaticWorkers < world.workerPool.availableDiplomaticWorkers)
@@ -101,23 +101,37 @@ static void handleLandingClick(int x, int y, World& world, LandingState& state, 
                 }
             }
 
-            // Gold minus
+            // Bribe worker minus (infoY+276)
             if (x >= PANEL_X + 170 && x <= PANEL_X + 190 &&
                 y >= infoY + 276 && y <= infoY + 296) {
+                if (world.pendingDiplomaticWorkers > 1)
+                    world.pendingDiplomaticWorkers--;
+            }
+
+            // Bribe worker plus (infoY+276)
+            if (x >= PANEL_X + 196 && x <= PANEL_X + 216 &&
+                y >= infoY + 276 && y <= infoY + 296) {
+                if (world.pendingDiplomaticWorkers < world.workerPool.availableDiplomaticWorkers)
+                    world.pendingDiplomaticWorkers++;
+            }
+
+            // Gold minus
+            if (x >= PANEL_X + 170 && x <= PANEL_X + 190 &&
+                y >= infoY + 303 && y <= infoY + 323) {
                 if (world.pendingBribeGold > 1)
                     world.pendingBribeGold--;
             }
 
             // Gold plus
             if (x >= PANEL_X + 196 && x <= PANEL_X + 216 &&
-                y >= infoY + 276 && y <= infoY + 296) {
+                y >= infoY + 303 && y <= infoY + 323) {
                 if (world.pendingBribeGold < world.resources.gold)
                     world.pendingBribeGold++;
             }
 
             // Bribe button
             if (x >= PANEL_X + 10 && x <= PANEL_X + 210 &&
-                y >= infoY + 305 && y <= infoY + 341) {
+                y >= infoY + 330 && y <= infoY + 366) {
                 for (auto& p : world.provinces) {
                     if (!p.isSelected) continue;
                     DiplomacySystem::startBribe(world, p.id,
@@ -262,6 +276,14 @@ static void handleLandingClick(int x, int y, World& world, LandingState& state, 
 
     bool handle(SDL_Event& event, World& world, LandingState& landingState, Mix_Music* music) {
         if (event.type == SDL_QUIT) return false;
+
+#ifdef DEBUG
+        if (event.type == SDL_KEYDOWN && world.ctx.screen == GameScreen::Playing) {
+            if (event.key.keysym.sym == SDLK_g) {
+                world.resources.gold += 20;
+            }
+        }
+#endif
 
         if (event.type == SDL_MOUSEBUTTONDOWN) {
             int x = event.button.x;

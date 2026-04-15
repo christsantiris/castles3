@@ -392,19 +392,7 @@ namespace PanelRenderer {
                     drawText(r, font, "Marching...", PANEL_X + 10, infoY + 140, GOLD);
                 }
 
-                // Diplomatic worker selector (shared by scout and bribe)
-                std::string dipLabel = "Diplo: " + std::to_string(world.pendingDiplomaticWorkers);
-                drawText(r, font, dipLabel, PANEL_X + 10, infoY + 208, WHITE);
-
-                drawRect(r, PANEL_X + 170, infoY + 206, 20, 20, {120, 0, 0, 255});
-                drawBorder(r, PANEL_X + 170, infoY + 206, 20, 20, GOLD);
-                drawTextCentered(r, font, "-", PANEL_X + 170, infoY + 208, 20, WHITE);
-
-                drawRect(r, PANEL_X + 196, infoY + 206, 20, 20, {0, 120, 0, 255});
-                drawBorder(r, PANEL_X + 196, infoY + 206, 20, 20, GOLD);
-                drawTextCentered(r, font, "+", PANEL_X + 196, infoY + 208, 20, WHITE);
-
-                // Scout button
+                // Scout section
                 bool scouting = false;
                 for (int s = 0; s < 2; s++)
                     if (world.scoutTasks.slots[s].active &&
@@ -412,8 +400,19 @@ namespace PanelRenderer {
                         scouting = true;
 
                 if (scouting) {
-                    drawText(r, font, "Scouting...", PANEL_X + 10, infoY + 238, {100, 150, 255, 255});
+                    drawText(r, font, "Scouting...", PANEL_X + 10, infoY + 208, {100, 150, 255, 255});
                 } else if (!isScouted) {
+                    std::string scoutWLabel = "Workers: " + std::to_string(world.pendingDiplomaticWorkers);
+                    drawText(r, font, scoutWLabel, PANEL_X + 10, infoY + 208, WHITE);
+
+                    drawRect(r, PANEL_X + 170, infoY + 206, 20, 20, {120, 0, 0, 255});
+                    drawBorder(r, PANEL_X + 170, infoY + 206, 20, 20, GOLD);
+                    drawTextCentered(r, font, "-", PANEL_X + 170, infoY + 208, 20, WHITE);
+
+                    drawRect(r, PANEL_X + 196, infoY + 206, 20, 20, {0, 120, 0, 255});
+                    drawBorder(r, PANEL_X + 196, infoY + 206, 20, 20, GOLD);
+                    drawTextCentered(r, font, "+", PANEL_X + 196, infoY + 208, 20, WHITE);
+
                     drawRect(r, PANEL_X + 10, infoY + 233, 200, 36, {0, 0, 120, 255});
                     drawBorder(r, PANEL_X + 10, infoY + 233, 200, 36, GOLD);
                     drawTextCentered(r, font, "SCOUT", PANEL_X + 10, infoY + 243, 200, GOLD);
@@ -429,8 +428,8 @@ namespace PanelRenderer {
                 if (bribing) {
                     drawText(r, font, "Bribing...", PANEL_X + 10, infoY + 283, {100, 150, 255, 255});
                 } else if (selected->name != "Constantinople") {
-                    std::string goldLabel = "Gold: " + std::to_string(world.pendingBribeGold);
-                    drawText(r, font, goldLabel, PANEL_X + 10, infoY + 278, WHITE);
+                    std::string brWLabel = "Workers: " + std::to_string(world.pendingDiplomaticWorkers);
+                    drawText(r, font, brWLabel, PANEL_X + 10, infoY + 278, WHITE);
 
                     drawRect(r, PANEL_X + 170, infoY + 276, 20, 20, {120, 0, 0, 255});
                     drawBorder(r, PANEL_X + 170, infoY + 276, 20, 20, GOLD);
@@ -440,13 +439,24 @@ namespace PanelRenderer {
                     drawBorder(r, PANEL_X + 196, infoY + 276, 20, 20, GOLD);
                     drawTextCentered(r, font, "+", PANEL_X + 196, infoY + 278, 20, WHITE);
 
+                    std::string goldLabel = "Gold: " + std::to_string(world.pendingBribeGold);
+                    drawText(r, font, goldLabel, PANEL_X + 10, infoY + 305, WHITE);
+
+                    drawRect(r, PANEL_X + 170, infoY + 303, 20, 20, {120, 0, 0, 255});
+                    drawBorder(r, PANEL_X + 170, infoY + 303, 20, 20, GOLD);
+                    drawTextCentered(r, font, "-", PANEL_X + 170, infoY + 305, 20, WHITE);
+
+                    drawRect(r, PANEL_X + 196, infoY + 303, 20, 20, {0, 120, 0, 255});
+                    drawBorder(r, PANEL_X + 196, infoY + 303, 20, 20, GOLD);
+                    drawTextCentered(r, font, "+", PANEL_X + 196, infoY + 305, 20, WHITE);
+
                     bool canBribe = world.resources.gold >= world.pendingBribeGold
                                     && world.workerPool.availableDiplomaticWorkers >= 1;
                     SDL_Color bribeBtn = canBribe ? SDL_Color{0, 0, 120, 255}
                                                   : SDL_Color{40, 40, 40, 255};
-                    drawRect(r, PANEL_X + 10, infoY + 305, 200, 36, bribeBtn);
-                    drawBorder(r, PANEL_X + 10, infoY + 305, 200, 36, GOLD);
-                    drawTextCentered(r, font, "BRIBE", PANEL_X + 10, infoY + 315, 200,
+                    drawRect(r, PANEL_X + 10, infoY + 330, 200, 36, bribeBtn);
+                    drawBorder(r, PANEL_X + 10, infoY + 330, 200, 36, GOLD);
+                    drawTextCentered(r, font, "BRIBE", PANEL_X + 10, infoY + 340, 200,
                                      canBribe ? GOLD : SDL_Color{80, 80, 80, 255});
                 }
             }

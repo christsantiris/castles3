@@ -15,7 +15,7 @@ make run
 - Background music with toggle
 
 ## Roadmap
-- [ ] Advanced combat system
+- [ ] Advanced combat system (difficult)
 - [ ] Save/Load
 - [ ] Construct Castles (difficult)
 - [ ] Special Quests

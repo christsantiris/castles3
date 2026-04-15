@@ -36,7 +36,11 @@ struct ResourceStockComponent {
     int food   = 3;
     int timber = 3;
     int iron   = 3;
+#ifdef DEBUG
+    int gold   = 15;
+#else
     int gold   = 3;
+#endif
 };
 
 // ── Worker Pools ──────────────────────────────────────────────────────────────
