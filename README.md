@@ -16,7 +16,6 @@ make run
 
 ## Roadmap
 - [ ] Advanced combat system
-- [ ] Add diplomacy (bribe province, scout province)
 - [ ] Save/Load
 - [ ] Construct Castles (difficult)
 - [ ] Special Quests
