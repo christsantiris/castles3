@@ -24,5 +24,5 @@ make run
       
 <img width="2544" height="1644" alt="image" src="https://github.com/user-attachments/assets/fb244b2c-a6bd-4373-b3ba-8efdb8904e17" />
 
-<img width="2558" height="1606" alt="image" src="https://github.com/user-attachments/assets/2ddbf2ea-ec2d-416b-ba5d-442887ced0f2" />
+<img width="2564" height="1590" alt="image" src="https://github.com/user-attachments/assets/c1c03d5f-141c-43cd-b379-49f66a47e4b7" />
 
