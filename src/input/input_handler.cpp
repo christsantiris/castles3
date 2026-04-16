@@ -43,6 +43,13 @@ static void handleLandingClick(int x, int y, World& world, LandingState& state, 
             if (state.randomResources) {
                 GameSystem::randomizeResources(world);
             }
+            if (state.difficulty == Difficulty::Hard) {
+                world.aiConfig = AISystem::hardConfig();
+                world.ctx.upkeepInterval = 45;
+            } else {
+                world.aiConfig = AISystem::easyConfig();
+                world.ctx.upkeepInterval = 120;
+            }
             AISystem::initAI(world, world.aiConfig);
             world.ctx.screen = GameScreen::Playing;
         }
