@@ -17,6 +17,13 @@ static void handleLandingClick(int x, int y, World& world, LandingState& state, 
         if (x >= 420 && x <= 860 && y >= 280 && y <= 320)
             state.dynastyIndex = (state.dynastyIndex + 1) % 5;
 
+        // Difficulty toggle
+        if (x >= 420 && x <= 860 && y >= 330 && y <= 370) {
+            state.difficulty = (state.difficulty == Difficulty::Easy)
+                ? Difficulty::Hard
+                : Difficulty::Easy;
+        }
+
         // Music toggle
         if (x >= 420 && x <= 860 && y >= 380 && y <= 420) {
             state.musicOn = !state.musicOn;

@@ -18,6 +18,7 @@ make run
 - [ ] Save/Load
 - [ ] Attacking requires food to feed army
 - [ ] Easy and Hard mode
+- [ ] Installers for Mac, Linux, Windows
 - [ ] Trade resources through diplomacy tab
 - [ ] Special Quests
 - [ ] Construct Castles (difficult)
