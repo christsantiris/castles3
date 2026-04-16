@@ -82,7 +82,7 @@ namespace LandingRenderer {
 
         drawMenuItem(renderer, font, "Play as", state.selectedDynasty(), menuY);
         menuY += lineH;
-        drawMenuItem(renderer, font, "Difficulty", "Easy", menuY);
+        drawMenuItem(renderer, font, "Difficulty", state.difficulty == Difficulty::Easy ? "Easy" : "Hard", menuY);
         menuY += lineH;
         drawMenuItem(renderer, font, "Music", state.musicOn ? "On" : "Off", menuY);
         menuY += lineH;
