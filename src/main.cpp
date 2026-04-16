@@ -75,8 +75,6 @@ int main() {
                     GameSystem::tick(world);
                 }
 
-                if (world.battle.phase == BattlePhase::Resolved)
-                    world.battle = BattleState{};
             }
         }
 
