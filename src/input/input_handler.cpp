@@ -265,9 +265,15 @@ static void handleLandingClick(int x, int y, World& world, LandingState& state, 
             int rowH = 58;
             int y0 = infoY + 10;
 
-            // Music toggle
+            // Pause/Resume toggle
             if (x >= baseX && x <= baseX + 314 &&
                 y >= y0 && y <= y0 + 50) {
+                world.ctx.paused = !world.ctx.paused;
+            }
+
+            // Music toggle
+            if (x >= baseX && x <= baseX + 314 &&
+                y >= y0 + rowH && y <= y0 + rowH + 50) {
                 state.musicOn = !state.musicOn;
                 if (state.musicOn) Mix_ResumeMusic();
                 else Mix_PauseMusic();
@@ -275,8 +281,7 @@ static void handleLandingClick(int x, int y, World& world, LandingState& state, 
 
             // Quit button
             if (x >= baseX && x <= baseX + 314 &&
-                y >= y0 + (3 * rowH) && y <= y0 + (3 * rowH) + 50) {
-                // Signal quit by returning false from handle
+                y >= y0 + (4 * rowH) && y <= y0 + (4 * rowH) + 50) {
                 world.ctx.shouldQuit = true;
             }
         }

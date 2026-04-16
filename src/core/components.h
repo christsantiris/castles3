@@ -137,6 +137,7 @@ struct GameContext {
     int         upkeepInterval     = 90;
     int         upkeepCounter      = 0;
     bool        upkeepDue          = false;
+    bool        paused             = false;
 };
 
 enum class BattlePhase { None, Preparing, Running, Paused, Resolved };

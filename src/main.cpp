@@ -70,7 +70,8 @@ int main() {
             if (now - lastTick >= tickInterval) {
                 lastTick = now;
                 if (world.ctx.screen == GameScreen::Playing &&
-                    world.battle.phase == BattlePhase::None) {
+                    world.battle.phase == BattlePhase::None &&
+                    !world.ctx.paused) {
                     GameSystem::tick(world);
                 }
 

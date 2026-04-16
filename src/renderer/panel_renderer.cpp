@@ -509,6 +509,7 @@ namespace PanelRenderer {
         int rowH = 50;
 
         const char* labels[] = {
+            world.ctx.paused ? "Resume" : "Pause",
             musicOn ? "Music: On" : "Music: Off",
             "Save Game",
             "Load Game",
@@ -516,13 +517,14 @@ namespace PanelRenderer {
         };
 
         SDL_Color btnColors[] = {
+            world.ctx.paused ? SDL_Color{0, 100, 0, 255} : SDL_Color{100, 80, 0, 255},
             {0, 80, 80, 255},
             {50, 50, 50, 255},
             {50, 50, 50, 255},
             {120, 0, 0, 255}
         };
 
-        for (int i = 0; i < 4; i++) {
+        for (int i = 0; i < 5; i++) {
             drawRect(r, x, y, w, rowH, btnColors[i]);
             drawBorder(r, x, y, w, rowH, GOLD);
             drawTextCentered(r, font, labels[i], x, y + 16, w, GOLD);
