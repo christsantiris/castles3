@@ -16,6 +16,10 @@ struct World {
     int pendingMilitaryWorkers = 1;
     int pendingDiplomaticWorkers = 1;
     int pendingBribeGold = 5;
+    std::string pendingTradeDynasty = "";
+    int pendingTradeOfferRes = 0;
+    int pendingTradeRequestRes = 1;
+    int pendingTradeQty = 1;
     // ── Map ───────────────────────────────────────────────────────────────────
     std::vector<ProvinceComponent> provinces;
 
@@ -30,6 +34,7 @@ struct World {
     RecruitTasksComponent    recruitTasks;
     BribeTasksComponent      bribeTasks;
     ScoutTasksComponent      scoutTasks;
+    TradeTasksComponent      tradeTasks;
 
     // ── Date ──────────────────────────────────────────────────────────────────
     DateComponent date;

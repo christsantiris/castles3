@@ -8,6 +8,7 @@
 #include "core/systems/ai_system.h"
 #include "core/systems/diplomacy_system.h"
 #include "core/systems/upkeep_system.h"
+#include "core/systems/trade_system.h"
 
 static const int PANEL_X = 950;
 
@@ -290,6 +291,104 @@ static void handleLandingClick(int x, int y, World& world, LandingState& state, 
                     world.pendingMilitaryWorkers++;
             }
         }
+        // RELAT tab clicks
+        if (world.ctx.activeTab == 2 && x >= 950) {
+            static const std::vector<std::string> ALL_DYNASTIES = {
+                "Kantakouzenos", "Doukas", "Palaiologos", "Phokas", "Komnenos", "Baldwin II"
+            };
+            int infoY = 60 + (36 + 4) * 6 + 4 + 40;
+            int baseX = PANEL_X + 8;
+            int dy = infoY + 8;
+
+            // Dynasty selection rows
+            for (const auto& d : ALL_DYNASTIES) {
+                if (d == world.ctx.playerDynasty) {
+                    continue;
+                }
+                if (y >= dy && y <= dy + 28 && !world.isDefeated(d)) {
+                    world.pendingTradeDynasty = (world.pendingTradeDynasty == d) ? "" : d;
+                }
+                dy += 32;
+            }
+
+            int tradeY = dy + 8;
+
+            // Offer < and >
+            if (y >= tradeY && y <= tradeY + 26) {
+                if (x >= baseX + 110 && x <= baseX + 132) {
+                    int next = (world.pendingTradeOfferRes + 3) % 4;
+                    if (next != world.pendingTradeRequestRes) {
+                        world.pendingTradeOfferRes = next;
+                    }
+                }
+                if (x >= baseX + 200 && x <= baseX + 222) {
+                    int next = (world.pendingTradeOfferRes + 1) % 4;
+                    if (next != world.pendingTradeRequestRes) {
+                        world.pendingTradeOfferRes = next;
+                    }
+                }
+            }
+
+            tradeY += 36;
+
+            // Request < and >
+            if (y >= tradeY && y <= tradeY + 26) {
+                if (x >= baseX + 110 && x <= baseX + 132) {
+                    int next = (world.pendingTradeRequestRes + 3) % 4;
+                    if (next != world.pendingTradeOfferRes) {
+                        world.pendingTradeRequestRes = next;
+                    }
+                }
+                if (x >= baseX + 200 && x <= baseX + 222) {
+                    int next = (world.pendingTradeRequestRes + 1) % 4;
+                    if (next != world.pendingTradeOfferRes) {
+                        world.pendingTradeRequestRes = next;
+                    }
+                }
+            }
+
+            tradeY += 36;
+
+            // Qty - and +
+            if (y >= tradeY && y <= tradeY + 22) {
+                if (x >= baseX + 110 && x <= baseX + 132) {
+                    if (world.pendingTradeQty > 1) {
+                        world.pendingTradeQty--;
+                    }
+                }
+                if (x >= baseX + 180 && x <= baseX + 202) {
+                    int maxQty = TradeSystem::playerStock(world, world.pendingTradeOfferRes);
+                    if (world.pendingTradeQty < maxQty) {
+                        world.pendingTradeQty++;
+                    }
+                }
+            }
+
+            tradeY += 36;
+
+            // Diplomat worker picker
+            if (y >= tradeY && y <= tradeY + 22) {
+                if (x >= baseX + 170 && x <= baseX + 192) {
+                    if (world.pendingDiplomaticWorkers > 1) {
+                        world.pendingDiplomaticWorkers--;
+                    }
+                }
+                if (x >= baseX + 198 && x <= baseX + 220) {
+                    if (world.pendingDiplomaticWorkers < world.workerPool.availableDiplomaticWorkers) {
+                        world.pendingDiplomaticWorkers++;
+                    }
+                }
+            }
+
+            tradeY += 36;
+
+            // Trade button
+            if (x >= baseX + 87 && x <= baseX + 227 &&
+                y >= tradeY && y <= tradeY + 32) {
+                TradeSystem::startTrade(world);
+            }
+        }
+
         // Opts tab clicks
         if (world.ctx.activeTab == 3 && x >= 950) {
             int infoY = 60 + (36 + 4) * 6 + 4 + 40;

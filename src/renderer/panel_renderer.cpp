@@ -3,6 +3,7 @@
 #include "../core/systems/unlock_system.h"
 #include "../core/systems/combat_system.h"
 #include "../core/systems/recruit_system.h"
+#include "../core/systems/trade_system.h"
 
 namespace PanelRenderer {
 
@@ -151,11 +152,14 @@ namespace PanelRenderer {
             auto& scout = world.scoutTasks.slots[i];
             bool bribeActive = bribe.active;
             bool scoutActive = scout.active;
+            bool tradeActive = (i == 0) && world.tradeTasks.slots[0].active;
             std::string label = bribeActive ? "Bribing..."
                               : scoutActive ? "Scouting..."
+                              : tradeActive ? "Trading..."
                               : "Diplomacy slot " + std::to_string(i + 1);
             float prog = bribeActive ? bribe.progress()
-                       : scoutActive ? scout.progress() : 0.0f;
+                       : scoutActive ? scout.progress()
+                       : tradeActive ? world.tradeTasks.slots[0].progress() : 0.0f;
             SDL_Color border = {0, 0, 200, 255};
             drawRect(r, x, y, w, BAR_H, BAR_DIPL);
             drawBorder(r, x, y, w, BAR_H, border);
@@ -334,6 +338,8 @@ namespace PanelRenderer {
         drawTextCentered(r, font, "+", x + 148, y + 8, 22, WHITE);
     }
 
+    static void renderRelatTab(SDL_Renderer* r, TTF_Font* font, const World& world);
+
     static void renderInfoArea(SDL_Renderer* r, TTF_Font* font, World& world, bool musicOn) {
         int infoY = PANEL_Y + (BAR_H + BAR_MARGIN) * 6 + BAR_MARGIN + TAB_H;
         int infoH = PANEL_H - infoY;
@@ -466,6 +472,9 @@ namespace PanelRenderer {
         } else if (world.ctx.activeTab == 1) {
             renderArmyTab(r, font, world);
             return;
+        } else if (world.ctx.activeTab == 2) {
+            renderRelatTab(r, font, world);
+            return;
         } else if (world.ctx.activeTab == 3) {
             renderOptsTab(r, font, world, musicOn);
             return;
@@ -531,4 +540,107 @@ namespace PanelRenderer {
             y += rowH + 8;
         }
     }
-} 
+
+    static void renderRelatTab(SDL_Renderer* r, TTF_Font* font, const World& world) {
+        static const std::vector<std::string> ALL_DYNASTIES = {
+            "Kantakouzenos", "Doukas", "Palaiologos", "Phokas", "Komnenos", "Baldwin II"
+        };
+
+        int infoY = PANEL_Y + (BAR_H + BAR_MARGIN) * 6 + BAR_MARGIN + TAB_H;
+        int x = PANEL_X + 8;
+        int w = PANEL_W - 16;
+        int dy = infoY + 8;
+
+        for (const auto& d : ALL_DYNASTIES) {
+            if (d == world.ctx.playerDynasty) {
+                continue;
+            }
+            bool defeated = world.isDefeated(d);
+            bool selected = (d == world.pendingTradeDynasty);
+            SDL_Color bg = defeated  ? SDL_Color{30, 30, 30, 255}
+                         : selected  ? SDL_Color{0, 60, 120, 255}
+                         : WOOD_MID;
+            SDL_Color border = defeated ? SDL_Color{60, 60, 60, 255} : GOLD;
+            SDL_Color textCol = defeated ? SDL_Color{80, 80, 80, 255} : WHITE;
+            drawRect(r, x, dy, w, 28, bg);
+            drawBorder(r, x, dy, w, 28, border);
+            drawText(r, font, d, x + 6, dy + 7, textCol);
+            dy += 32;
+        }
+
+        int tradeY = dy + 8;
+
+        // Active trade — let the task bar show progress
+        if (world.tradeTasks.slots[0].active) {
+            std::string msg = "Trading with " + world.tradeTasks.slots[0].dynasty + "...";
+            drawText(r, font, msg, x, tradeY + 5, GOLD);
+            return;
+        }
+
+        // Offer row
+        drawText(r, font, "Offer:", x, tradeY + 5, WHITE);
+        drawRect(r, x + 110, tradeY, 22, 26, {120, 0, 0, 255});
+        drawBorder(r, x + 110, tradeY, 22, 26, GOLD);
+        drawTextCentered(r, font, "<", x + 110, tradeY + 6, 22, WHITE);
+        drawTextCentered(r, font, TradeSystem::resourceName(world.pendingTradeOfferRes),
+                         x + 134, tradeY + 5, 64, GOLD);
+        drawRect(r, x + 200, tradeY, 22, 26, {0, 120, 0, 255});
+        drawBorder(r, x + 200, tradeY, 22, 26, GOLD);
+        drawTextCentered(r, font, ">", x + 200, tradeY + 6, 22, WHITE);
+        std::string offerStock = "(" + std::to_string(
+            TradeSystem::playerStock(world, world.pendingTradeOfferRes)) + ")";
+        drawText(r, font, offerStock, x + 228, tradeY + 5, WHITE);
+
+        tradeY += 36;
+
+        // Request row
+        bool produces = !world.pendingTradeDynasty.empty() &&
+                        TradeSystem::dynastyProduces(world, world.pendingTradeDynasty,
+                                                     world.pendingTradeRequestRes);
+        drawText(r, font, "Want:", x, tradeY + 5, WHITE);
+        drawRect(r, x + 110, tradeY, 22, 26, {120, 0, 0, 255});
+        drawBorder(r, x + 110, tradeY, 22, 26, GOLD);
+        drawTextCentered(r, font, "<", x + 110, tradeY + 6, 22, WHITE);
+        SDL_Color wantCol = produces ? GOLD : SDL_Color{80, 80, 80, 255};
+        drawTextCentered(r, font, TradeSystem::resourceName(world.pendingTradeRequestRes),
+                         x + 134, tradeY + 5, 64, wantCol);
+        drawRect(r, x + 200, tradeY, 22, 26, {0, 120, 0, 255});
+        drawBorder(r, x + 200, tradeY, 22, 26, GOLD);
+        drawTextCentered(r, font, ">", x + 200, tradeY + 6, 22, WHITE);
+
+        tradeY += 36;
+
+        // Quantity row
+        drawText(r, font, "Qty:", x, tradeY + 4, WHITE);
+        drawRect(r, x + 110, tradeY, 22, 22, {120, 0, 0, 255});
+        drawBorder(r, x + 110, tradeY, 22, 22, GOLD);
+        drawTextCentered(r, font, "-", x + 110, tradeY + 4, 22, WHITE);
+        drawTextCentered(r, font, std::to_string(world.pendingTradeQty),
+                         x + 134, tradeY + 4, 44, WHITE);
+        drawRect(r, x + 180, tradeY, 22, 22, {0, 120, 0, 255});
+        drawBorder(r, x + 180, tradeY, 22, 22, GOLD);
+        drawTextCentered(r, font, "+", x + 180, tradeY + 4, 22, WHITE);
+
+        tradeY += 36;
+
+        // Diplomat worker picker
+        std::string wLabel = "Diplomats: " + std::to_string(world.pendingDiplomaticWorkers);
+        drawText(r, font, wLabel, x, tradeY + 4, WHITE);
+        drawRect(r, x + 170, tradeY, 22, 22, {120, 0, 0, 255});
+        drawBorder(r, x + 170, tradeY, 22, 22, GOLD);
+        drawTextCentered(r, font, "-", x + 170, tradeY + 4, 22, WHITE);
+        drawRect(r, x + 198, tradeY, 22, 22, {0, 120, 0, 255});
+        drawBorder(r, x + 198, tradeY, 22, 22, GOLD);
+        drawTextCentered(r, font, "+", x + 198, tradeY + 4, 22, WHITE);
+
+        tradeY += 36;
+
+        // Trade button
+        bool ok = TradeSystem::canStartTrade(world);
+        SDL_Color tradeBtn = ok ? SDL_Color{0, 100, 0, 255} : SDL_Color{50, 50, 50, 255};
+        SDL_Color tradeTxt = ok ? GOLD : SDL_Color{80, 80, 80, 255};
+        drawRect(r, x + 87, tradeY, 140, 32, tradeBtn);
+        drawBorder(r, x + 87, tradeY, 140, 32, GOLD);
+        drawTextCentered(r, font, "TRADE", x + 87, tradeY + 9, 140, tradeTxt);
+    }
+}

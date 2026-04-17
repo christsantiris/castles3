@@ -114,6 +114,18 @@ struct ScoutTasksComponent {
     ScoutTask slots[2];
 };
 
+// ── Trade Tasks ───────────────────────────────────────────────────────────────
+struct TradeTask : TaskBase {
+    int         offerRes   = 0;
+    int         requestRes = 0;
+    int         qty        = 0;
+    std::string dynasty    = "";
+};
+
+struct TradeTasksComponent {
+    TradeTask slots[1];
+};
+
 // ── Date ──────────────────────────────────────────────────────────────────────
 struct DateComponent {
     int day   = 2;

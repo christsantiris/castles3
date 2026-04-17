@@ -17,7 +17,6 @@ make run
 ## Roadmap
 - [ ] Save/Load
 - [ ] Installers for Mac, Linux, Windows
-- [ ] Trade resources through diplomacy tab
 - [ ] Special Quests
 - [ ] Sabateurs
 - [ ] Construct Castles (difficult)
