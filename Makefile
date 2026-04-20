@@ -3,6 +3,8 @@
 APP      = dist/Castles3.app
 BINARY   = $(APP)/Contents/MacOS/castle3_bin
 LAUNCHER = $(APP)/Contents/MacOS/castle3
+ICONSET  = build/AppIcon.iconset
+ICNS     = $(APP)/Contents/Resources/AppIcon.icns
 
 define PLIST_CONTENT
 <?xml version="1.0" encoding="UTF-8"?>
@@ -19,6 +21,8 @@ define PLIST_CONTENT
 	<string>APPL</string>
 	<key>CFBundleShortVersionString</key>
 	<string>1.0</string>
+	<key>CFBundleIconFile</key>
+	<string>AppIcon</string>
 	<key>NSHighResolutionCapable</key>
 	<true/>
 </dict>
@@ -51,6 +55,18 @@ dmg: build
 	chmod +x $(LAUNCHER)
 	cp -r data fonts music $(APP)/Contents/Resources/
 	echo "$$PLIST_CONTENT" > $(APP)/Contents/Info.plist
+	mkdir -p $(ICONSET)
+	qlmanage -t -s 1024 -o build/ assets/app_icon.svg 2>/dev/null; \
+	mv build/app_icon.svg.png build/base_icon.png
+	for size in 16 32 64 128 256 512 1024; do \
+		sips -z $$size $$size build/base_icon.png --out $(ICONSET)/icon_$${size}x$${size}.png > /dev/null; \
+	done
+	cp $(ICONSET)/icon_32x32.png   $(ICONSET)/icon_16x16@2x.png
+	cp $(ICONSET)/icon_64x64.png   $(ICONSET)/icon_32x32@2x.png
+	cp $(ICONSET)/icon_256x256.png $(ICONSET)/icon_128x128@2x.png
+	cp $(ICONSET)/icon_512x512.png $(ICONSET)/icon_256x256@2x.png
+	cp $(ICONSET)/icon_1024x1024.png $(ICONSET)/icon_512x512@2x.png
+	iconutil -c icns $(ICONSET) -o $(ICNS)
 	dylibbundler -od -b -x $(BINARY) -d $(APP)/Contents/Frameworks/ -p @executable_path/../Frameworks/
 	hdiutil create -volname "Castles III" -srcfolder $(APP) -ov -format UDZO dist/Castles3.dmg
 	@echo "DMG ready: dist/Castles3.dmg"
