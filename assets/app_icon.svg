@@ -1,0 +1,106 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" width="1024" height="1024">
+  <defs>
+    <radialGradient id="bg" cx="50%" cy="40%" r="60%">
+      <stop offset="0%"   stop-color="#2a1a6e"/>
+      <stop offset="100%" stop-color="#0a0510"/>
+    </radialGradient>
+    <radialGradient id="glow" cx="50%" cy="50%" r="50%">
+      <stop offset="0%"   stop-color="#c8960c" stop-opacity="0.25"/>
+      <stop offset="100%" stop-color="#c8960c" stop-opacity="0"/>
+    </radialGradient>
+    <filter id="shadow">
+      <feDropShadow dx="0" dy="6" stdDeviation="10" flood-color="#000" flood-opacity="0.7"/>
+    </filter>
+    <filter id="goldglow">
+      <feGaussianBlur stdDeviation="4" result="blur"/>
+      <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+  </defs>
+
+  <!-- Background circle -->
+  <circle cx="512" cy="512" r="512" fill="url(#bg)"/>
+
+  <!-- Subtle inner glow -->
+  <circle cx="512" cy="420" r="360" fill="url(#glow)"/>
+
+  <!-- Outer gold ring -->
+  <circle cx="512" cy="512" r="490" fill="none" stroke="#c8960c" stroke-width="8" opacity="0.6"/>
+  <circle cx="512" cy="512" r="474" fill="none" stroke="#c8960c" stroke-width="2" opacity="0.3"/>
+
+  <!-- === CASTLE === -->
+  <g filter="url(#shadow)" fill="#c8960c">
+
+    <!-- Main curtain wall -->
+    <rect x="210" y="620" width="604" height="200"/>
+
+    <!-- Wall battlements -->
+    <rect x="210" y="580" width="60" height="50"/>
+    <rect x="300" y="580" width="60" height="50"/>
+    <rect x="390" y="580" width="60" height="50"/>
+    <rect x="480" y="580" width="60" height="50"/>
+    <rect x="570" y="580" width="60" height="50"/>
+    <rect x="660" y="580" width="60" height="50"/>
+    <rect x="750" y="580" width="64" height="50"/>
+
+    <!-- Left tower -->
+    <rect x="190" y="460" width="160" height="370"/>
+    <!-- Left tower battlements -->
+    <rect x="190" y="420" width="36" height="50"/>
+    <rect x="242" y="420" width="36" height="50"/>
+    <rect x="294" y="420" width="56" height="50"/>
+
+    <!-- Right tower -->
+    <rect x="674" y="460" width="160" height="370"/>
+    <!-- Right tower battlements -->
+    <rect x="674" y="420" width="56" height="50"/>
+    <rect x="746" y="420" width="36" height="50"/>
+    <rect x="798" y="420" width="36" height="50"/>
+
+    <!-- Centre keep -->
+    <rect x="370" y="360" width="284" height="460"/>
+    <!-- Keep battlements -->
+    <rect x="370" y="310" width="52" height="58"/>
+    <rect x="440" y="310" width="52" height="58"/>
+    <rect x="512" y="310" width="52" height="58"/>
+    <rect x="582" y="310" width="72" height="58"/>
+
+    <!-- Gate arch (cutout in dark) -->
+    <rect x="453" y="690" width="118" height="130" fill="#0a0510"/>
+    <ellipse cx="512" cy="690" rx="59" ry="36" fill="#0a0510"/>
+
+    <!-- Portcullis bars -->
+    <rect x="462" y="695" width="8" height="120" fill="#1a0a40" opacity="0.8"/>
+    <rect x="484" y="695" width="8" height="120" fill="#1a0a40" opacity="0.8"/>
+    <rect x="506" y="695" width="8" height="120" fill="#1a0a40" opacity="0.8"/>
+    <rect x="528" y="695" width="8" height="120" fill="#1a0a40" opacity="0.8"/>
+    <rect x="550" y="695" width="8" height="120" fill="#1a0a40" opacity="0.8"/>
+    <rect x="460" y="730" width="104" height="8" fill="#1a0a40" opacity="0.8"/>
+    <rect x="460" y="760" width="104" height="8" fill="#1a0a40" opacity="0.8"/>
+
+  </g>
+
+  <!-- Tower windows (dark) -->
+  <rect x="240" y="510" width="32" height="44" rx="16" fill="#0a0510"/>
+  <rect x="752" y="510" width="32" height="44" rx="16" fill="#0a0510"/>
+  <rect x="449" y="440" width="30" height="48" rx="15" fill="#0a0510"/>
+  <rect x="545" y="440" width="30" height="48" rx="15" fill="#0a0510"/>
+
+  <!-- Byzantine cross on keep -->
+  <g filter="url(#goldglow)">
+    <rect x="500" y="200" width="24" height="90" fill="#ffe066"/>
+    <rect x="472" y="228" width="80" height="22" fill="#ffe066"/>
+    <rect x="487" y="254" width="50" height="12" fill="#ffe066"/>
+  </g>
+
+  <!-- Ground shadow line -->
+  <ellipse cx="512" cy="820" rx="310" ry="18" fill="#000" opacity="0.4"/>
+
+  <!-- Title text -->
+  <text x="512" y="930" text-anchor="middle"
+        font-family="Georgia, serif" font-size="62" font-weight="bold"
+        fill="#c8960c" letter-spacing="6">CASTLES</text>
+  <text x="512" y="982" text-anchor="middle"
+        font-family="Georgia, serif" font-size="28"
+        fill="#a07830" letter-spacing="10">III</text>
+
+</svg>
