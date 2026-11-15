@@ -50,6 +50,50 @@ personal scores are excluded from the published bundle.
 - Score-based unlock system
 - Background music with toggle
 
+## Task slots and workers
+
+Workers and fighting units are separate. Starting worker counts and difficulty
+settings are retained pending play-testing. Military workers perform tasks;
+infantry, archers, and knights fight battles. More assigned workers shorten task
+duration, independently of the category's unlocked task-slot count.
+
+Campaign time stops while a battle is preparing, running, paused, or displaying
+results. The player must dismiss results before campaign time resumes. Other
+arriving marches wait rather than replacing that battle. Battle animation has
+its own frame clock. Any future automatic-battle mode must likewise retain a
+result-review pause; there is currently no automatic-battle toggle.
+
+Resource roles: marching pays food; troops periodically require gold upkeep;
+recruiting uses iron and/or timber. Diplomatic tasks generally require gold,
+except trade, which swaps resources. Current scouting has no gold fee. Castle
+construction is planned to require all resources, but is not implemented yet.
+These are the intended resource roles; costs and balance remain subject to
+play-testing rather than being changed alongside task-slot fixes.
+
+Every new game starts with **one administrative, one military, and one diplomatic
+task slot**. The existing score thresholds unlock a second slot per category:
+
+| Category | Tasks sharing its slots | Score for second slot |
+| --- | --- | --- |
+| Administrative (Stock) | Resource collection | 200 |
+| Military | Marching and recruiting, combined | 400 |
+| Diplomatic | Scouting, bribery, and trading, combined | 600 |
+
+Worker selectors start at zero and reset after starting a task; the player must
+explicitly assign at least one worker before each task starts.
+Unused workers do not unlock extra slots. Assign all available workers to one
+task, or split the category's worker pool between two tasks after its second
+slot unlocks. Starting a task requires both a free category slot and enough
+unassigned workers. Completing or canceling a task frees its slot and workers.
+The thresholds live in `UnlockSystem::UnlockThresholds`; `TaskSlots` enforces
+the shared limits and positive worker allocation in game logic, independently of the UI.
+Task types declare static category/label metadata and register their storage once
+in `World::tasks()`. Both admission checks and task bars scan that common view;
+adding a task type does not require adding special cases to the category policy. Score and active tasks
+are saved, so these rules also apply after loading. Older saves with excess
+tasks are repaired on load: tasks are kept in task-bar order and overflow is
+canceled, returning workers and applying the normal cancellation refunds.
+
 ## Roadmap
 - [ ] Save/Load
 - [ ] Installers for Linux, Windows

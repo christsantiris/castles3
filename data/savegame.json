@@ -9,56 +9,27 @@
     "stockWorkers": 1,
     "tickInterval": 15
   },
-  "aiMarches": [
-    {
-      "active": true,
-      "daysAccumulated": 11,
-      "daysRequired": 40,
-      "dynasty": "Doukas",
-      "targetProvinceId": 7
-    },
-    {
-      "active": true,
-      "daysAccumulated": 11,
-      "daysRequired": 40,
-      "dynasty": "Palaiologos",
-      "targetProvinceId": 3
-    },
-    {
-      "active": true,
-      "daysAccumulated": 11,
-      "daysRequired": 40,
-      "dynasty": "Phokas",
-      "targetProvinceId": 1
-    },
-    {
-      "active": true,
-      "daysAccumulated": 11,
-      "daysRequired": 40,
-      "dynasty": "Komnenos",
-      "targetProvinceId": 5
-    }
-  ],
+  "aiMarches": [],
   "aiStates": {
     "Doukas": {
-      "dayCounter": 15,
-      "recruitCounter": 15
+      "dayCounter": 1,
+      "recruitCounter": 1
     },
     "Kantakouzenos": {
       "dayCounter": 0,
       "recruitCounter": 0
     },
     "Komnenos": {
-      "dayCounter": 15,
-      "recruitCounter": 15
+      "dayCounter": 1,
+      "recruitCounter": 1
     },
     "Palaiologos": {
-      "dayCounter": 15,
-      "recruitCounter": 15
+      "dayCounter": 1,
+      "recruitCounter": 1
     },
     "Phokas": {
-      "dayCounter": 15,
-      "recruitCounter": 15
+      "dayCounter": 1,
+      "recruitCounter": 1
     }
   },
   "armies": {
@@ -169,35 +140,35 @@
     "activeTab": -1,
     "battleMessage": "",
     "battleMessageTimer": 0,
-    "dayCounter": 25,
+    "dayCounter": 1,
     "marchFoodFlat": 1,
     "paused": false,
     "playerDynasty": "Kantakouzenos",
-    "score": 5,
+    "score": 0,
     "screen": 2,
     "shouldQuit": false,
-    "upkeepCounter": 25,
+    "upkeepCounter": 1,
     "upkeepDue": false,
     "upkeepInterval": 120,
     "victoryRecorded": false
   },
   "date": {
-    "day": 27,
+    "day": 3,
     "month": 5,
     "year": 1312
   },
   "pendingBribeGold": 5,
-  "pendingDiplomaticWorkers": 1,
-  "pendingMilitaryWorkers": 1,
+  "pendingDiplomaticWorkers": 0,
+  "pendingMilitaryWorkers": 0,
   "pendingTradeDynasty": "",
   "pendingTradeOfferRes": 0,
   "pendingTradeQty": 1,
   "pendingTradeRequestRes": 1,
   "pendingWorkers": [
-    1,
-    1,
-    1,
-    1
+    0,
+    0,
+    0,
+    0
   ],
   "provinces": [
     {
@@ -213,7 +184,7 @@
     {
       "id": 2,
       "isRevealed": true,
-      "owner": "neutral"
+      "owner": "Palaiologos"
     },
     {
       "id": 3,
@@ -233,7 +204,7 @@
     {
       "id": 6,
       "isRevealed": true,
-      "owner": "Komnenos"
+      "owner": "neutral"
     },
     {
       "id": 7,
@@ -248,17 +219,17 @@
     {
       "id": 9,
       "isRevealed": true,
-      "owner": "Palaiologos"
+      "owner": "neutral"
     },
     {
       "id": 10,
       "isRevealed": true,
-      "owner": "Phokas"
+      "owner": "neutral"
     },
     {
       "id": 11,
       "isRevealed": true,
-      "owner": "Doukas"
+      "owner": "neutral"
     },
     {
       "id": 12,
@@ -283,7 +254,7 @@
     {
       "id": 16,
       "isRevealed": true,
-      "owner": "neutral"
+      "owner": "Kantakouzenos"
     },
     {
       "id": 17,
@@ -293,7 +264,7 @@
     {
       "id": 18,
       "isRevealed": true,
-      "owner": "neutral"
+      "owner": "Komnenos"
     },
     {
       "id": 19,
@@ -313,12 +284,12 @@
     {
       "id": 22,
       "isRevealed": true,
-      "owner": "Kantakouzenos"
+      "owner": "Phokas"
     },
     {
       "id": 23,
       "isRevealed": true,
-      "owner": "neutral"
+      "owner": "Doukas"
     }
   ],
   "recruitTasks": [

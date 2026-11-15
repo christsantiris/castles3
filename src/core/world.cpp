@@ -27,3 +27,20 @@ int World::countOwnedProvinces(const std::string& dynasty) const {
 bool World::isDefeated(const std::string& dynasty) const {
     return countOwnedProvinces(dynasty) == 0;
 }
+// Register each task store once here. Category policy never enumerates task
+// types: new stores declare category metadata and join this common view.
+std::vector<World::TaskView> World::tasks() const {
+    std::vector<TaskView> result;
+    auto registerStore = [&](const auto& tasks) {
+        for (const auto& task : tasks) {
+            result.push_back({&task, task.category, task.label});
+        }
+    };
+    registerStore(collectionTasks.slots);
+    registerStore(combatTasks.slots);
+    registerStore(recruitTasks.slots);
+    registerStore(bribeTasks.slots);
+    registerStore(scoutTasks.slots);
+    registerStore(tradeTasks.slots);
+    return result;
+}

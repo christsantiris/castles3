@@ -211,7 +211,7 @@ static void handleLandingClick(int x, int y, World& world, LandingState& state, 
             // Military worker minus button
             if (x >= PANEL_X + 170 && x <= PANEL_X + 190 &&
                 y >= infoY + 133 && y <= infoY + 153) {
-                if (world.pendingMilitaryWorkers > 1)
+                if (world.pendingMilitaryWorkers > 0)
                     world.pendingMilitaryWorkers--;
             }
 
@@ -235,7 +235,7 @@ static void handleLandingClick(int x, int y, World& world, LandingState& state, 
             // Scout/Bribe worker minus (infoY+206, shared)
             if (x >= PANEL_X + 170 && x <= PANEL_X + 190 &&
                 y >= infoY + 206 && y <= infoY + 226) {
-                if (world.pendingDiplomaticWorkers > 1)
+                if (world.pendingDiplomaticWorkers > 0)
                     world.pendingDiplomaticWorkers--;
             }
 
@@ -259,7 +259,7 @@ static void handleLandingClick(int x, int y, World& world, LandingState& state, 
             // Bribe worker minus (infoY+276)
             if (x >= PANEL_X + 170 && x <= PANEL_X + 190 &&
                 y >= infoY + 276 && y <= infoY + 296) {
-                if (world.pendingDiplomaticWorkers > 1)
+                if (world.pendingDiplomaticWorkers > 0)
                     world.pendingDiplomaticWorkers--;
             }
 
@@ -335,10 +335,10 @@ static void handleLandingClick(int x, int y, World& world, LandingState& state, 
                 ResourceType res = (ResourceType)i;
 
                 if (x >= baseX + 60 && x <= baseX + 80 && y >= rowY + 24 && y <= rowY + 44)
-                    if (world.pendingWorkers[i] > 1) world.pendingWorkers[i]--;
+                    if (world.pendingWorkers[i] > 0) world.pendingWorkers[i]--;
 
                 if (x >= baseX + 86 && x <= baseX + 106 && y >= rowY + 24 && y <= rowY + 44)
-                    if (world.pendingWorkers[i] < world.workerPool.totalStockWorkers)
+                    if (world.pendingWorkers[i] < world.workerPool.availableStockWorkers)
                         world.pendingWorkers[i]++;
 
                 if (x >= baseX + 160 && x <= baseX + 240 && y >= rowY + 24 && y <= rowY + 44) {
@@ -395,7 +395,7 @@ static void handleLandingClick(int x, int y, World& world, LandingState& state, 
             int workerY = y0 + (3 * rowH) + 6;
             if (x >= baseX + 120 && x <= baseX + 142 &&
                 y >= workerY && y <= workerY + 22) {
-                if (world.pendingMilitaryWorkers > 1)
+                if (world.pendingMilitaryWorkers > 0)
                     world.pendingMilitaryWorkers--;
             }
 
@@ -483,7 +483,7 @@ static void handleLandingClick(int x, int y, World& world, LandingState& state, 
             // Diplomat worker picker
             if (y >= tradeY && y <= tradeY + 22) {
                 if (x >= baseX + 170 && x <= baseX + 192) {
-                    if (world.pendingDiplomaticWorkers > 1) {
+                    if (world.pendingDiplomaticWorkers > 0) {
                         world.pendingDiplomaticWorkers--;
                     }
                 }

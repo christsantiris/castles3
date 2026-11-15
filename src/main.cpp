@@ -61,6 +61,7 @@ int main() {
     LandingState landingState;
     HallOfFame hof = HallOfFameSystem::load(Storage::path("hall_of_fame.json"));
     Uint32 lastTick = SDL_GetTicks();
+    Uint32 lastFrame = lastTick;
     const Uint32 tickInterval = 3750;
 
     SDL_Event event;
@@ -76,13 +77,18 @@ int main() {
         if (world.ctx.shouldQuit) running = false;
 
         Uint32 now = SDL_GetTicks();
-        float deltaTime = (now - lastTick) / 1000.0f;
+        float deltaTime = (now - lastFrame) / 1000.0f;
+        lastFrame = now;
 
         if (world.ctx.screen == GameScreen::Playing ||
             world.ctx.screen == GameScreen::Victory) {
             CombatSystem::updateBattle(world, deltaTime);
 
-            if (now - lastTick >= tickInterval) {
+            if (world.ctx.paused || world.battle.phase != BattlePhase::None) {
+                // Do not accumulate campaign time while fighting or reviewing
+                // results. Battle animation uses the separate frame clock.
+                lastTick = now;
+            } else if (now - lastTick >= tickInterval) {
                 lastTick = now;
                 if (world.ctx.screen == GameScreen::Playing &&
                     world.battle.phase == BattlePhase::None &&

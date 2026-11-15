@@ -1,5 +1,6 @@
 #include "recruit_system.h"
 #include "unlock_system.h"
+#include "task_slots.h"
 
 namespace RecruitSystem {
 
@@ -14,6 +15,9 @@ namespace RecruitSystem {
     }
 
     bool startRecruitment(World& world, UnitType unit, int workers) {
+        if (!TaskSlots::canStart(world, RecruitTask::category, workers)) {
+            return false;
+        }
         if (!canAfford(world, unit)) return false;
         if (workers < 1) return false;
         if (workers > world.workerPool.availableMilitaryWorkers) return false;
@@ -49,6 +53,7 @@ namespace RecruitSystem {
         task.daysAccumulated = 0;
 
         world.workerPool.availableMilitaryWorkers -= workers;
+        world.pendingMilitaryWorkers = 0;
         return true;
     }
 

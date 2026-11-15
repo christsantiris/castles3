@@ -36,6 +36,7 @@ TEST_CASE("start task fills a slot and deducts workers", "[resource]") {
 
 TEST_CASE("cannot start more than 2 tasks", "[resource]") {
     World w;
+    w.ctx.score = 200;
     w.ctx.playerDynasty = "Player";
     giveProvince(w, "Food");
     w.workerPool.availableStockWorkers = 4;

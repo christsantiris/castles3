@@ -13,8 +13,8 @@ struct World {
     // Ai config
     AIConfig aiConfig;
 
-    int pendingMilitaryWorkers = 1;
-    int pendingDiplomaticWorkers = 1;
+    int pendingMilitaryWorkers = 0;
+    int pendingDiplomaticWorkers = 0;
     int pendingBribeGold = 5;
     std::string pendingTradeDynasty = "";
     int pendingTradeOfferRes = 0;
@@ -48,9 +48,15 @@ struct World {
     std::vector<AIMarchTask> aiMarches;
 
     // ── Helpers ───────────────────────────────────────────────────────────────
+    struct TaskView {
+        const TaskBase* task;
+        TaskCategory category;
+        const char* label;
+    };
+    std::vector<TaskView> tasks() const;
     ProvinceComponent* findProvince(int id);
     int countOwnedProvinces(const std::string& dynasty, ResourceType res) const;
     int countOwnedProvinces(const std::string& dynasty) const;
     bool isDefeated(const std::string& dynasty) const;
-    int pendingWorkers[4] = {1, 1, 1, 1};
+    int pendingWorkers[4] = {0, 0, 0, 0};
 };
