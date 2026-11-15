@@ -77,7 +77,7 @@ void save_game(const World& world, const std::string& path) {
 
     json provincesJ = json::array();
     for (const auto& p : world.provinces) {
-        provincesJ.push_back({{"id", p.id}, {"owner", p.owner}, {"isRevealed", p.isRevealed}});
+        provincesJ.push_back({{"id", p.id}, {"owner", p.owner}, {"isRevealed", p.isRevealed}, {"resource", p.resource}});
     }
     j["provinces"] = provincesJ;
 
@@ -264,6 +264,11 @@ bool load_game(World& world, const std::string& path) {
             if (p.id == id) {
                 p.owner = pj.at("owner");
                 p.isRevealed = pj.at("isRevealed");
+                // Older saves omitted randomized assignments. Keep the loaded
+                // map's value when that field is unavailable.
+                if (pj.contains("resource")) {
+                    p.resource = pj.at("resource");
+                }
                 break;
             }
         }

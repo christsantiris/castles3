@@ -95,38 +95,26 @@ tasks are repaired on load: tasks are kept in task-bar order and overflow is
 canceled, returning workers and applying the normal cancellation refunds.
 
 ## Roadmap
-- [ ] Save/Load
+
 - [ ] Installers for Linux, Windows
-- [ ] Special Quests
-- [ ] Sabateurs
-- [ ] Construct Castles (difficult)
+- [ ] Special Quests e.g Holy grail or other papal requests
+- [ ] Sabateurs to destroy AI castles or poison troops
+- [ ] Construct Castles to improve defensive positions and prevent provinces from revolting (difficult) 
 - [ ] Advanced combat system (difficult)
-
-Priority correctness issues from the gameplay-rules review:
-
-- [x] Fix defensive battles using the wrong opposing army; verify combat roles, casualties, ownership, and saved battles (seven regression tests).
 - [ ] Fix upkeep desertion increasing troop counts when the treasury exceeds the payment due.
 - [ ] Reconcile diplomatic worker progression and its tests with the correct starting worker count; preserve starting values.
-- [ ] Preserve randomized province resource assignments through save/load.
 - [ ] Add a balanced gold cost to scouting, consistent with diplomatic resource costs.
-
-Features to build out:
-
 - [ ] Implement castle construction as an administrative task consuming food, timber, iron, and gold, including progress, cancellation, effects, and persistence.
 - [ ] Implement spying as a distinct diplomatic task with costs, duration, outcomes, and persistence.
 - [ ] Add automatic battle resolution with a results screen that pauses campaign time until acknowledged.
 - [ ] Support additional gameplay milestones beyond score-based progression.
 - [ ] Review AI participation in worker pools, task slots, resource costs, and upkeep after play-testing; retain current difficulty settings meanwhile.
 - [ ] Review the one-active-trade limitation when two diplomatic task slots are unlocked.
-
-Polish and balancing:
-
 - [ ] Consistently display task costs, assigned workers, expected duration, available slots, and reasons actions are blocked.
 - [ ] Display upcoming worker/slot milestones and announce unlocks.
 - [ ] Show the actual speed benefit of assigning more workers, including timing-table plateaus.
-- [ ] Align battle-result displays with casualties, ownership changes, rewards, and remaining army strength.
+- [ ] Align battle result displays with casualties, ownership changes, rewards, and remaining army strength.
 - [ ] Balance food for marches, iron/timber for recruitment, gold for diplomacy/upkeep, trade exchanges, and all-resource castle costs together.
-- [ ] Expand regression coverage for defensive combat, upkeep edge cases, and randomized-resource save/load.
       
 <img width="2544" height="1644" alt="image" src="https://github.com/user-attachments/assets/fb244b2c-a6bd-4373-b3ba-8efdb8904e17" />
 
