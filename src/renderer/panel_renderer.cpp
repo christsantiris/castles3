@@ -4,6 +4,8 @@
 #include "../core/systems/combat_system.h"
 #include "../core/systems/recruit_system.h"
 #include "../core/systems/trade_system.h"
+#include "../core/systems/task_slots.h"
+#include "../core/systems/diplomacy_system.h"
 
 namespace PanelRenderer {
 
@@ -69,104 +71,42 @@ namespace PanelRenderer {
         int x = PANEL_X + BAR_MARGIN;
         int w = PANEL_W - (BAR_MARGIN * 2);
 
-        for (int i = 0; i < 2; i++) {
-            if (i == 1 && !UnlockSystem::hasSecondStockSlot(world)) {
+        struct CategoryBar {
+            TaskCategory category;
+            const char* name;
+            bool secondUnlocked;
+            SDL_Color fill;
+            SDL_Color border;
+        };
+        const CategoryBar categories[] = {
+            {TaskCategory::Administrative, "Stock", UnlockSystem::hasSecondStockSlot(world), BAR_STOCK, {0, 200, 0, 255}},
+            {TaskCategory::Military, "Military", UnlockSystem::hasSecondMilitarySlot(world), BAR_ARMY, {200, 0, 0, 255}},
+            {TaskCategory::Diplomatic, "Diplomacy", UnlockSystem::hasSecondDiplomacySlot(world), BAR_DIPL, {0, 0, 200, 255}}
+        };
+        const auto tasks = world.tasks();
+        for (const auto& category : categories) {
+            std::vector<World::TaskView> active;
+            for (const auto& entry : tasks) {
+                if (entry.category == category.category && entry.task->active) {
+                    active.push_back(entry);
+                }
+            }
+            for (int i = 0; i < 2; i++) {
+                if (i == 1 && !category.secondUnlocked) {
+                    y += BAR_H + BAR_MARGIN;
+                    continue;
+                }
+                bool occupied = i < (int)active.size();
+                std::string label = occupied ? active[i].label : std::string(category.name) + " slot " + std::to_string(i + 1);
+                float progress = occupied ? std::max(active[i].task->progress(), 0.01f) : 0.0f;
+                drawRect(r, x, y, w, BAR_H, category.fill);
+                drawBorder(r, x, y, w, BAR_H, category.border);
+                if (occupied) {
+                    drawRect(r, x + 2, y + BAR_H - 6, (int)((w - 4) * progress), 4, category.border);
+                }
+                drawText(r, font, label, x + 6, y + 8, WHITE);
                 y += BAR_H + BAR_MARGIN;
-                continue;
             }
-            auto& task = world.collectionTasks.slots[i];
-            std::string label = task.active ? "Collecting..." : "Stock slot " + std::to_string(i + 1);
-            SDL_Color border = {0, 200, 0, 255};
-            drawRect(r, x, y, w, BAR_H, BAR_STOCK);
-            drawBorder(r, x, y, w, BAR_H, border);
-            if (task.progress() > 0.0f)
-                drawRect(r, x + 2, y + BAR_H - 6, (int)((w - 4) * task.progress()), 4, border);
-            drawText(r, font, label, x + 6, y + 8, WHITE);
-            y += BAR_H + BAR_MARGIN;
-        }
-
-        // for (int i = 0; i < 2; i++) {
-        //     if (i == 1 && !UnlockSystem::hasSecondMilitarySlot(world)) {
-        //         y += BAR_H + BAR_MARGIN;
-        //         continue;
-        //     }
-        //     auto& combatTask = world.combatTasks.slots[i];
-        //     auto& recruitTask = world.recruitTasks.slots[i];
-        //     bool combatActive = combatTask.active;
-        //     bool recruitActive = recruitTask.active;
-        //     std::string label = combatActive ? "Marching..."
-        //                       : recruitActive ? "Recruiting..."
-        //                       : "Military slot " + std::to_string(i + 1);
-        //     float prog = combatActive ? combatTask.progress()
-        //                : recruitActive ? recruitTask.progress() : 0.0f;
-        //     if (prog == 0.0f && (combatActive || recruitActive)) prog = 0.01f;
-        //     SDL_Color border = {200, 0, 0, 255};
-        //     drawRect(r, x, y, w, BAR_H, BAR_ARMY);
-        //     drawBorder(r, x, y, w, BAR_H, border);
-        //     if (prog > 0.0f)
-        //         drawRect(r, x + 2, y + BAR_H - 6, (int)((w - 4) * prog), 4, border);
-        //     drawText(r, font, label, x + 6, y + 8, WHITE);
-        //     y += BAR_H + BAR_MARGIN;
-        // }
-        MilitarySlot milSlots[2];
-        milSlots[0] = {"Military slot 1", 0.0f, false};
-        milSlots[1] = {"Military slot 2", 0.0f, false};
-                int slotIndex = 0;
-        for (int i = 0; i < 2 && slotIndex < 2; i++) {
-            if (world.combatTasks.slots[i].active) {
-                milSlots[slotIndex].label    = "Marching...";
-                milSlots[slotIndex].progress = std::max(world.combatTasks.slots[i].progress(), 0.01f);
-                milSlots[slotIndex].active   = true;
-                slotIndex++;
-            }
-        }
-        for (int i = 0; i < 2 && slotIndex < 2; i++) {
-            if (world.recruitTasks.slots[i].active) {
-                milSlots[slotIndex].label    = "Recruiting...";
-                milSlots[slotIndex].progress = std::max(world.recruitTasks.slots[i].progress(), 0.01f);
-                milSlots[slotIndex].active   = true;
-                slotIndex++;
-            }
-        }
-
-        for (int i = 0; i < 2; i++) {
-            if (i == 1 && !UnlockSystem::hasSecondMilitarySlot(world) && !milSlots[i].active) {
-                y += BAR_H + BAR_MARGIN;
-                continue;
-            }
-            SDL_Color border = {200, 0, 0, 255};
-            drawRect(r, x, y, w, BAR_H, BAR_ARMY);
-            drawBorder(r, x, y, w, BAR_H, border);
-            if (milSlots[i].active)
-                drawRect(r, x + 2, y + BAR_H - 6, (int)((w - 4) * milSlots[i].progress), 4, border);
-            drawText(r, font, milSlots[i].label, x + 6, y + 8, WHITE);
-            y += BAR_H + BAR_MARGIN;
-        }
-
-        for (int i = 0; i < 2; i++) {
-            if (i == 1 && !UnlockSystem::hasSecondDiplomacySlot(world)) {
-                y += BAR_H + BAR_MARGIN;
-                continue;
-            }
-            auto& bribe = world.bribeTasks.slots[i];
-            auto& scout = world.scoutTasks.slots[i];
-            bool bribeActive = bribe.active;
-            bool scoutActive = scout.active;
-            bool tradeActive = (i == 0) && world.tradeTasks.slots[0].active;
-            std::string label = bribeActive ? "Bribing..."
-                              : scoutActive ? "Scouting..."
-                              : tradeActive ? "Trading..."
-                              : "Diplomacy slot " + std::to_string(i + 1);
-            float prog = bribeActive ? bribe.progress()
-                       : scoutActive ? scout.progress()
-                       : tradeActive ? world.tradeTasks.slots[0].progress() : 0.0f;
-            SDL_Color border = {0, 0, 200, 255};
-            drawRect(r, x, y, w, BAR_H, BAR_DIPL);
-            drawBorder(r, x, y, w, BAR_H, border);
-            if (prog > 0.0f)
-                drawRect(r, x + 2, y + BAR_H - 6, (int)((w - 4) * prog), 4, border);
-            drawText(r, font, label, x + 6, y + 8, WHITE);
-            y += BAR_H + BAR_MARGIN;
         }
     }
 
@@ -239,6 +179,9 @@ namespace PanelRenderer {
                 }
             }
 
+            canCollect = canCollect && (isActive || (TaskSlots::administrativeAvailable(world)
+                         && world.pendingWorkers[i] >= 1
+                         && world.pendingWorkers[i] <= world.workerPool.availableStockWorkers));
             SDL_Color btnColor = isActive ? SDL_Color{120, 0, 0, 255}
                                         : canCollect ? SDL_Color{0, 80, 0, 255}
                                         : SDL_Color{40, 40, 40, 255};
@@ -311,7 +254,9 @@ namespace PanelRenderer {
             // }
 
             bool canStart = !isActive && RecruitSystem::canAfford(world, unitTypes[i])
-                            && world.workerPool.availableMilitaryWorkers >= 1;
+                            && world.pendingMilitaryWorkers >= 1
+                            && world.pendingMilitaryWorkers <= world.workerPool.availableMilitaryWorkers
+                            && TaskSlots::militaryAvailable(world);
 
             SDL_Color btnColor = isActive ? SDL_Color{120, 0, 0, 255}
                                : canStart ? SDL_Color{0, 80, 0, 255}
@@ -391,9 +336,12 @@ namespace PanelRenderer {
                     drawBorder(r, PANEL_X + 196, infoY + 133, 20, 20, GOLD);
                     drawTextCentered(r, font, "+", PANEL_X + 196, infoY + 135, 20, WHITE);
 
-                    drawRect(r, PANEL_X + 10, infoY + 160, 200, 36, {0, 100, 0, 255});
+                    bool canMarch = CombatSystem::canStartMarch(world, selected->id)
+                                    && world.pendingMilitaryWorkers >= 1
+                                    && world.pendingMilitaryWorkers <= world.workerPool.availableMilitaryWorkers;
+                    drawRect(r, PANEL_X + 10, infoY + 160, 200, 36, canMarch ? SDL_Color{0, 100, 0, 255} : SDL_Color{40, 40, 40, 255});
                     drawBorder(r, PANEL_X + 10, infoY + 160, 200, 36, GOLD);
-                    drawTextCentered(r, font, "ATTACK", PANEL_X + 10, infoY + 170, 200, GOLD);
+                    drawTextCentered(r, font, "ATTACK", PANEL_X + 10, infoY + 170, 200, canMarch ? GOLD : SDL_Color{100, 100, 100, 255});
                 } else {
                     drawText(r, font, "Marching...", PANEL_X + 10, infoY + 140, GOLD);
                 }
@@ -419,9 +367,12 @@ namespace PanelRenderer {
                     drawBorder(r, PANEL_X + 196, infoY + 206, 20, 20, GOLD);
                     drawTextCentered(r, font, "+", PANEL_X + 196, infoY + 208, 20, WHITE);
 
-                    drawRect(r, PANEL_X + 10, infoY + 233, 200, 36, {0, 0, 120, 255});
+                    bool canScout = DiplomacySystem::canStartScout(world, selected->id)
+                                    && world.pendingDiplomaticWorkers >= 1
+                                    && world.pendingDiplomaticWorkers <= world.workerPool.availableDiplomaticWorkers;
+                    drawRect(r, PANEL_X + 10, infoY + 233, 200, 36, canScout ? SDL_Color{0, 0, 120, 255} : SDL_Color{40, 40, 40, 255});
                     drawBorder(r, PANEL_X + 10, infoY + 233, 200, 36, GOLD);
-                    drawTextCentered(r, font, "SCOUT", PANEL_X + 10, infoY + 243, 200, GOLD);
+                    drawTextCentered(r, font, "SCOUT", PANEL_X + 10, infoY + 243, 200, canScout ? GOLD : SDL_Color{100, 100, 100, 255});
                 }
 
                 // Bribe section
@@ -457,7 +408,9 @@ namespace PanelRenderer {
                     drawTextCentered(r, font, "+", PANEL_X + 196, infoY + 305, 20, WHITE);
 
                     bool canBribe = world.resources.gold >= world.pendingBribeGold
-                                    && world.workerPool.availableDiplomaticWorkers >= 1;
+                                    && world.pendingDiplomaticWorkers >= 1
+                                    && world.pendingDiplomaticWorkers <= world.workerPool.availableDiplomaticWorkers
+                                    && DiplomacySystem::canStartBribe(world, selected->id);
                     SDL_Color bribeBtn = canBribe ? SDL_Color{0, 0, 120, 255}
                                                   : SDL_Color{40, 40, 40, 255};
                     drawRect(r, PANEL_X + 10, infoY + 330, 200, 36, bribeBtn);

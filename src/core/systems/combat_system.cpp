@@ -1,4 +1,5 @@
 #include "combat_system.h"
+#include "task_slots.h"
 #include <cstdlib>
 #include <cmath>
 
@@ -14,6 +15,9 @@ namespace CombatSystem {
     }
 
     bool canStartMarch(const World& world, int targetProvinceId) {
+        if (!TaskSlots::militaryAvailable(world)) {
+            return false;
+        }
         auto* target = const_cast<World&>(world).findProvince(targetProvinceId);
         if (!target) return false;
         if (target->owner == world.ctx.playerDynasty) return false;
@@ -27,6 +31,9 @@ namespace CombatSystem {
     }
 
     bool startMarch(World& world, int targetProvinceId, int workers) {
+        if (!TaskSlots::canStart(world, CombatTask::category, workers)) {
+            return false;
+        }
         if (!canStartMarch(world, targetProvinceId)) return false;
         if (workers < 1) return false;
         if (workers > world.workerPool.availableMilitaryWorkers) return false;
@@ -58,6 +65,7 @@ namespace CombatSystem {
         task.daysRequired = daysPerUnit[std::min(workers, 8) - 1] * (isNeutral ? 1 : 2);
 
         world.workerPool.availableMilitaryWorkers -= workers;
+        world.pendingMilitaryWorkers = 0;
         return true;
     }
 
@@ -69,6 +77,9 @@ namespace CombatSystem {
     }
 
     void tickMarch(World& world) {
+        if (world.battle.phase != BattlePhase::None) {
+            return;
+        }
         for (int i = 0; i < 2; i++) {
             auto& task = world.combatTasks.slots[i];
             if (!task.active) continue;
@@ -81,6 +92,9 @@ namespace CombatSystem {
             world.workerPool.availableMilitaryWorkers += task.workersAssigned;
             task = CombatTask{};
             initBattle(world, targetId);
+            if (world.battle.phase != BattlePhase::None) {
+                return;
+            }
         }
     }
 

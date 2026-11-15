@@ -1,4 +1,5 @@
 #include "resource_system.h"
+#include "task_slots.h"
 
 namespace ResourceSystem {
 
@@ -9,6 +10,9 @@ namespace ResourceSystem {
     }
 
     bool startTask(World& world, ResourceType res, int workers) {
+        if (!TaskSlots::canStart(world, CollectionTask::category, workers)) {
+            return false;
+        }
         int slot = freeSlot(world.collectionTasks);
         if (slot == -1) return false;
 
@@ -28,6 +32,7 @@ namespace ResourceSystem {
         task.daysAccumulated = 0;
 
         world.workerPool.availableStockWorkers -= workers;
+        world.pendingWorkers[(int)res] = 0;
         return true;
     }
 

@@ -190,6 +190,7 @@ TEST_CASE("cannot start march if battle is already active", "[combat]") {
 
 TEST_CASE("cannot start more than 2 marches", "[combat]") {
     World w;
+    w.ctx.score = 400;
     setupWorld(w);
 
     ProvinceComponent target2;

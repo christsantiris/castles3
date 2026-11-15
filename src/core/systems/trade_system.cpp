@@ -1,4 +1,5 @@
 #include "trade_system.h"
+#include "task_slots.h"
 
 namespace TradeSystem {
 
@@ -31,6 +32,9 @@ namespace TradeSystem {
     }
 
     bool canStartTrade(const World& world) {
+        if (!TaskSlots::canStart(world, TradeTask::category, world.pendingDiplomaticWorkers)) {
+            return false;
+        }
         if (world.tradeTasks.slots[0].active) {
             return false;
         }
@@ -78,6 +82,7 @@ namespace TradeSystem {
         }
 
         world.pendingTradeQty = 1;
+        world.pendingDiplomaticWorkers = 0;
         return true;
     }
 

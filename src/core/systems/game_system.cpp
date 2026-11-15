@@ -25,16 +25,26 @@ namespace GameSystem {
     }
 
     void tick(World& world) {
+        // Campaign time stops throughout combat, including result review.
+        if (world.ctx.paused || world.battle.phase != BattlePhase::None) {
+            return;
+        }
         DateSystem::advance(world.date);
         world.ctx.dayCounter++;
         if (world.ctx.dayCounter % 5 == 0)
             world.ctx.score++;
         ResourceSystem::tick(world);
         CombatSystem::tickMarch(world);
+        if (world.battle.phase != BattlePhase::None) {
+            return;
+        }
         UnlockSystem::applyUnlocks(world);
         RecruitSystem::tick(world);
         AISystem::tick(world, world.aiConfig);
         AISystem::tickMarches(world);
+        if (world.battle.phase != BattlePhase::None) {
+            return;
+        }
         DiplomacySystem::tick(world);
         UpkeepSystem::tick(world);
         TradeSystem::tick(world);

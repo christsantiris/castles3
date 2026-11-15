@@ -1,5 +1,6 @@
 #include "diplomacy_system.h"
 #include "combat_system.h"
+#include "task_slots.h"
 #include <cstdlib>
 #include <algorithm>
 
@@ -8,6 +9,9 @@ namespace DiplomacySystem {
     static const int daysPerUnit[] = {20, 10, 7, 5, 4, 3, 3, 2};
 
     bool canStartBribe(const World& world, int targetProvinceId) {
+        if (!TaskSlots::diplomaticAvailable(world)) {
+            return false;
+        }
         auto* target = const_cast<World&>(world).findProvince(targetProvinceId);
         if (!target) return false;
         if (target->owner == world.ctx.playerDynasty) return false;
@@ -21,6 +25,9 @@ namespace DiplomacySystem {
     }
 
     bool startBribe(World& world, int targetProvinceId, int workers, int gold) {
+        if (!TaskSlots::canStart(world, BribeTask::category, workers)) {
+            return false;
+        }
         if (!canStartBribe(world, targetProvinceId)) return false;
         if (workers < 1) return false;
         if (workers > world.workerPool.availableDiplomaticWorkers) return false;
@@ -42,6 +49,7 @@ namespace DiplomacySystem {
 
         world.resources.gold -= gold;
         world.workerPool.availableDiplomaticWorkers -= workers;
+        world.pendingDiplomaticWorkers = 0;
         return true;
     }
 
@@ -61,6 +69,9 @@ namespace DiplomacySystem {
     }
 
     bool canStartScout(const World& world, int targetProvinceId) {
+        if (!TaskSlots::diplomaticAvailable(world)) {
+            return false;
+        }
         auto* target = const_cast<World&>(world).findProvince(targetProvinceId);
         if (!target) return false;
         if (target->owner == world.ctx.playerDynasty) return false;
@@ -74,6 +85,9 @@ namespace DiplomacySystem {
     }
 
     bool startScout(World& world, int targetProvinceId, int workers) {
+        if (!TaskSlots::canStart(world, ScoutTask::category, workers)) {
+            return false;
+        }
         if (!canStartScout(world, targetProvinceId)) return false;
         if (workers < 1) return false;
         if (workers > world.workerPool.availableDiplomaticWorkers) return false;
@@ -91,6 +105,7 @@ namespace DiplomacySystem {
         task.daysRequired = daysPerUnit[std::min(workers, 8) - 1];
 
         world.workerPool.availableDiplomaticWorkers -= workers;
+        world.pendingDiplomaticWorkers = 0;
         return true;
     }
 

@@ -4,7 +4,9 @@
 namespace UnlockSystem {
 
     struct UnlockThresholds {
-        // Task slot unlocks
+        // Shared category capacities start at ONE (independent of worker count).
+        // At these scores capacity becomes TWO: collection; march/recruit;
+        // scout/bribe/trade respectively. Enforced centrally by TaskSlots.
         static const int SECOND_STOCK_SLOT    = 200;
         static const int SECOND_MILITARY_SLOT = 400;
         static const int SECOND_DIPLOMACY_SLOT = 600;

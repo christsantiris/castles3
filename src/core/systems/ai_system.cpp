@@ -96,6 +96,9 @@ namespace AISystem {
     }
 
     void tickMarches(World& world) {
+        if (world.battle.phase != BattlePhase::None) {
+            return;
+        }
         for (auto& march : world.aiMarches) {
             if (!march.active) continue;
 
@@ -159,6 +162,7 @@ namespace AISystem {
 
                 // Mark as scouted
                 world.scoutedProvinces.insert(march.targetProvinceId);
+                return;
 
             } else {
                 // Neutral province — resolve instantly

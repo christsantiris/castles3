@@ -1,4 +1,5 @@
 #include "save_load.h"
+#include "task_slots.h"
 #include <nlohmann/json.hpp>
 #include <fstream>
 
@@ -389,6 +390,7 @@ bool load_game(World& world, const std::string& path) {
         return false;
     }
 
+    TaskSlots::normalizeLoadedTasks(world);
     return true;
 }
 

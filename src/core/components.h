@@ -58,6 +58,8 @@ struct WorkerPoolComponent {
 };
 
 // ── Task Base ─────────────────────────────────────────────────────────────────
+enum class TaskCategory { Administrative, Military, Diplomatic };
+
 struct TaskBase {
     bool active          = false;
     int  workersAssigned = 0;
@@ -72,6 +74,8 @@ struct TaskBase {
 
 // ── Collection Tasks ──────────────────────────────────────────────────────────
 struct CollectionTask : TaskBase {
+    static constexpr const char* label = "Collecting...";
+    static constexpr TaskCategory category = TaskCategory::Administrative;
     ResourceType resource = ResourceType::None;
 };
 
@@ -81,6 +85,8 @@ struct CollectionTasksComponent {
 
 // ── Combat Tasks ──────────────────────────────────────────────────────────────
 struct CombatTask : TaskBase {
+    static constexpr const char* label = "Marching...";
+    static constexpr TaskCategory category = TaskCategory::Military;
     int targetProvinceId = -1;
 };
 
@@ -92,6 +98,8 @@ struct CombatTasksComponent {
 enum class UnitType { Infantry, Archers, Knights };
 
 struct RecruitTask : TaskBase {
+    static constexpr const char* label = "Recruiting...";
+    static constexpr TaskCategory category = TaskCategory::Military;
     UnitType unitType = UnitType::Infantry;
 };
 
@@ -101,6 +109,8 @@ struct RecruitTasksComponent {
 
 // ── Bribe Tasks ───────────────────────────────────────────────────────────────
 struct BribeTask : TaskBase {
+    static constexpr const char* label = "Bribing...";
+    static constexpr TaskCategory category = TaskCategory::Diplomatic;
     int targetProvinceId = -1;
     int goldAmount = 5;
 };
@@ -111,6 +121,8 @@ struct BribeTasksComponent {
 
 // ── Scout Tasks ───────────────────────────────────────────────────────────────
 struct ScoutTask : TaskBase {
+    static constexpr const char* label = "Scouting...";
+    static constexpr TaskCategory category = TaskCategory::Diplomatic;
     int targetProvinceId = -1;
 };
 
@@ -120,6 +132,8 @@ struct ScoutTasksComponent {
 
 // ── Trade Tasks ───────────────────────────────────────────────────────────────
 struct TradeTask : TaskBase {
+    static constexpr const char* label = "Trading...";
+    static constexpr TaskCategory category = TaskCategory::Diplomatic;
     int         offerRes   = 0;
     int         requestRes = 0;
     int         qty        = 0;
