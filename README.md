@@ -60,6 +60,7 @@ personal scores are excluded from the published bundle.
       
 <img width="2544" height="1644" alt="image" src="https://github.com/user-attachments/assets/fb244b2c-a6bd-4373-b3ba-8efdb8904e17" />
 
-<img width="2544" height="1644" alt="image" src="https://github.com/user-attachments/assets/6a68795d-5cc4-483a-a846-abc6c385d21d" />
+<img width="2544" height="1644" alt="image" src="https://github.com/user-attachments/assets/65eaf3e5-2fd8-4451-9725-fbe907de3385" />
+
 
 
