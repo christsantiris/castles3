@@ -2,6 +2,16 @@
 
 A medieval strategy game of conquest, resource management, and diplomacy set in the late Eastern Roman world.
 
+## Navigation
+
+- [Build Instructions](#build-instructions)
+- [Dependencies](#dependencies)
+- [Browser and GitHub Pages](#browser-and-github-pages)
+- [Features](#features)
+- [Task slots and workers](#task-slots-and-workers)
+- [Roadmap](#roadmap)
+- [Screenshots](#screenshots)
+
 ## Build Instructions
 ```bash
 make run
@@ -115,7 +125,9 @@ canceled, returning workers and applying the normal cancellation refunds.
 - [ ] Show the actual speed benefit of assigning more workers, including timing-table plateaus.
 - [ ] Align battle result displays with casualties, ownership changes, rewards, and remaining army strength.
 - [ ] Balance food for marches, iron/timber for recruitment, gold for diplomacy/upkeep, trade exchanges, and all-resource castle costs together.
-      
+
+## Screenshots
+
 <img width="2544" height="1644" alt="image" src="https://github.com/user-attachments/assets/fb244b2c-a6bd-4373-b3ba-8efdb8904e17" />
 
 <img width="2544" height="1644" alt="image" src="https://github.com/user-attachments/assets/65eaf3e5-2fd8-4451-9725-fbe907de3385" />
