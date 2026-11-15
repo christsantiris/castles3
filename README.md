@@ -32,5 +32,6 @@ brew install sdl2 sdl2_ttf sdl2_mixer nlohmann-json catch2 dylibbundler
       
 <img width="2544" height="1644" alt="image" src="https://github.com/user-attachments/assets/fb244b2c-a6bd-4373-b3ba-8efdb8904e17" />
 
-<img width="2564" height="1590" alt="image" src="https://github.com/user-attachments/assets/c1c03d5f-141c-43cd-b379-49f66a47e4b7" />
+<img width="2544" height="1644" alt="image" src="https://github.com/user-attachments/assets/6a68795d-5cc4-483a-a846-abc6c385d21d" />
+
 
