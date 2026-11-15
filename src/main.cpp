@@ -18,6 +18,16 @@
 #include "core/systems/date_system.h"
 #include "core/systems/ai_system.h"
 #include "core/systems/save_load.h"
+#include "core/storage_paths.h"
+#ifdef __EMSCRIPTEN__
+#include <emscripten.h>
+
+EM_ASYNC_JS(void, browser_next_frame, (), {
+    await new Promise(function(resolve) {
+        requestAnimationFrame(resolve);
+    });
+});
+#endif
 
 int main() {
     SDL_Init(SDL_INIT_VIDEO);
@@ -49,13 +59,16 @@ int main() {
     // AISystem::initAI(world, world.aiConfig);
 
     LandingState landingState;
-    HallOfFame hof = HallOfFameSystem::load("data/hall_of_fame.json");
+    HallOfFame hof = HallOfFameSystem::load(Storage::path("hall_of_fame.json"));
     Uint32 lastTick = SDL_GetTicks();
     const Uint32 tickInterval = 3750;
 
     SDL_Event event;
     bool running = true;
     while (running) {
+#ifdef __EMSCRIPTEN__
+        browser_next_frame();
+#endif
         while (SDL_PollEvent(&event)) {
             if (!InputHandler::handle(event, world, landingState, music))
                 running = false;
@@ -84,7 +97,7 @@ int main() {
             world.ctx.victoryRecorded = true;
             HallOfFameSystem::addEntry(hof, world.ctx.playerDynasty,
                                        world.ctx.score, DateSystem::toString(world.date));
-            HallOfFameSystem::save(hof, "data/hall_of_fame.json");
+            HallOfFameSystem::save(hof, Storage::path("hall_of_fame.json"));
         }
 
         SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
@@ -113,11 +126,13 @@ int main() {
         }
 
         SDL_RenderPresent(renderer);
+#ifndef __EMSCRIPTEN__
         SDL_Delay(16);
+#endif
     }
 
     if (world.ctx.screen == GameScreen::Playing) {
-        SaveLoad::save_game(world, "data/savegame.json");
+        SaveLoad::save_game(world, Storage::path("savegame.json"));
     }
 
     SDL_DestroyRenderer(renderer);
@@ -127,5 +142,8 @@ int main() {
     Mix_CloseAudio();
     TTF_Quit();
     SDL_Quit();
+#ifdef __EMSCRIPTEN__
+    EM_ASM({ Module.onGameExit(); });
+#endif
     return 0;
 }

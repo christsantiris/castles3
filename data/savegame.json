@@ -15,43 +15,50 @@
       "daysAccumulated": 11,
       "daysRequired": 40,
       "dynasty": "Doukas",
-      "targetProvinceId": 3
+      "targetProvinceId": 7
     },
     {
       "active": true,
       "daysAccumulated": 11,
       "daysRequired": 40,
       "dynasty": "Palaiologos",
-      "targetProvinceId": 11
+      "targetProvinceId": 3
+    },
+    {
+      "active": true,
+      "daysAccumulated": 11,
+      "daysRequired": 40,
+      "dynasty": "Phokas",
+      "targetProvinceId": 1
     },
     {
       "active": true,
       "daysAccumulated": 11,
       "daysRequired": 40,
       "dynasty": "Komnenos",
-      "targetProvinceId": 11
+      "targetProvinceId": 5
     }
   ],
   "aiStates": {
     "Doukas": {
-      "dayCounter": 30,
-      "recruitCounter": 0
+      "dayCounter": 15,
+      "recruitCounter": 15
     },
     "Kantakouzenos": {
       "dayCounter": 0,
       "recruitCounter": 0
     },
     "Komnenos": {
-      "dayCounter": 30,
-      "recruitCounter": 0
+      "dayCounter": 15,
+      "recruitCounter": 15
     },
     "Palaiologos": {
-      "dayCounter": 30,
-      "recruitCounter": 0
+      "dayCounter": 15,
+      "recruitCounter": 15
     },
     "Phokas": {
-      "dayCounter": 40,
-      "recruitCounter": 10
+      "dayCounter": 15,
+      "recruitCounter": 15
     }
   },
   "armies": {
@@ -61,8 +68,8 @@
       "knights": 1
     },
     "Doukas": {
-      "archers": 2,
-      "infantry": 4,
+      "archers": 1,
+      "infantry": 2,
       "knights": 0
     },
     "Kantakouzenos": {
@@ -71,17 +78,17 @@
       "knights": 0
     },
     "Komnenos": {
-      "archers": 2,
-      "infantry": 4,
+      "archers": 1,
+      "infantry": 2,
       "knights": 0
     },
     "Palaiologos": {
-      "archers": 2,
-      "infantry": 4,
+      "archers": 1,
+      "infantry": 2,
       "knights": 0
     },
     "Phokas": {
-      "archers": 2,
+      "archers": 1,
       "infantry": 2,
       "knights": 0
     },
@@ -159,24 +166,24 @@
     }
   ],
   "ctx": {
-    "activeTab": 0,
+    "activeTab": -1,
     "battleMessage": "",
     "battleMessageTimer": 0,
-    "dayCounter": 79,
+    "dayCounter": 25,
     "marchFoodFlat": 1,
     "paused": false,
     "playerDynasty": "Kantakouzenos",
-    "score": 15,
+    "score": 5,
     "screen": 2,
     "shouldQuit": false,
-    "upkeepCounter": 79,
+    "upkeepCounter": 25,
     "upkeepDue": false,
     "upkeepInterval": 120,
     "victoryRecorded": false
   },
   "date": {
-    "day": 20,
-    "month": 7,
+    "day": 27,
+    "month": 5,
     "year": 1312
   },
   "pendingBribeGold": 5,
@@ -221,37 +228,37 @@
     {
       "id": 5,
       "isRevealed": true,
-      "owner": "Phokas"
+      "owner": "neutral"
     },
     {
       "id": 6,
       "isRevealed": true,
-      "owner": "Palaiologos"
+      "owner": "Komnenos"
     },
     {
       "id": 7,
       "isRevealed": true,
-      "owner": "Palaiologos"
+      "owner": "neutral"
     },
     {
       "id": 8,
       "isRevealed": true,
-      "owner": "Komnenos"
+      "owner": "neutral"
     },
     {
       "id": 9,
       "isRevealed": true,
-      "owner": "Doukas"
+      "owner": "Palaiologos"
     },
     {
       "id": 10,
       "isRevealed": true,
-      "owner": "neutral"
+      "owner": "Phokas"
     },
     {
       "id": 11,
       "isRevealed": true,
-      "owner": "neutral"
+      "owner": "Doukas"
     },
     {
       "id": 12,
@@ -271,7 +278,7 @@
     {
       "id": 15,
       "isRevealed": true,
-      "owner": "Kantakouzenos"
+      "owner": "neutral"
     },
     {
       "id": 16,
@@ -306,12 +313,12 @@
     {
       "id": 22,
       "isRevealed": true,
-      "owner": "Doukas"
+      "owner": "Kantakouzenos"
     },
     {
       "id": 23,
       "isRevealed": true,
-      "owner": "Komnenos"
+      "owner": "neutral"
     }
   ],
   "recruitTasks": [
