@@ -122,9 +122,13 @@ def project(lon, lat):
 
 
 def polygons(geometry):
+    if geometry.is_empty:
+        return []
     if geometry.geom_type == "Polygon":
         return [geometry]
-    return [p for g in geometry.geoms for p in polygons(g)]
+    if hasattr(geometry, "geoms"):
+        return [p for g in geometry.geoms for p in polygons(g)]
+    return []
 
 
 def ring(part):
@@ -138,10 +142,53 @@ def ring(part):
     return result
 
 
+# A coastline can cross an inland cut several times. Reassign detached mainland
+# pieces to the adjacent province's main body instead of treating them as islands.
+mainlands = unary_union([p for p in land.geoms if p.area > 3])
+for _ in range(24):
+    moved = False
+    for province_id, region in list(regions.items()):
+        pieces = sorted(polygons(region.intersection(mainlands)), key=lambda p: p.area, reverse=True)
+        for fragment in pieces[1:]:
+            if fragment.area < 1e-10:
+                continue
+            candidates = {}
+            for other_id, other in regions.items():
+                if other_id == province_id:
+                    continue
+                other_parts = polygons(other.intersection(mainlands))
+                if not other_parts:
+                    continue
+                main_body = max(other_parts, key=lambda p: p.area)
+                shared = fragment.boundary.intersection(main_body.boundary).length
+                if shared > 1e-8:
+                    candidates[other_id] = shared
+            assert candidates, (province_id, fragment.bounds)
+            recipient = max(candidates, key=candidates.get)
+            regions[province_id] = regions[province_id].difference(fragment)
+            regions[recipient] = regions[recipient].union(fragment)
+            moved = True
+    if not moved:
+        break
+else:
+    raise AssertionError("Mainland fragment repair did not converge")
+for province_id, region in regions.items():
+    assert len([p for p in polygons(region.intersection(mainlands)) if p.area > 1e-8]) <= 1, province_id
+
+# Small real islands belong wholly to one province, never sliced by inland cuts.
+for island in land.geoms:
+    if island.area > 3:
+        continue
+    owner = max(regions, key=lambda k: regions[k].intersection(island).area)
+    for province_id in regions:
+        regions[province_id] = regions[province_id].difference(island)
+    regions[owner] = regions[owner].union(island)
+
+
 LABELS = {0: (29.15, 41.8), 1: (21.7, 41), 2: (24.8, 43),
           3: (20, 39.65), 4: (26.25, 41.25), 5: (36.5, 41.5),
           6: (33.25, 39.4), 7: (29.5, 38.7), 8: (38.6, 39),
-          9: (22.5, 38.55), 10: (22.55, 39.5), 11: (35.2, 37),
+          9: (22.5, 38.55), 10: (24.9, 39.8), 11: (35.2, 37),
           12: (25.3, 38.35), 13: (33.2, 35), 14: (37.1, 34.7),
           15: (35.2, 32.2), 16: (22.1, 37.2), 17: (25, 34.65),
           18: (14.1, 37.4), 19: (39.3, 28.4), 20: (29.5, 28.1),

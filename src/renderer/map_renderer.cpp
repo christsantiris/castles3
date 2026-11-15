@@ -1,5 +1,8 @@
 #include "map_renderer.h"
+#include "../core/map_labels.h"
 #include <algorithm>
+#include <cmath>
+#include <functional>
 
 namespace MapRenderer {
 
@@ -80,30 +83,90 @@ namespace MapRenderer {
         }
     }
 
-    static void drawLabel(SDL_Renderer* renderer, TTF_Font* font, const ProvinceComponent& province) {
-        int cx = 0, cy = 0;
-        if (province.hasLabelPosition) {
-            Point anchor = offsetPoint(province.labelPosition);
-            cx = anchor.x;
-            cy = anchor.y;
-        } else {
-            if (province.polygon.empty()) {
-                return;
+    static const std::vector<MapLabels::Placement>& labelLayout(TTF_Font* font, const World& world) {
+        static size_t cachedKey = 0;
+        static std::vector<MapLabels::Placement> cached;
+        size_t key = std::hash<TTF_Font*>{}(font);
+        std::vector<Point> sizes;
+        auto combine = [&](size_t value) { key ^= value + 0x9e3779b9 + (key << 6) + (key >> 2); };
+        for (const auto& province : world.provinces) {
+            int width = 0, height = 0;
+            TTF_SizeText(font, province.name.c_str(), &width, &height);
+            sizes.push_back({(int)std::ceil(width / MAP_SCALE_X) + 1, (int)std::ceil(height / MAP_SCALE_Y) + 1});
+            combine(std::hash<std::string>{}(province.name));
+            combine(width);
+            combine(height);
+            combine(province.labelPosition.x);
+            combine(province.labelPosition.y);
+            combine(province.hasLabelPosition);
+            auto hashPolygon = [&](const std::vector<Point>& polygon) {
+                combine(polygon.size());
+                for (const auto& point : polygon) {
+                    combine(point.x);
+                    combine(point.y);
+                }
+            };
+            hashPolygon(province.polygon);
+            combine(province.islands.size());
+            for (const auto& island : province.islands) {
+                hashPolygon(island);
             }
-            for (const auto& pt : province.polygon) {
-                Point point = offsetPoint(pt);
-                cx += point.x;
-                cy += point.y;
-            }
-            cx /= province.polygon.size();
-            cy /= province.polygon.size();
         }
+        if (cachedKey != key || cached.size() != world.provinces.size()) {
+            cached = MapLabels::layout(world.provinces, sizes);
+            cachedKey = key;
+        }
+        return cached;
+    }
 
+    static void drawLeader(SDL_Renderer* renderer, const MapLabels::Placement& placement) {
+        if (!placement.external) {
+            return;
+        }
+        const auto& bounds = placement.bounds;
+        Point target = offsetPoint(placement.target);
+        Point start = offsetPoint({std::clamp(placement.target.x, bounds.x - 3, bounds.x + bounds.w + 3),
+                                   std::clamp(placement.target.y, bounds.y - 3, bounds.y + bounds.h + 3)});
+        SDL_SetRenderDrawColor(renderer, 20, 30, 30, 255);
+        for (int dx = -1; dx <= 1; dx++) {
+            SDL_RenderDrawLine(renderer, start.x + dx, start.y, target.x + dx, target.y);
+            SDL_RenderDrawLine(renderer, start.x, start.y + dx, target.x, target.y + dx);
+        }
+        SDL_Rect dot = {target.x - 2, target.y - 2, 5, 5};
+        SDL_RenderFillRect(renderer, &dot);
+        SDL_SetRenderDrawColor(renderer, LABEL.r, LABEL.g, LABEL.b, 255);
+        SDL_RenderDrawLine(renderer, start.x, start.y, target.x, target.y);
+        dot = {target.x - 1, target.y - 1, 3, 3};
+        SDL_RenderFillRect(renderer, &dot);
+    }
+
+    static void drawLabel(SDL_Renderer* renderer, TTF_Font* font, const ProvinceComponent& province, const MapLabels::Placement& placement) {
+        const auto& bounds = placement.bounds;
+        Point center = offsetPoint({bounds.x + bounds.w / 2, bounds.y + bounds.h / 2});
         SDL_Color color = province.isSelected ? LABEL_SEL : LABEL;
-        SDL_Surface* s = TTF_RenderText_Solid(font, province.name.c_str(), color);
-        if (!s) return;
+        SDL_Surface* s = TTF_RenderText_Blended(font, province.name.c_str(), color);
+        if (!s) {
+            return;
+        }
         SDL_Texture* t = SDL_CreateTextureFromSurface(renderer, s);
-        SDL_Rect r = {cx - s->w / 2, cy - s->h / 2, s->w, s->h};
+        SDL_Rect r = {center.x - s->w / 2, center.y - s->h / 2, s->w, s->h};
+        if (placement.external) {
+            SDL_Rect plate = {r.x - 3, r.y - 2, r.w + 6, r.h + 4};
+            SDL_SetRenderDrawColor(renderer, 28, 42, 45, 255);
+            SDL_RenderFillRect(renderer, &plate);
+        }
+        // A dark halo keeps gold and selected white text legible on every owner
+        // color, including the pale selected-province fill.
+        SDL_SetTextureColorMod(t, 12, 18, 18);
+        for (int dy = -1; dy <= 1; dy++) {
+            for (int dx = -1; dx <= 1; dx++) {
+                if (dx != 0 || dy != 0) {
+                    SDL_Rect outline = {r.x + dx, r.y + dy, r.w, r.h};
+                    SDL_RenderCopy(renderer, t, nullptr, &outline);
+                }
+            }
+        }
+        SDL_SetTextureColorMod(t, 255, 255, 255);
         SDL_RenderCopy(renderer, t, nullptr, &r);
         SDL_FreeSurface(s);
         SDL_DestroyTexture(t);
@@ -152,8 +215,12 @@ namespace MapRenderer {
         }
 
         // Draw labels
-        for (const auto& p : world.provinces) {
-            drawLabel(renderer, font, p);
+        const auto& placements = labelLayout(font, world);
+        for (const auto& placement : placements) {
+            drawLeader(renderer, placement);
+        }
+        for (size_t i = 0; i < world.provinces.size(); i++) {
+            drawLabel(renderer, font, world.provinces[i], placements[i]);
         }
 
         SDL_RenderSetClipRect(renderer, nullptr);

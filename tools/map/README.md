@@ -12,11 +12,20 @@ These inland boundaries are approximate game regions, not historical borders.
 IDs, names, owners, resources, and neighbor lists are retained from `data/map.json`.
 Sea connections still follow those original neighbor lists.
 
+Detached mainland pieces created by coastal/inland intersections are reassigned
+to the adjoining province with the longest shared border to its main body.
+Each mainland province must then have one continuous body. Real islands are
+assigned whole to one province; inland cuts cannot divide an island.
+
 The projection is equirectangular at 35° N and fitted uniformly to the 950×740
 map viewport before conversion to legacy 940×880 map coordinates. This accounts
 for the renderer's different X/Y scales and preserves geographic proportions.
 Islands use separate polygons; inland lake holes are omitted at this display scale.
-Label anchors are explicit, with some small-island labels placed over nearby water.
+Label anchors are explicit preferences. At runtime, label layout uses measured
+font dimensions and a raster area check to fit the entire padded text rectangle
+inside its province. Names that cannot fit use nonoverlapping sea callouts with
+leader lines and endpoint markers. Text has a dark halo for contrast, including
+on selected provinces. Layout is cached until the geometry, names, or font change.
 Static geometry and labels come from map.json when loading a game; save files
 continue to store mutable province ownership and visibility by ID.
 
