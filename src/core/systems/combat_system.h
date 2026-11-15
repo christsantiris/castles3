@@ -10,7 +10,7 @@ namespace CombatSystem {
     bool startMarch(World& world, int targetProvinceId, int workers);
     void cancelMarch(World& world, int slot);
     void tickMarch(World& world);
-    void initBattle(World& world, int targetProvinceId);
+    void initBattle(World& world, int targetProvinceId, const std::string& attackingDynasty = "");
     void updateBattle(World& world, float deltaTime);
     void retreat(World& world);
     void pauseBattle(World& world);

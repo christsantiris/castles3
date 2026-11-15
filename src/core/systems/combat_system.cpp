@@ -138,32 +138,37 @@ namespace CombatSystem {
         }
     }
 
-    void initBattle(World& world, int targetProvinceId) {
+    void initBattle(World& world, int targetProvinceId, const std::string& attackingDynasty) {
         auto* target = world.findProvince(targetProvinceId);
         if (!target) return;
 
         ArmyComponent& playerArmy = world.armies[world.ctx.playerDynasty];
-        ArmyComponent& defenderArmy = world.armies.count(target->owner)
-            ? world.armies[target->owner]
+        bool defending = !attackingDynasty.empty();
+        const std::string opponent = defending ? attackingDynasty : target->owner;
+        ArmyComponent& enemyArmy = world.armies.count(opponent)
+            ? world.armies[opponent]
             : world.armies["neutral"];
 
+        world.battle = BattleState{};
         world.battle.phase = BattlePhase::Preparing;
         world.battle.targetProvinceId = targetProvinceId;
+        world.battle.targetProvinceName = target->name;
+        world.battle.defenderDynasty = defending ? opponent : "";
 
-        int atkStr = attackStrength(playerArmy);
-        int defStr = defenseStrength(defenderArmy);
+        int playerStrength = defending ? defenseStrength(playerArmy) : attackStrength(playerArmy);
+        int enemyStrength = defending ? attackStrength(enemyArmy) : defenseStrength(enemyArmy);
 
-        world.battle.playerMaxHealth = atkStr * 10;
-        world.battle.aiMaxHealth = defStr * 10;
+        world.battle.playerMaxHealth = playerStrength * 10;
+        world.battle.aiMaxHealth = enemyStrength * 10;
         world.battle.playerHealth = world.battle.playerMaxHealth;
         world.battle.aiHealth = world.battle.aiMaxHealth;
         world.battle.roundTimer = 0.0f;
         world.battle.playerWon = false;
-        world.battle.statusText = "Attack: " + std::to_string(atkStr) +
-                                   " vs Defense: " + std::to_string(defStr);
+        world.battle.statusText = std::string(defending ? "Defense: " : "Attack: ") + std::to_string(playerStrength) +
+                                  (defending ? " vs Attack: " : " vs Defense: ") + std::to_string(enemyStrength);
 
         spawnUnits(world.battle.playerUnits, playerArmy, true);
-        spawnUnits(world.battle.aiUnits, defenderArmy, false);
+        spawnUnits(world.battle.aiUnits, enemyArmy, false);
     }
 
     void updateBattle(World& world, float deltaTime) {
@@ -183,16 +188,21 @@ namespace CombatSystem {
         world.battle.roundTimer = 0.0f;
 
         auto* target = world.findProvince(world.battle.targetProvinceId);
+        if (!target) {
+            return;
+        }
+        bool defending = !world.battle.defenderDynasty.empty();
+        const std::string opponent = defending ? world.battle.defenderDynasty : target->owner;
         ArmyComponent& playerArmy = world.armies[world.ctx.playerDynasty];
-        ArmyComponent& defenderArmy = world.armies.count(target->owner)
-            ? world.armies[target->owner]
+        ArmyComponent& enemyArmy = world.armies.count(opponent)
+            ? world.armies[opponent]
             : world.armies["neutral"];
 
-        int atkRoll = attackStrength(playerArmy) + (rand() % 10);
-        int defRoll = defenseStrength(defenderArmy) + (rand() % 10);
+        int playerRoll = (defending ? defenseStrength(playerArmy) : attackStrength(playerArmy)) + (rand() % 10);
+        int enemyRoll = (defending ? attackStrength(enemyArmy) : defenseStrength(enemyArmy)) + (rand() % 10);
 
-        int damage = std::max(1, atkRoll - defRoll / 2);
-        int defDamage = std::max(1, defRoll - atkRoll / 2);
+        int damage = std::max(1, playerRoll - enemyRoll / 2);
+        int defDamage = std::max(1, enemyRoll - playerRoll / 2);
 
         world.battle.aiHealth -= damage;
         world.battle.playerHealth -= defDamage;
@@ -225,21 +235,23 @@ namespace CombatSystem {
             };
 
             if (world.battle.playerWon) {
-                std::string defenderOwner = target->owner;
-                if (defenderOwner != "neutral" && world.armies.count(defenderOwner)) {
-                    applyLosses(world.armies[defenderOwner]);
+                if (opponent != "neutral" && world.armies.count(opponent)) {
+                    applyLosses(enemyArmy);
                 }
             } else {
                 applyLosses(world.armies[world.ctx.playerDynasty]);
             }
 
             if (world.battle.playerWon) {
-                target->owner = world.ctx.playerDynasty;
+                if (!defending) {
+                    target->owner = world.ctx.playerDynasty;
+                }
                 world.ctx.score += 150;
-                world.ctx.battleMessage = "Victory! " + target->name + " conquered";
+                world.ctx.battleMessage = "Victory! " + target->name + (defending ? " defended" : " conquered");
                 world.scoutedProvinces.insert(world.battle.targetProvinceId);
-                if (target->name == "Constantinople")
+                if (!defending && target->name == "Constantinople") {
                     world.ctx.screen = GameScreen::Victory;
+                }
             } else {
                 if (!world.battle.defenderDynasty.empty()) {
                     target->owner = world.battle.defenderDynasty;

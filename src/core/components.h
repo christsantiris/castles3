@@ -185,7 +185,9 @@ struct BattleState {
     BattlePhase phase = BattlePhase::None;
     int targetProvinceId = -1;
     std::string targetProvinceName = "";
-    std::string defenderDynasty    = "";
+    // Legacy save field: attacking AI dynasty when the player defends;
+    // empty when the player attacks. Retained for save compatibility.
+    std::string defenderDynasty = "";
     std::vector<BattleUnit> playerUnits;
     std::vector<BattleUnit> aiUnits;
     int playerHealth = 100;

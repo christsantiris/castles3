@@ -111,54 +111,8 @@ namespace AISystem {
             if (!target) continue;
 
             if (target->owner == world.ctx.playerDynasty) {
-                // Trigger interactive battle — AI attacks player
-                // Swap attacker/defender by temporarily setting playerDynasty context
-                world.battle.phase            = BattlePhase::Preparing;
-                world.battle.targetProvinceId = march.targetProvinceId;
-                world.battle.targetProvinceName = target->name;
-                world.battle.defenderDynasty  = march.dynasty;
-
-                ArmyComponent& playerArmy = world.armies[world.ctx.playerDynasty];
-                ArmyComponent& aiArmy     = world.armies[march.dynasty];
-
-                // Player defends, AI attacks
-                int atkStr = CombatSystem::attackStrength(aiArmy);
-                int defStr = CombatSystem::defenseStrength(playerArmy);
-
-                world.battle.playerMaxHealth = defStr * 10;
-                world.battle.aiMaxHealth     = atkStr * 10;
-                world.battle.playerHealth    = world.battle.playerMaxHealth;
-                world.battle.aiHealth        = world.battle.aiMaxHealth;
-                world.battle.roundTimer      = 0.0f;
-                world.battle.transitionTimer = 0.0f;
-                world.battle.playerWon       = false;
-                world.battle.statusText      = "Defense: " + std::to_string(defStr) +
-                                               " vs Attack: " + std::to_string(atkStr);
-
-                // Spawn units — player on left, AI on right
-                std::vector<BattleUnit> playerUnits;
-                std::vector<BattleUnit> aiUnits;
-
-                float py = 200.0f;
-                for (int i = 0; i < playerArmy.infantry; i++) {
-                    BattleUnit u; u.x = 100.0f; u.y = py + i * 40.0f; u.type = 0; u.health = 10;
-                    playerUnits.push_back(u);
-                }
-                for (int i = 0; i < playerArmy.archers; i++) {
-                    BattleUnit u; u.x = 100.0f; u.y = py + (playerArmy.infantry + i) * 40.0f; u.type = 1; u.health = 10;
-                    playerUnits.push_back(u);
-                }
-                for (int i = 0; i < aiArmy.infantry; i++) {
-                    BattleUnit u; u.x = 750.0f; u.y = py + i * 40.0f; u.type = 0; u.health = 10;
-                    aiUnits.push_back(u);
-                }
-                for (int i = 0; i < aiArmy.archers; i++) {
-                    BattleUnit u; u.x = 750.0f; u.y = py + (aiArmy.infantry + i) * 40.0f; u.type = 1; u.health = 10;
-                    aiUnits.push_back(u);
-                }
-
-                world.battle.playerUnits = playerUnits;
-                world.battle.aiUnits     = aiUnits;
+                // Use the same participant setup for both attack directions.
+                CombatSystem::initBattle(world, march.targetProvinceId, march.dynasty);
 
                 // Mark as scouted
                 world.scoutedProvinces.insert(march.targetProvinceId);

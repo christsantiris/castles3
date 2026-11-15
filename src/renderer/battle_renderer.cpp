@@ -168,7 +168,7 @@ namespace BattleRenderer {
 
         drawHealthBar(renderer, 950 - hbW - 20, hbY, hbW, hbH,
                       battle.aiHealth, battle.aiMaxHealth, AI_COL);
-        drawText(renderer, font, "Defender", 950 - hbW - 20, hbY - 20, WHITE);
+        drawText(renderer, font, battle.defenderDynasty.empty() ? "Defender" : "Attacker", 950 - hbW - 20, hbY - 20, WHITE);
 
         // Draw units
         int totalPlayerUnits = (int)battle.playerUnits.size();
