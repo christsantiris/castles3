@@ -1,0 +1,354 @@
+{
+  "aiConfig": {
+    "dipWorkers": 1,
+    "militaryWorkers": 1,
+    "recruitInterval": 30,
+    "startArchers": 1,
+    "startInfantry": 2,
+    "startKnights": 0,
+    "stockWorkers": 1,
+    "tickInterval": 15
+  },
+  "aiMarches": [],
+  "aiStates": {
+    "Doukas": {
+      "dayCounter": 3,
+      "recruitCounter": 3
+    },
+    "Kantakouzenos": {
+      "dayCounter": 0,
+      "recruitCounter": 0
+    },
+    "Komnenos": {
+      "dayCounter": 3,
+      "recruitCounter": 3
+    },
+    "Palaiologos": {
+      "dayCounter": 3,
+      "recruitCounter": 3
+    },
+    "Phokas": {
+      "dayCounter": 3,
+      "recruitCounter": 3
+    }
+  },
+  "armies": {
+    "Baldwin II": {
+      "archers": 3,
+      "infantry": 3,
+      "knights": 1
+    },
+    "Doukas": {
+      "archers": 1,
+      "infantry": 2,
+      "knights": 0
+    },
+    "Kantakouzenos": {
+      "archers": 2,
+      "infantry": 4,
+      "knights": 0
+    },
+    "Komnenos": {
+      "archers": 1,
+      "infantry": 2,
+      "knights": 0
+    },
+    "Palaiologos": {
+      "archers": 1,
+      "infantry": 2,
+      "knights": 0
+    },
+    "Phokas": {
+      "archers": 1,
+      "infantry": 2,
+      "knights": 0
+    },
+    "neutral": {
+      "archers": 1,
+      "infantry": 2,
+      "knights": 0
+    }
+  },
+  "battle": {
+    "aiHealth": 100,
+    "aiMaxHealth": 100,
+    "aiUnits": [],
+    "defenderDynasty": "",
+    "phase": 0,
+    "playerHealth": 100,
+    "playerMaxHealth": 100,
+    "playerUnits": [],
+    "playerWon": false,
+    "roundInterval": 1.0,
+    "roundTimer": 0.0,
+    "statusText": "",
+    "targetProvinceId": -1,
+    "targetProvinceName": "",
+    "transitionTimer": 0.0
+  },
+  "bribeTasks": [
+    {
+      "active": false,
+      "daysAccumulated": 0,
+      "daysRequired": 0,
+      "goldAmount": 5,
+      "targetProvinceId": -1,
+      "workersAssigned": 0
+    },
+    {
+      "active": false,
+      "daysAccumulated": 0,
+      "daysRequired": 0,
+      "goldAmount": 5,
+      "targetProvinceId": -1,
+      "workersAssigned": 0
+    }
+  ],
+  "collectionTasks": [
+    {
+      "active": false,
+      "daysAccumulated": 0,
+      "daysRequired": 0,
+      "resource": 4,
+      "workersAssigned": 0
+    },
+    {
+      "active": false,
+      "daysAccumulated": 0,
+      "daysRequired": 0,
+      "resource": 4,
+      "workersAssigned": 0
+    }
+  ],
+  "combatTasks": [
+    {
+      "active": false,
+      "daysAccumulated": 0,
+      "daysRequired": 0,
+      "targetProvinceId": -1,
+      "workersAssigned": 0
+    },
+    {
+      "active": false,
+      "daysAccumulated": 0,
+      "daysRequired": 0,
+      "targetProvinceId": -1,
+      "workersAssigned": 0
+    }
+  ],
+  "ctx": {
+    "activeTab": -1,
+    "battleMessage": "",
+    "battleMessageTimer": 0,
+    "dayCounter": 3,
+    "marchFoodFlat": 1,
+    "paused": false,
+    "playerDynasty": "Kantakouzenos",
+    "score": 0,
+    "screen": 2,
+    "shouldQuit": false,
+    "upkeepCounter": 3,
+    "upkeepDue": false,
+    "upkeepInterval": 120,
+    "victoryRecorded": false
+  },
+  "date": {
+    "day": 5,
+    "month": 5,
+    "year": 1312
+  },
+  "pendingBribeGold": 5,
+  "pendingDiplomaticWorkers": 1,
+  "pendingMilitaryWorkers": 1,
+  "pendingTradeDynasty": "",
+  "pendingTradeOfferRes": 0,
+  "pendingTradeQty": 1,
+  "pendingTradeRequestRes": 1,
+  "pendingWorkers": [
+    1,
+    1,
+    1,
+    1
+  ],
+  "provinces": [
+    {
+      "id": 0,
+      "isRevealed": true,
+      "owner": "Baldwin II"
+    },
+    {
+      "id": 1,
+      "isRevealed": true,
+      "owner": "neutral"
+    },
+    {
+      "id": 2,
+      "isRevealed": true,
+      "owner": "Phokas"
+    },
+    {
+      "id": 3,
+      "isRevealed": true,
+      "owner": "neutral"
+    },
+    {
+      "id": 4,
+      "isRevealed": true,
+      "owner": "neutral"
+    },
+    {
+      "id": 5,
+      "isRevealed": true,
+      "owner": "neutral"
+    },
+    {
+      "id": 6,
+      "isRevealed": true,
+      "owner": "Palaiologos"
+    },
+    {
+      "id": 7,
+      "isRevealed": true,
+      "owner": "neutral"
+    },
+    {
+      "id": 8,
+      "isRevealed": true,
+      "owner": "neutral"
+    },
+    {
+      "id": 9,
+      "isRevealed": true,
+      "owner": "neutral"
+    },
+    {
+      "id": 10,
+      "isRevealed": true,
+      "owner": "Komnenos"
+    },
+    {
+      "id": 11,
+      "isRevealed": true,
+      "owner": "neutral"
+    },
+    {
+      "id": 12,
+      "isRevealed": true,
+      "owner": "neutral"
+    },
+    {
+      "id": 13,
+      "isRevealed": true,
+      "owner": "neutral"
+    },
+    {
+      "id": 14,
+      "isRevealed": true,
+      "owner": "neutral"
+    },
+    {
+      "id": 15,
+      "isRevealed": true,
+      "owner": "neutral"
+    },
+    {
+      "id": 16,
+      "isRevealed": true,
+      "owner": "neutral"
+    },
+    {
+      "id": 17,
+      "isRevealed": true,
+      "owner": "neutral"
+    },
+    {
+      "id": 18,
+      "isRevealed": true,
+      "owner": "neutral"
+    },
+    {
+      "id": 19,
+      "isRevealed": true,
+      "owner": "neutral"
+    },
+    {
+      "id": 20,
+      "isRevealed": true,
+      "owner": "neutral"
+    },
+    {
+      "id": 21,
+      "isRevealed": true,
+      "owner": "neutral"
+    },
+    {
+      "id": 22,
+      "isRevealed": true,
+      "owner": "Doukas"
+    },
+    {
+      "id": 23,
+      "isRevealed": true,
+      "owner": "Kantakouzenos"
+    }
+  ],
+  "recruitTasks": [
+    {
+      "active": false,
+      "daysAccumulated": 0,
+      "daysRequired": 0,
+      "unitType": 0,
+      "workersAssigned": 0
+    },
+    {
+      "active": false,
+      "daysAccumulated": 0,
+      "daysRequired": 0,
+      "unitType": 0,
+      "workersAssigned": 0
+    }
+  ],
+  "resources": {
+    "food": 3,
+    "gold": 3,
+    "iron": 3,
+    "timber": 3
+  },
+  "scoutTasks": [
+    {
+      "active": false,
+      "daysAccumulated": 0,
+      "daysRequired": 0,
+      "targetProvinceId": -1,
+      "workersAssigned": 0
+    },
+    {
+      "active": false,
+      "daysAccumulated": 0,
+      "daysRequired": 0,
+      "targetProvinceId": -1,
+      "workersAssigned": 0
+    }
+  ],
+  "scoutedProvinces": [],
+  "tradeTasks": [
+    {
+      "active": false,
+      "daysAccumulated": 0,
+      "daysRequired": 0,
+      "dynasty": "",
+      "offerRes": 0,
+      "qty": 0,
+      "requestRes": 0,
+      "workersAssigned": 0
+    }
+  ],
+  "workerPool": {
+    "availableDiplomaticWorkers": 4,
+    "availableMilitaryWorkers": 4,
+    "availableStockWorkers": 4,
+    "totalDiplomaticWorkers": 4,
+    "totalMilitaryWorkers": 4,
+    "totalStockWorkers": 4
+  }
+}

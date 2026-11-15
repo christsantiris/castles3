@@ -16,6 +16,10 @@ struct ProvinceComponent {
     std::string owner;
     std::string resource;
     std::vector<Point> polygon;
+    // Static geography loaded from map.json, including when restoring a save.
+    std::vector<std::vector<Point>> islands;
+    Point labelPosition = {0, 0};
+    bool hasLabelPosition = false;
     std::vector<int>   neighbors;
     bool        isSelected = false;
     bool        isRevealed = true;

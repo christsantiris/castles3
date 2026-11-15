@@ -30,6 +30,20 @@ namespace MapSystem {
                 province.polygon.push_back(pt);
             }
 
+            if (p.contains("islands")) {
+                for (const auto& island : p["islands"]) {
+                    std::vector<Point> points;
+                    for (const auto& point : island) {
+                        points.push_back({point["x"], point["y"]});
+                    }
+                    province.islands.push_back(points);
+                }
+            }
+            if (p.contains("label")) {
+                province.labelPosition = {p["label"]["x"], p["label"]["y"]};
+                province.hasLabelPosition = true;
+            }
+
             for (auto& neighbor : p["neighbors"])
                 province.neighbors.push_back(neighbor);
 
@@ -37,20 +51,37 @@ namespace MapSystem {
         }
     }
 
-    bool containsPoint(const ProvinceComponent& province, int px, int py) {
-        int n = province.polygon.size();
+    static bool polygonContainsPoint(const std::vector<Point>& polygon, int px, int py) {
+        int n = polygon.size();
         bool inside = false;
         for (int i = 0, j = n - 1; i < n; j = i++) {
-            int xi = province.polygon[i].x, yi = province.polygon[i].y;
-            int xj = province.polygon[j].x, yj = province.polygon[j].y;
+            int xi = polygon[i].x, yi = polygon[i].y;
+            int xj = polygon[j].x, yj = polygon[j].y;
             bool intersect = ((yi > py) != (yj > py)) &&
-                             (px < (xj - xi) * (py - yi) / (yj - yi) + xi);
-            if (intersect) inside = !inside;
+                             (px < (double)(xj - xi) * (py - yi) / (yj - yi) + xi);
+            if (intersect) {
+                inside = !inside;
+            }
         }
         return inside;
     }
 
+    bool containsPoint(const ProvinceComponent& province, int px, int py) {
+        if (polygonContainsPoint(province.polygon, px, py)) {
+            return true;
+        }
+        for (const auto& island : province.islands) {
+            if (polygonContainsPoint(island, px, py)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     ProvinceComponent* handleClick(World& world, int x, int y) {
+        if (x < 0 || x >= 950 || y < MAP_Y || y >= MAP_Y + 740) {
+            return nullptr;
+        }
         float scaleX = 940.0f / 950.0f;
         float scaleY = 880.0f / 740.0f;
         int adjustedX = (int)(x * scaleX);

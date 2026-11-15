@@ -4,8 +4,6 @@
 namespace MapRenderer {
 
     static const int MAP_Y = 60;
-    static const int MAP_HEIGHT  = 740;
-    static const float MAP_SCALE = 740.0f / 880.0f;
 
     static const SDL_Color WATER     = {180, 210, 230, 255};
     static const SDL_Color BORDER    = {100,  80,  40, 255};
@@ -15,13 +13,16 @@ namespace MapRenderer {
     static const float MAP_SCALE_Y = 740.0f / 880.0f;
     static const float MAP_SCALE_X = 950.0f / 940.0f;
 
+    static Point offsetPoint(const Point& point) {
+        return {(int)(point.x * MAP_SCALE_X), (int)(point.y * MAP_SCALE_Y) + MAP_Y};
+    }
+
     static std::vector<Point> offsetPolygon(const std::vector<Point>& polygon) {
         std::vector<Point> result;
-        for (auto& pt : polygon)
-            result.push_back({
-                (int)(pt.x * MAP_SCALE_X),
-                (int)(pt.y * MAP_SCALE_Y) + MAP_Y
-            });
+        result.reserve(polygon.size());
+        for (const auto& pt : polygon) {
+            result.push_back(offsetPoint(pt));
+        }
         return result;
     }
 
@@ -64,16 +65,42 @@ namespace MapRenderer {
         }
     }
 
-    static void drawLabel(SDL_Renderer* renderer, TTF_Font* font,
-                          const std::string& text, const std::vector<Point>& polygon,
-                          bool selected) {
-        int cx = 0, cy = 0;
-        for (auto& pt : polygon) { cx += pt.x; cy += pt.y; }
-        cx /= polygon.size();
-        cy /= polygon.size();
+    static void drawProvinceBorder(SDL_Renderer* renderer, const std::vector<Point>& polygon, bool owned) {
+        auto points = offsetPolygon(polygon);
+        if (!owned) {
+            drawBorder(renderer, points);
+            return;
+        }
+        SDL_SetRenderDrawColor(renderer, 255, 215, 0, 255);
+        for (size_t i = 0; i < points.size(); i++) {
+            size_t j = (i + 1) % points.size();
+            SDL_RenderDrawLine(renderer, points[i].x, points[i].y, points[j].x, points[j].y);
+            SDL_RenderDrawLine(renderer, points[i].x + 1, points[i].y, points[j].x + 1, points[j].y);
+            SDL_RenderDrawLine(renderer, points[i].x, points[i].y + 1, points[j].x, points[j].y + 1);
+        }
+    }
 
-        SDL_Color color = selected ? LABEL_SEL : LABEL;
-        SDL_Surface* s = TTF_RenderText_Solid(font, text.c_str(), color);
+    static void drawLabel(SDL_Renderer* renderer, TTF_Font* font, const ProvinceComponent& province) {
+        int cx = 0, cy = 0;
+        if (province.hasLabelPosition) {
+            Point anchor = offsetPoint(province.labelPosition);
+            cx = anchor.x;
+            cy = anchor.y;
+        } else {
+            if (province.polygon.empty()) {
+                return;
+            }
+            for (const auto& pt : province.polygon) {
+                Point point = offsetPoint(pt);
+                cx += point.x;
+                cy += point.y;
+            }
+            cx /= province.polygon.size();
+            cy /= province.polygon.size();
+        }
+
+        SDL_Color color = province.isSelected ? LABEL_SEL : LABEL;
+        SDL_Surface* s = TTF_RenderText_Solid(font, province.name.c_str(), color);
         if (!s) return;
         SDL_Texture* t = SDL_CreateTextureFromSurface(renderer, s);
         SDL_Rect r = {cx - s->w / 2, cy - s->h / 2, s->w, s->h};
@@ -110,28 +137,24 @@ namespace MapRenderer {
                 color = {34, 139, 34, 255};
             }
             fillPolygon(renderer, offsetPolygon(p.polygon), color);
+            for (const auto& island : p.islands) {
+                fillPolygon(renderer, offsetPolygon(island), color);
+            }
         }
 
         // Draw borders
         for (auto& p : world.provinces) {
-            if (p.owner == world.ctx.playerDynasty) {
-                SDL_SetRenderDrawColor(renderer, 255, 215, 0, 255);
-                auto op = offsetPolygon(p.polygon);
-                int n = op.size();
-                for (int i = 0; i < n; i++) {
-                    int j = (i + 1) % n;
-                    SDL_RenderDrawLine(renderer, op[i].x, op[i].y, op[j].x, op[j].y);
-                    SDL_RenderDrawLine(renderer, op[i].x+1, op[i].y, op[j].x+1, op[j].y);
-                    SDL_RenderDrawLine(renderer, op[i].x, op[i].y+1, op[j].x, op[j].y+1);
-                }
-            } else {
-                drawBorder(renderer, offsetPolygon(p.polygon));
+            bool owned = p.owner == world.ctx.playerDynasty;
+            drawProvinceBorder(renderer, p.polygon, owned);
+            for (const auto& island : p.islands) {
+                drawProvinceBorder(renderer, island, owned);
             }
         }
 
         // Draw labels
-        for (auto& p : world.provinces)
-            drawLabel(renderer, font, p.name, offsetPolygon(p.polygon), p.isSelected);
+        for (const auto& p : world.provinces) {
+            drawLabel(renderer, font, p);
+        }
 
         SDL_RenderSetClipRect(renderer, nullptr);
     }
