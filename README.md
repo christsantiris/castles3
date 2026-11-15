@@ -108,11 +108,9 @@ canceled, returning workers and applying the normal cancellation refunds.
 
 - [ ] Installers for Linux, Windows
 - [ ] Special Quests e.g Holy grail or other papal requests
-- [ ] Sabateurs to destroy AI castles or poison troops
-- [ ] Construct Castles to improve defensive positions and prevent provinces from revolting (difficult) 
+- [ ] Sabateurs to destroy AI castles or poison troops 
 - [ ] Advanced combat system (difficult)
 - [ ] Fix upkeep desertion increasing troop counts when the treasury exceeds the payment due.
-- [ ] Reconcile diplomatic worker progression and its tests with the correct starting worker count; preserve starting values.
 - [ ] Add a balanced gold cost to scouting, consistent with diplomatic resource costs.
 - [ ] Implement castle construction as an administrative task consuming food, timber, iron, and gold, including progress, cancellation, effects, and persistence.
 - [ ] Implement spying as a distinct diplomatic task with costs, duration, outcomes, and persistence.

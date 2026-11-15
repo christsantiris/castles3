@@ -98,25 +98,33 @@ TEST_CASE("military workers increase at score thresholds", "[unlock]") {
 
 TEST_CASE("diplomatic workers increase at score thresholds", "[unlock]") {
     World w;
-    w.ctx.score = 499;
-    UnlockSystem::applyUnlocks(w);
-    REQUIRE(w.workerPool.totalDiplomaticWorkers == 2);
-
-    w.ctx.score = 500;
-    UnlockSystem::applyUnlocks(w);
-    REQUIRE(w.workerPool.totalDiplomaticWorkers == 3);
-
-    w.ctx.score = 650;
-    UnlockSystem::applyUnlocks(w);
     REQUIRE(w.workerPool.totalDiplomaticWorkers == 4);
+    REQUIRE(w.workerPool.availableDiplomaticWorkers == 4);
+    w.workerPool.availableDiplomaticWorkers = 2; // 2 workers assigned
 
-    w.ctx.score = 800;
-    UnlockSystem::applyUnlocks(w);
-    REQUIRE(w.workerPool.totalDiplomaticWorkers == 5);
+    const int thresholds[] = {500, 650, 800, 950};
+    int expectedWorkers = 4;
+    for (int threshold : thresholds) {
+        w.ctx.score = threshold - 1;
+        UnlockSystem::applyUnlocks(w);
+        REQUIRE(w.workerPool.totalDiplomaticWorkers == expectedWorkers);
+        REQUIRE(w.workerPool.availableDiplomaticWorkers == expectedWorkers - 2);
 
-    w.ctx.score = 950;
+        w.ctx.score = threshold;
+        ++expectedWorkers;
+        UnlockSystem::applyUnlocks(w);
+        REQUIRE(w.workerPool.totalDiplomaticWorkers == expectedWorkers);
+        REQUIRE(w.workerPool.availableDiplomaticWorkers == expectedWorkers - 2);
+
+        UnlockSystem::applyUnlocks(w);
+        REQUIRE(w.workerPool.totalDiplomaticWorkers == expectedWorkers);
+        REQUIRE(w.workerPool.availableDiplomaticWorkers == expectedWorkers - 2);
+    }
+
+    w.ctx.score = 0;
     UnlockSystem::applyUnlocks(w);
-    REQUIRE(w.workerPool.totalDiplomaticWorkers == 6);
+    REQUIRE(w.workerPool.totalDiplomaticWorkers == 8);
+    REQUIRE(w.workerPool.availableDiplomaticWorkers == 6);
 }
 
 TEST_CASE("applyUnlocks does not reduce workers already assigned", "[unlock]") {

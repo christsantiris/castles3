@@ -48,11 +48,16 @@ namespace UnlockSystem {
         }
 
         // Diplomatic workers
-        int dipWorkers = 2;
-        if (score >= UnlockThresholds::DIPLOMATIC_WORKER_4)      dipWorkers = 6;
-        else if (score >= UnlockThresholds::DIPLOMATIC_WORKER_3) dipWorkers = 5;
-        else if (score >= UnlockThresholds::DIPLOMATIC_WORKER_2) dipWorkers = 4;
-        else if (score >= UnlockThresholds::DIPLOMATIC_WORKER_1) dipWorkers = 3;
+        int dipWorkers = 4;
+        if (score >= UnlockThresholds::DIPLOMATIC_WORKER_4) {
+            dipWorkers = 8;
+        } else if (score >= UnlockThresholds::DIPLOMATIC_WORKER_3) {
+            dipWorkers = 7;
+        } else if (score >= UnlockThresholds::DIPLOMATIC_WORKER_2) {
+            dipWorkers = 6;
+        } else if (score >= UnlockThresholds::DIPLOMATIC_WORKER_1) {
+            dipWorkers = 5;
+        }
 
         int dipDelta = dipWorkers - world.workerPool.totalDiplomaticWorkers;
         if (dipDelta > 0) {
