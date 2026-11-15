@@ -13,9 +13,30 @@
 #include "core/systems/diplomacy_system.h"
 #include "core/systems/upkeep_system.h"
 #include "core/systems/trade_system.h"
+#include "core/storage_paths.h"
+#ifdef __EMSCRIPTEN__
+#include <emscripten.h>
+#include <cstdlib>
+
+EM_JS(char*, browserPrompt, (const char* message, const char* defaultValue), {
+    const answer = window.prompt(UTF8ToString(message), UTF8ToString(defaultValue));
+    return answer === null ? 0 : stringToNewUTF8(answer);
+});
+
+static std::string browserPromptResult(const std::string& message, const std::string& defaultValue) {
+    char* answer = browserPrompt(message.c_str(), defaultValue.c_str());
+    if (!answer) {
+        return "";
+    }
+    std::string result(answer);
+    std::free(answer);
+    return result;
+}
+#endif
 
 static const int PANEL_X = 950;
 
+#ifndef __EMSCRIPTEN__
 static std::string osascriptResult(const std::string& cmd) {
     FILE* pipe = popen(cmd.c_str(), "r");
     if (!pipe) {
@@ -32,17 +53,26 @@ static std::string osascriptResult(const std::string& cmd) {
     }
     return result;
 }
+#endif
 
 static std::string promptFilename(const std::string& prompt, const std::string& defaultName) {
+#ifdef __EMSCRIPTEN__
+    std::string name = browserPromptResult(prompt, defaultName);
+    if (name.find_first_of("/\\") != std::string::npos || name == "." || name == ".." || name == "map" || name == "hall_of_fame") {
+        return "";
+    }
+    return name;
+#else
     std::string cmd = "osascript -e 'text returned of (display dialog \"" + prompt + "\" "
                       "default answer \"" + defaultName + "\" with title \"Castles III\")' 2>/dev/null";
     return osascriptResult(cmd);
+#endif
 }
 
 static std::string chooseSave(const std::string& prompt) {
     static const std::set<std::string> excluded = {"map", "hall_of_fame"};
     std::vector<std::string> saves;
-    DIR* dir = opendir("data");
+    DIR* dir = opendir(Storage::DIRECTORY);
     if (dir) {
         struct dirent* entry;
         while ((entry = readdir(dir)) != nullptr) {
@@ -60,6 +90,19 @@ static std::string chooseSave(const std::string& prompt) {
         return "";
     }
     std::sort(saves.begin(), saves.end());
+#ifdef __EMSCRIPTEN__
+    std::string message = prompt;
+    for (size_t i = 0; i < saves.size(); i++) {
+        message += "\n" + std::to_string(i + 1) + ". " + saves[i];
+    }
+    std::string answer = browserPromptResult(message + "\nEnter a save number:", "1");
+    char* end = nullptr;
+    long selected = std::strtol(answer.c_str(), &end, 10);
+    if (end == answer.c_str() || *end != '\0' || selected < 1 || selected > (long)saves.size()) {
+        return "";
+    }
+    return saves[selected - 1];
+#else
     std::string items;
     for (size_t i = 0; i < saves.size(); i++) {
         if (i > 0) { items += ", "; }
@@ -72,6 +115,7 @@ static std::string chooseSave(const std::string& prompt) {
         return "";
     }
     return result;
+#endif
 }
 
 namespace InputHandler {
@@ -124,7 +168,7 @@ static void handleLandingClick(int x, int y, World& world, LandingState& state, 
         if (x >= 560 && x <= 640 && y >= 580 && y <= 620) {
             std::string name = chooseSave("Choose a save to load:");
             if (!name.empty()) {
-                SaveLoad::load_game(world, "data/" + name + ".json");
+                SaveLoad::load_game(world, Storage::path(name + ".json"));
             }
         }
 
@@ -485,7 +529,7 @@ static void handleLandingClick(int x, int y, World& world, LandingState& state, 
                 y >= y0 + (2 * rowH) && y <= y0 + (2 * rowH) + 50) {
                 std::string name = promptFilename("Save file name:", "savegame");
                 if (!name.empty()) {
-                    SaveLoad::save_game(world, "data/" + name + ".json");
+                    SaveLoad::save_game(world, Storage::path(name + ".json"));
                 }
             }
 
@@ -494,7 +538,7 @@ static void handleLandingClick(int x, int y, World& world, LandingState& state, 
                 y >= y0 + (3 * rowH) && y <= y0 + (3 * rowH) + 50) {
                 std::string name = chooseSave("Choose a save to load:");
                 if (!name.empty()) {
-                    SaveLoad::load_game(world, "data/" + name + ".json");
+                    SaveLoad::load_game(world, Storage::path(name + ".json"));
                 }
             }
 
