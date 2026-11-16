@@ -4,6 +4,7 @@
 #include "combat_system.h"
 #include "recruit_system.h"
 #include "diplomacy_system.h"
+#include "trade_system.h"
 
 namespace TaskSlots {
     int activeCount(const World& world, TaskCategory category) {
@@ -79,14 +80,6 @@ namespace TaskSlots {
         int diplomatic = UnlockSystem::hasSecondDiplomacySlot(world) ? 2 : 1;
         trim(world.bribeTasks.slots, diplomatic, [&](int i) { DiplomacySystem::cancelBribe(world, i); });
         trim(world.scoutTasks.slots, diplomatic, [&](int i) { DiplomacySystem::cancelScout(world, i); });
-        auto& trade = world.tradeTasks.slots[0];
-        if (trade.active && (diplomatic == 0 || trade.workersAssigned < 1)) {
-            int* resources[] = {&world.resources.food, &world.resources.timber, &world.resources.iron, &world.resources.gold};
-            if (trade.offerRes >= 0 && trade.offerRes < 4) {
-                *resources[trade.offerRes] += trade.qty;
-            }
-            world.workerPool.availableDiplomaticWorkers += trade.workersAssigned;
-            trade = TradeTask{};
-        }
+        trim(world.tradeTasks.slots, diplomatic, [&](int i) { TradeSystem::cancelTrade(world, i); });
     }
 }

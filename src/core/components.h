@@ -141,7 +141,7 @@ struct TradeTask : TaskBase {
 };
 
 struct TradeTasksComponent {
-    TradeTask slots[1];
+    TradeTask slots[2];
 };
 
 // ── Date ──────────────────────────────────────────────────────────────────────

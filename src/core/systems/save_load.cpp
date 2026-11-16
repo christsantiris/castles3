@@ -150,8 +150,8 @@ void save_game(const World& world, const std::string& path) {
     j["scoutTasks"] = scoutJ;
 
     json tradeJ = json::array();
-    {
-        const auto& s = world.tradeTasks.slots[0];
+    for (int i = 0; i < 2; i++) {
+        const auto& s = world.tradeTasks.slots[i];
         json sj = serialize_task_base(s);
         sj["offerRes"] = s.offerRes;
         sj["requestRes"] = s.requestRes;
@@ -330,11 +330,17 @@ bool load_game(World& world, const std::string& path) {
     }
 
     const auto& trJ = j.at("tradeTasks");
-    deserialize_task_base(trJ[0], world.tradeTasks.slots[0]);
-    world.tradeTasks.slots[0].offerRes = trJ[0].at("offerRes");
-    world.tradeTasks.slots[0].requestRes = trJ[0].at("requestRes");
-    world.tradeTasks.slots[0].qty = trJ[0].at("qty");
-    world.tradeTasks.slots[0].dynasty = trJ[0].at("dynasty");
+    int tradeCount = (int)trJ.size();
+    if (tradeCount > 2) {
+        tradeCount = 2;
+    }
+    for (int i = 0; i < tradeCount; i++) {
+        deserialize_task_base(trJ[i], world.tradeTasks.slots[i]);
+        world.tradeTasks.slots[i].offerRes = trJ[i].at("offerRes");
+        world.tradeTasks.slots[i].requestRes = trJ[i].at("requestRes");
+        world.tradeTasks.slots[i].qty = trJ[i].at("qty");
+        world.tradeTasks.slots[i].dynasty = trJ[i].at("dynasty");
+    }
 
     const auto& dj = j.at("date");
     world.date.day = dj.at("day");

@@ -7,6 +7,8 @@
 #include "core/systems/trade_system.h"
 #include "core/systems/save_load.h"
 #include <filesystem>
+#include <fstream>
+#include <nlohmann/json.hpp>
 
 static World taskWorld() {
     World w;
@@ -154,4 +156,142 @@ TEST_CASE("save loading preserves earned capacity and repairs old overflowing ta
         REQUIRE(restored.resources.iron == (score == 400 ? 17 : 20));
         REQUIRE_FALSE(RecruitSystem::startRecruitment(restored, UnitType::Archers, 1));
     }
+}
+
+TEST_CASE("two unlocked diplomatic slots can hold two escrowed trades", "[tasks]") {
+    auto w = taskWorld();
+    w.ctx.score = 600;
+    w.resources.gold = 2;
+    w.pendingTradeOfferRes = 3;
+    w.pendingTradeRequestRes = 1;
+    w.pendingTradeQty = 1;
+    w.pendingDiplomaticWorkers = 1;
+    REQUIRE(TradeSystem::startTrade(w));
+    w.pendingTradeQty = 1;
+    w.pendingDiplomaticWorkers = 1;
+    REQUIRE(TradeSystem::startTrade(w));
+    REQUIRE(w.resources.gold == 0);
+    REQUIRE(w.tradeTasks.slots[0].dynasty == "Enemy");
+    REQUIRE(w.tradeTasks.slots[1].dynasty == "Enemy");
+    REQUIRE(TaskSlots::diplomaticCount(w) == 2);
+    w.pendingDiplomaticWorkers = 1;
+    REQUIRE_FALSE(TradeSystem::startTrade(w));
+
+    w.tradeTasks.slots[0].daysAccumulated = w.tradeTasks.slots[0].daysRequired - 1;
+    int timber = w.resources.timber;
+    TradeSystem::tick(w);
+    REQUIRE_FALSE(w.tradeTasks.slots[0].active);
+    REQUIRE(w.tradeTasks.slots[1].active);
+    REQUIRE(w.resources.timber == timber + 1);
+    REQUIRE(w.resources.gold == 0);
+
+    TradeSystem::cancelTrade(w, 1);
+    REQUIRE_FALSE(w.tradeTasks.slots[1].active);
+    REQUIRE(w.resources.gold == 1);
+    REQUIRE(w.workerPool.availableDiplomaticWorkers == 4);
+    w.pendingTradeQty = 1;
+    w.pendingDiplomaticWorkers = 1;
+    REQUIRE(TradeSystem::startTrade(w));
+    REQUIRE(w.tradeTasks.slots[0].active);
+    REQUIRE(w.resources.gold == 0);
+}
+
+TEST_CASE("escrowed gold cannot fund a second trade but another resource can", "[tasks]") {
+    auto w = taskWorld();
+    w.ctx.score = 600;
+    w.resources.gold = 2;
+    w.pendingTradeOfferRes = 3;
+    w.pendingTradeRequestRes = 1;
+    w.pendingTradeQty = 2;
+    w.pendingDiplomaticWorkers = 1;
+    REQUIRE(TradeSystem::startTrade(w));
+    REQUIRE(w.resources.gold == 0);
+    w.pendingTradeQty = 1;
+    w.pendingDiplomaticWorkers = 1;
+    REQUIRE_FALSE(TradeSystem::startTrade(w));
+    REQUIRE_FALSE(w.tradeTasks.slots[1].active);
+    w.pendingTradeOfferRes = 0;
+    REQUIRE(TradeSystem::startTrade(w));
+    REQUIRE(w.resources.food == 19);
+    REQUIRE(w.tradeTasks.slots[1].offerRes == 0);
+}
+
+TEST_CASE("one diplomatic slot still allows only one trade", "[tasks]") {
+    auto w = taskWorld();
+    w.ctx.score = 599;
+    w.resources.gold = 2;
+    w.pendingTradeOfferRes = 3;
+    w.pendingTradeRequestRes = 1;
+    w.pendingTradeQty = 1;
+    w.pendingDiplomaticWorkers = 1;
+    REQUIRE(TradeSystem::startTrade(w));
+    w.pendingDiplomaticWorkers = 1;
+    REQUIRE_FALSE(TradeSystem::startTrade(w));
+    REQUIRE(w.resources.gold == 1);
+    REQUIRE_FALSE(w.tradeTasks.slots[1].active);
+}
+
+TEST_CASE("two trades may target different dynasties", "[tasks]") {
+    auto w = taskWorld();
+    w.ctx.score = 600;
+    ProvinceComponent other;
+    other.id = 2;
+    other.owner = "Other";
+    other.resource = "Iron";
+    w.provinces.push_back(other);
+    w.pendingTradeOfferRes = 3;
+    w.pendingTradeRequestRes = 1;
+    w.pendingTradeQty = 1;
+    w.pendingDiplomaticWorkers = 1;
+    REQUIRE(TradeSystem::startTrade(w));
+    w.pendingTradeDynasty = "Other";
+    w.pendingTradeOfferRes = 0;
+    w.pendingTradeRequestRes = 2;
+    w.pendingTradeQty = 1;
+    w.pendingDiplomaticWorkers = 1;
+    REQUIRE(TradeSystem::startTrade(w));
+    REQUIRE(w.tradeTasks.slots[0].dynasty == "Enemy");
+    REQUIRE(w.tradeTasks.slots[1].dynasty == "Other");
+    REQUIRE(w.tradeTasks.slots[1].requestRes == 2);
+}
+
+TEST_CASE("loaded trades stay within diplomatic capacity and accept a one-entry save", "[tasks][save]") {
+    auto w = taskWorld();
+    w.ctx.score = 600;
+    w.resources.gold = 2;
+    w.pendingTradeOfferRes = 3;
+    w.pendingTradeRequestRes = 1;
+    w.pendingTradeQty = 1;
+    w.pendingDiplomaticWorkers = 1;
+    REQUIRE(TradeSystem::startTrade(w));
+    w.pendingDiplomaticWorkers = 1;
+    REQUIRE(TradeSystem::startTrade(w));
+    w.ctx.score = 0;
+    auto path = std::filesystem::temp_directory_path() / "castles3-trade-slots-test.json";
+    SaveLoad::save_game(w, path.string());
+    auto restored = taskWorld();
+    bool loaded = SaveLoad::load_game(restored, path.string());
+    REQUIRE(loaded);
+    REQUIRE(TaskSlots::diplomaticCount(restored) == 1);
+    REQUIRE(restored.resources.gold == 1);
+    REQUIRE(restored.workerPool.availableDiplomaticWorkers == 3);
+    REQUIRE(restored.tradeTasks.slots[0].active);
+    REQUIRE_FALSE(restored.tradeTasks.slots[1].active);
+
+    std::ifstream in(path);
+    nlohmann::json saved;
+    in >> saved;
+    in.close();
+    saved["tradeTasks"] = nlohmann::json::array({saved["tradeTasks"][0]});
+    saved["ctx"]["score"] = 600;
+    std::ofstream out(path);
+    out << saved.dump();
+    out.close();
+    auto legacy = taskWorld();
+    REQUIRE(SaveLoad::load_game(legacy, path.string()));
+    std::filesystem::remove(path);
+    REQUIRE(legacy.tradeTasks.slots[0].active);
+    REQUIRE(legacy.tradeTasks.slots[0].qty == 1);
+    REQUIRE_FALSE(legacy.tradeTasks.slots[1].active);
+    REQUIRE(legacy.resources.gold == 0);
 }

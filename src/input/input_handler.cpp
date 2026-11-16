@@ -35,6 +35,7 @@ static std::string browserPromptResult(const std::string& message, const std::st
 #endif
 
 static const int PANEL_X = 950;
+static const int PANEL_W = 330;
 
 #ifndef __EMSCRIPTEN__
 static std::string osascriptResult(const std::string& cmd) {
@@ -426,6 +427,18 @@ static void handleLandingClick(int x, int y, World& world, LandingState& state, 
             }
 
             int tradeY = dy + 8;
+            int rowW = PANEL_W - 16;
+
+            for (int i = 0; i < 2; i++) {
+                if (!world.tradeTasks.slots[i].active) {
+                    continue;
+                }
+                if (x >= baseX + rowW - 22 && x <= baseX + rowW &&
+                    y >= tradeY && y <= tradeY + 26) {
+                    TradeSystem::cancelTrade(world, i);
+                }
+                tradeY += 32;
+            }
 
             // Offer < and >
             if (y >= tradeY && y <= tradeY + 26) {

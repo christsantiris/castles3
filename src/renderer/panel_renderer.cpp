@@ -523,11 +523,19 @@ namespace PanelRenderer {
 
         int tradeY = dy + 8;
 
-        // Active trade — let the task bar show progress
-        if (world.tradeTasks.slots[0].active) {
-            std::string msg = "Trading with " + world.tradeTasks.slots[0].dynasty + "...";
-            drawText(r, font, msg, x, tradeY + 5, GOLD);
-            return;
+        for (int i = 0; i < 2; i++) {
+            const auto& task = world.tradeTasks.slots[i];
+            if (!task.active) {
+                continue;
+            }
+            std::string line = task.dynasty + ": " + std::to_string(task.qty) + " " +
+                TradeSystem::resourceName(task.offerRes) + " for " +
+                TradeSystem::resourceName(task.requestRes);
+            drawText(r, font, line, x + 6, tradeY + 7, GOLD);
+            drawRect(r, x + w - 22, tradeY, 22, 26, {120, 0, 0, 255});
+            drawBorder(r, x + w - 22, tradeY, 22, 26, GOLD);
+            drawTextCentered(r, font, "X", x + w - 22, tradeY + 6, 22, WHITE);
+            tradeY += 32;
         }
 
         // Offer row
