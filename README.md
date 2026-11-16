@@ -121,6 +121,8 @@ canceled, returning workers and applying the normal cancellation refunds.
 
 <img width="2544" height="1644" alt="image" src="https://github.com/user-attachments/assets/fb244b2c-a6bd-4373-b3ba-8efdb8904e17" />
 
+<img width="2544" height="1644" alt="image" src="https://github.com/user-attachments/assets/db35cb2f-95a5-4892-8d7d-9c3472ca1815" />
+
 <img width="2544" height="1644" alt="image" src="https://github.com/user-attachments/assets/65eaf3e5-2fd8-4451-9725-fbe907de3385" />
 
 
