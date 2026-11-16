@@ -15,6 +15,59 @@ namespace RecruitSystem {
         return daysPerUnit[count - 1];
     }
 
+    std::string recruitBlockReason(const World& world, UnitType unit, int workers) {
+        if (workers < 1) {
+            return "Assign a worker";
+        }
+        if (!TaskSlots::militaryAvailable(world)) {
+            return "No military slot";
+        }
+        if (workers > world.workerPool.availableMilitaryWorkers) {
+            return "Not enough workers";
+        }
+        if (!canAfford(world, unit)) {
+            if (unit == UnitType::Archers) {
+                return "Need 3 timber";
+            }
+            if (unit == UnitType::Knights && world.resources.iron >= 3) {
+                return "Need 3 timber";
+            }
+            if (unit == UnitType::Knights && world.resources.timber >= 3) {
+                return "Need 3 iron";
+            }
+            if (unit == UnitType::Knights) {
+                return "Need iron+timber";
+            }
+            return "Need 3 iron";
+        }
+        if (unit == UnitType::Knights && !UnlockSystem::hasKnights(world)) {
+            return "Knights locked";
+        }
+        bool free = false;
+        for (int i = 0; i < 2; i++) {
+            if (!world.recruitTasks.slots[i].active) {
+                free = true;
+                break;
+            }
+        }
+        if (!free) {
+            return "No military slot";
+        }
+        auto it = world.armies.find(world.ctx.playerDynasty);
+        if (it != world.armies.end()) {
+            if (unit == UnitType::Infantry && it->second.infantry >= 15) {
+                return "Unit cap";
+            }
+            if (unit == UnitType::Archers && it->second.archers >= 15) {
+                return "Unit cap";
+            }
+            if (unit == UnitType::Knights && it->second.knights >= 10) {
+                return "Unit cap";
+            }
+        }
+        return "";
+    }
+
     bool canAfford(const World& world, UnitType unit) {
         switch (unit) {
             case UnitType::Infantry: return world.resources.iron   >= 3;

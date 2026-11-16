@@ -83,6 +83,12 @@ namespace PanelRenderer {
         return GOLD;
     }
 
+    static std::string slotText(const World& world, TaskCategory category) {
+        int used = TaskSlots::activeCount(world, category);
+        int cap = TaskSlots::slotCapacity(world, category);
+        return "Slots " + std::to_string(used) + "/" + std::to_string(cap);
+    }
+
     static void drawTextCentered(SDL_Renderer* r, TTF_Font* font, const std::string& text,
                                   int x, int y, int w, SDL_Color color) {
         SDL_Surface* s = TTF_RenderText_Solid(font, text.c_str(), color);
@@ -133,6 +139,19 @@ namespace PanelRenderer {
                     drawRect(r, x + 2, y + BAR_H - 6, (int)((w - 4) * progress), 4, category.border);
                 }
                 drawText(r, font, label, x + 6, y + 8, WHITE);
+                if (occupied) {
+                    int left = active[i].task->daysRequired - active[i].task->daysAccumulated;
+                    if (left < 0) {
+                        left = 0;
+                    }
+                    std::string detail = "W" + std::to_string(active[i].task->workersAssigned) +
+                                         " " + std::to_string(left) + "d";
+                    int textW = 0;
+                    int textH = 0;
+                    if (TTF_SizeText(font, detail.c_str(), &textW, &textH) == 0) {
+                        drawText(r, font, detail, x + w - 6 - textW, y + 8, GOLD);
+                    }
+                }
                 y += BAR_H + BAR_MARGIN;
             }
         }
@@ -184,6 +203,7 @@ namespace PanelRenderer {
 
             std::string label = std::string(resNames[i]) + ": " + std::to_string(stockValues[i]);
             drawText(r, font, label, x + 6, y + 4, labelColor);
+            drawText(r, font, "No cost", x + 120, y + 4, {150, 150, 150, 255});
             int owned = world.countOwnedProvinces(world.ctx.playerDynasty, resTypes[i]);
             int assigned = world.pendingWorkers[i];
             int available = world.workerPool.availableStockWorkers;
@@ -205,6 +225,7 @@ namespace PanelRenderer {
             drawRect(r, x + 86, y + 24, 20, 20, {0, 120, 0, 255});
             drawBorder(r, x + 86, y + 24, 20, 20, GOLD);
             drawTextCentered(r, font, "+", x + 86, y + 26, 20, WHITE);
+            drawText(r, font, slotText(world, TaskCategory::Administrative), x + 112, y + 26, textColor);
 
             bool isActive = false;
             int activeSlot = -1;
@@ -217,17 +238,17 @@ namespace PanelRenderer {
                 }
             }
 
-            canCollect = canCollect && (isActive || (TaskSlots::administrativeAvailable(world)
-                         && world.pendingWorkers[i] >= 1
-                         && world.pendingWorkers[i] <= world.workerPool.availableStockWorkers));
+            std::string collectReason = isActive ? "" : ResourceSystem::collectBlockReason(world, resTypes[i], world.pendingWorkers[i]);
+            bool canCollectNow = isActive || collectReason.empty();
             SDL_Color btnColor = isActive ? SDL_Color{120, 0, 0, 255}
-                                        : canCollect ? SDL_Color{0, 80, 0, 255}
+                                        : canCollectNow ? SDL_Color{0, 80, 0, 255}
                                         : SDL_Color{40, 40, 40, 255};
-            SDL_Color btnBorder = canCollect ? GOLD : SDL_Color{60, 60, 60, 255};
-            SDL_Color btnText = canCollect || isActive ? GOLD : SDL_Color{60, 60, 60, 255};
-            drawRect(r, x + 160, y + 24, 80, 20, btnColor);
-            drawBorder(r, x + 160, y + 24, 80, 20, btnBorder);
-            drawTextCentered(r, font, isActive ? "Cancel" : "Collect", x + 160, y + 26, 80, btnText);
+            SDL_Color btnBorder = canCollectNow ? GOLD : SDL_Color{60, 60, 60, 255};
+            SDL_Color btnText = canCollectNow ? GOLD : SDL_Color{60, 60, 60, 255};
+            std::string collectLabel = isActive ? "Cancel" : (collectReason.empty() ? "Collect" : collectReason);
+            drawRect(r, x + 174, y + 24, 136, 20, btnColor);
+            drawBorder(r, x + 174, y + 24, 136, 20, btnBorder);
+            drawTextCentered(r, font, collectLabel, x + 174, y + 26, 136, btnText);
 
 
             y += rowH + 4;
@@ -268,7 +289,8 @@ namespace PanelRenderer {
             drawBorder(r, x, y, w, rowH, GOLD);
 
             drawText(r, font, unitNames[i], x + 6, y + 4, GOLD);
-            drawText(r, font, costs[i], x + 6, y + 24, {150, 150, 150, 255});
+            bool affordable = RecruitSystem::canAfford(world, unitTypes[i]);
+            drawText(r, font, costs[i], x + 6, y + 24, affordable ? SDL_Color{150, 150, 150, 255} : SDL_Color{120, 60, 60, 255});
 
             bool isActive = false;
             int activeSlot = -1;
@@ -291,19 +313,16 @@ namespace PanelRenderer {
             //     SDL_RenderFillRect(r, &pfill);
             // }
 
-            bool canStart = !isActive && RecruitSystem::canAfford(world, unitTypes[i])
-                            && world.pendingMilitaryWorkers >= 1
-                            && world.pendingMilitaryWorkers <= world.workerPool.availableMilitaryWorkers
-                            && TaskSlots::militaryAvailable(world);
+            std::string recruitReason = isActive ? "" : RecruitSystem::recruitBlockReason(world, unitTypes[i], world.pendingMilitaryWorkers);
+            bool canStart = !isActive && recruitReason.empty();
 
             SDL_Color btnColor = isActive ? SDL_Color{120, 0, 0, 255}
                                : canStart ? SDL_Color{0, 80, 0, 255}
                                : SDL_Color{50, 50, 50, 255};
-            drawRect(r, x + 160, y + 18, 80, 22, btnColor);
-            drawBorder(r, x + 160, y + 18, 80, 22, GOLD);
-            drawTextCentered(r, font,
-                isActive ? "Cancel" : "Recruit",
-                x + 160, y + 20, 80,
+            std::string recruitLabel = isActive ? "Cancel" : (recruitReason.empty() ? "Recruit" : recruitReason);
+            drawRect(r, x + 168, y + 18, 142, 22, btnColor);
+            drawBorder(r, x + 168, y + 18, 142, 22, GOLD);
+            drawTextCentered(r, font, recruitLabel, x + 168, y + 20, 142,
                 canStart || isActive ? GOLD : SDL_Color{100, 100, 100, 255});
 
             y += rowH + 4;
@@ -320,6 +339,7 @@ namespace PanelRenderer {
         if (!pace.empty()) {
             drawText(r, font, pace, x + 178, y + 8, workerPaceColor(assigned, available, currentDays, nextDays));
         }
+        drawText(r, font, slotText(world, TaskCategory::Military), x + 252, y + 8, WHITE);
 
         drawRect(r, x + 120, y + 6, 22, 22, {120, 0, 0, 255});
         drawBorder(r, x + 120, y + 6, 22, 22, GOLD);
@@ -374,6 +394,7 @@ namespace PanelRenderer {
                 if (!marching) {
                     std::string wLabel = "Military: " + std::to_string(world.pendingMilitaryWorkers);
                     drawText(r, font, wLabel, PANEL_X + 10, infoY + 135, WHITE);
+                    drawText(r, font, slotText(world, TaskCategory::Military), PANEL_X + 100, infoY + 135, WHITE);
                     bool neutral = selected->owner == "neutral";
                     int marchAssigned = world.pendingMilitaryWorkers;
                     int marchAvailable = world.workerPool.availableMilitaryWorkers;
@@ -394,12 +415,15 @@ namespace PanelRenderer {
                     drawBorder(r, PANEL_X + 196, infoY + 133, 20, 20, GOLD);
                     drawTextCentered(r, font, "+", PANEL_X + 196, infoY + 135, 20, WHITE);
 
-                    bool canMarch = CombatSystem::canStartMarch(world, selected->id)
-                                    && world.pendingMilitaryWorkers >= 1
-                                    && world.pendingMilitaryWorkers <= world.workerPool.availableMilitaryWorkers;
+                    std::string marchReason = CombatSystem::marchBlockReason(world, selected->id, world.pendingMilitaryWorkers);
+                    bool canMarch = marchReason.empty();
                     drawRect(r, PANEL_X + 10, infoY + 160, 200, 36, canMarch ? SDL_Color{0, 100, 0, 255} : SDL_Color{40, 40, 40, 255});
                     drawBorder(r, PANEL_X + 10, infoY + 160, 200, 36, GOLD);
-                    drawTextCentered(r, font, "ATTACK", PANEL_X + 10, infoY + 170, 200, canMarch ? GOLD : SDL_Color{100, 100, 100, 255});
+                    drawTextCentered(r, font, canMarch ? "ATTACK" : marchReason, PANEL_X + 10, infoY + 170, 200,
+                                     canMarch ? GOLD : SDL_Color{100, 100, 100, 255});
+                    int foodCost = CombatSystem::marchFoodCost(world);
+                    SDL_Color foodColor = world.resources.food >= foodCost ? WHITE : SDL_Color{120, 60, 60, 255};
+                    drawText(r, font, "Cost: " + std::to_string(foodCost) + " food", PANEL_X + 216, infoY + 170, foodColor);
                 } else {
                     drawText(r, font, "Marching...", PANEL_X + 10, infoY + 140, GOLD);
                 }
@@ -416,6 +440,7 @@ namespace PanelRenderer {
                 } else if (!isScouted) {
                     std::string scoutWLabel = "Workers: " + std::to_string(world.pendingDiplomaticWorkers);
                     drawText(r, font, scoutWLabel, PANEL_X + 10, infoY + 208, WHITE);
+                    drawText(r, font, slotText(world, TaskCategory::Diplomatic), PANEL_X + 100, infoY + 208, WHITE);
                     int scoutAssigned = world.pendingDiplomaticWorkers;
                     int scoutAvailable = world.workerPool.availableDiplomaticWorkers;
                     int scoutNext = scoutAssigned < 1 ? 1 : scoutAssigned + 1;
@@ -435,12 +460,13 @@ namespace PanelRenderer {
                     drawBorder(r, PANEL_X + 196, infoY + 206, 20, 20, GOLD);
                     drawTextCentered(r, font, "+", PANEL_X + 196, infoY + 208, 20, WHITE);
 
-                    bool canScout = DiplomacySystem::canStartScout(world, selected->id)
-                                    && world.pendingDiplomaticWorkers >= 1
-                                    && world.pendingDiplomaticWorkers <= world.workerPool.availableDiplomaticWorkers;
+                    std::string scoutReason = DiplomacySystem::scoutBlockReason(world, selected->id, world.pendingDiplomaticWorkers);
+                    bool canScout = scoutReason.empty();
                     drawRect(r, PANEL_X + 10, infoY + 233, 200, 36, canScout ? SDL_Color{0, 0, 120, 255} : SDL_Color{40, 40, 40, 255});
                     drawBorder(r, PANEL_X + 10, infoY + 233, 200, 36, GOLD);
-                    drawTextCentered(r, font, "SCOUT", PANEL_X + 10, infoY + 243, 200, canScout ? GOLD : SDL_Color{100, 100, 100, 255});
+                    drawTextCentered(r, font, canScout ? "SCOUT" : scoutReason, PANEL_X + 10, infoY + 243, 200,
+                                     canScout ? GOLD : SDL_Color{100, 100, 100, 255});
+                    drawText(r, font, "No cost", PANEL_X + 216, infoY + 243, {150, 150, 150, 255});
                 }
 
                 // Bribe section
@@ -455,6 +481,7 @@ namespace PanelRenderer {
                 } else if (selected->name != "Constantinople") {
                     std::string brWLabel = "Workers: " + std::to_string(world.pendingDiplomaticWorkers);
                     drawText(r, font, brWLabel, PANEL_X + 10, infoY + 278, WHITE);
+                    drawText(r, font, slotText(world, TaskCategory::Diplomatic), PANEL_X + 100, infoY + 278, WHITE);
                     int bribeAssigned = world.pendingDiplomaticWorkers;
                     int bribeAvailable = world.workerPool.availableDiplomaticWorkers;
                     int bribeNext = bribeAssigned < 1 ? 1 : bribeAssigned + 1;
@@ -474,8 +501,10 @@ namespace PanelRenderer {
                     drawBorder(r, PANEL_X + 196, infoY + 276, 20, 20, GOLD);
                     drawTextCentered(r, font, "+", PANEL_X + 196, infoY + 278, 20, WHITE);
 
-                    std::string goldLabel = "Gold: " + std::to_string(world.pendingBribeGold);
+                    std::string goldLabel = "Cost: " + std::to_string(world.pendingBribeGold) + " gold";
                     drawText(r, font, goldLabel, PANEL_X + 10, infoY + 305, WHITE);
+                    SDL_Color haveColor = world.resources.gold >= world.pendingBribeGold ? WHITE : SDL_Color{120, 60, 60, 255};
+                    drawText(r, font, "Have " + std::to_string(world.resources.gold), PANEL_X + 222, infoY + 305, haveColor);
 
                     drawRect(r, PANEL_X + 170, infoY + 303, 20, 20, {120, 0, 0, 255});
                     drawBorder(r, PANEL_X + 170, infoY + 303, 20, 20, GOLD);
@@ -485,15 +514,13 @@ namespace PanelRenderer {
                     drawBorder(r, PANEL_X + 196, infoY + 303, 20, 20, GOLD);
                     drawTextCentered(r, font, "+", PANEL_X + 196, infoY + 305, 20, WHITE);
 
-                    bool canBribe = world.resources.gold >= world.pendingBribeGold
-                                    && world.pendingDiplomaticWorkers >= 1
-                                    && world.pendingDiplomaticWorkers <= world.workerPool.availableDiplomaticWorkers
-                                    && DiplomacySystem::canStartBribe(world, selected->id);
+                    std::string bribeReason = DiplomacySystem::bribeBlockReason(world, selected->id, world.pendingDiplomaticWorkers, world.pendingBribeGold);
+                    bool canBribe = bribeReason.empty();
                     SDL_Color bribeBtn = canBribe ? SDL_Color{0, 0, 120, 255}
                                                   : SDL_Color{40, 40, 40, 255};
                     drawRect(r, PANEL_X + 10, infoY + 330, 200, 36, bribeBtn);
                     drawBorder(r, PANEL_X + 10, infoY + 330, 200, 36, GOLD);
-                    drawTextCentered(r, font, "BRIBE", PANEL_X + 10, infoY + 340, 200,
+                    drawTextCentered(r, font, canBribe ? "BRIBE" : bribeReason, PANEL_X + 10, infoY + 340, 200,
                                      canBribe ? GOLD : SDL_Color{80, 80, 80, 255});
                 }
             }
@@ -665,6 +692,7 @@ namespace PanelRenderer {
         // Diplomat worker picker
         std::string wLabel = "Diplomats: " + std::to_string(world.pendingDiplomaticWorkers);
         drawText(r, font, wLabel, x, tradeY + 4, WHITE);
+        drawText(r, font, slotText(world, TaskCategory::Diplomatic), x + 88, tradeY + 4, WHITE);
         int tradeAssigned = world.pendingDiplomaticWorkers;
         int tradeAvailable = world.workerPool.availableDiplomaticWorkers;
         int tradeNext = tradeAssigned < 1 ? 1 : tradeAssigned + 1;
@@ -685,11 +713,12 @@ namespace PanelRenderer {
         tradeY += 36;
 
         // Trade button
-        bool ok = TradeSystem::canStartTrade(world);
+        std::string tradeReason = TradeSystem::tradeBlockReason(world);
+        bool ok = tradeReason.empty();
         SDL_Color tradeBtn = ok ? SDL_Color{0, 100, 0, 255} : SDL_Color{50, 50, 50, 255};
         SDL_Color tradeTxt = ok ? GOLD : SDL_Color{80, 80, 80, 255};
         drawRect(r, x + 87, tradeY, 140, 32, tradeBtn);
         drawBorder(r, x + 87, tradeY, 140, 32, GOLD);
-        drawTextCentered(r, font, "TRADE", x + 87, tradeY + 9, 140, tradeTxt);
+        drawTextCentered(r, font, ok ? "TRADE" : tradeReason, x + 87, tradeY + 9, 140, tradeTxt);
     }
 }

@@ -20,6 +20,51 @@ namespace CombatSystem {
         return days;
     }
 
+    int marchFoodCost(const World& world) {
+        if (world.ctx.marchFoodFlat > 0) {
+            return world.ctx.marchFoodFlat;
+        }
+        int armySize = 0;
+        auto it = world.armies.find(world.ctx.playerDynasty);
+        if (it != world.armies.end()) {
+            armySize = it->second.infantry + it->second.archers + it->second.knights;
+        }
+        return (armySize + 1) / 2;
+    }
+
+    std::string marchBlockReason(const World& world, int targetProvinceId, int workers) {
+        if (workers < 1) {
+            return "Assign a worker";
+        }
+        if (!TaskSlots::militaryAvailable(world)) {
+            return "No military slot";
+        }
+        if (workers > world.workerPool.availableMilitaryWorkers) {
+            return "Not enough workers";
+        }
+        if (!canStartMarch(world, targetProvinceId)) {
+            auto* target = const_cast<World&>(world).findProvince(targetProvinceId);
+            if (!target) {
+                return "No province";
+            }
+            if (target->owner == world.ctx.playerDynasty) {
+                return "Own province";
+            }
+            if (!isAdjacent(world, targetProvinceId)) {
+                return "Not adjacent";
+            }
+            if (world.battle.phase != BattlePhase::None) {
+                return "Battle in progress";
+            }
+            return "No military slot";
+        }
+        int cost = marchFoodCost(world);
+        if (world.resources.food < cost) {
+            return "Need " + std::to_string(cost) + " food";
+        }
+        return "";
+    }
+
     bool isAdjacent(const World& world, int targetProvinceId) {
         for (auto& p : world.provinces) {
             if (p.owner != world.ctx.playerDynasty) continue;
@@ -53,11 +98,7 @@ namespace CombatSystem {
         if (workers < 1) return false;
         if (workers > world.workerPool.availableMilitaryWorkers) return false;
 
-        const ArmyComponent& army = world.armies[world.ctx.playerDynasty];
-        int armySize = army.infantry + army.archers + army.knights;
-        int foodCost = (world.ctx.marchFoodFlat > 0)
-            ? world.ctx.marchFoodFlat
-            : (armySize + 1) / 2;
+        int foodCost = marchFoodCost(world);
         if (world.resources.food < foodCost) {
             world.ctx.battleMessage = "Not enough food to march!";
             world.ctx.battleMessageTimer = 5;

@@ -85,6 +85,36 @@ namespace TradeSystem {
         return true;
     }
 
+    std::string tradeBlockReason(const World& world) {
+        int workers = world.pendingDiplomaticWorkers;
+        if (workers < 1) {
+            return "Assign a worker";
+        }
+        if (!TaskSlots::diplomaticAvailable(world)) {
+            return "No diplomatic slot";
+        }
+        if (workers > world.workerPool.availableDiplomaticWorkers) {
+            return "Not enough workers";
+        }
+        if (freeSlot(world) < 0) {
+            return "No diplomatic slot";
+        }
+        if (world.pendingTradeDynasty.empty()) {
+            return "Select dynasty";
+        }
+        if (world.pendingTradeOfferRes == world.pendingTradeRequestRes) {
+            return "Same resource";
+        }
+        if (playerStock(world, world.pendingTradeOfferRes) < world.pendingTradeQty) {
+            return "Need " + std::to_string(world.pendingTradeQty) + " " +
+                   resourceName(world.pendingTradeOfferRes);
+        }
+        if (!dynastyProduces(world, world.pendingTradeDynasty, world.pendingTradeRequestRes)) {
+            return "Not produced";
+        }
+        return "";
+    }
+
     bool startTrade(World& world) {
         if (!canStartTrade(world)) {
             return false;

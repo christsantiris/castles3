@@ -8,6 +8,7 @@ namespace TradeSystem {
     bool dynastyProduces(const World& world, const std::string& dynasty, int resIndex);
     int tradeDays(int workers);
     bool canStartTrade(const World& world);
+    std::string tradeBlockReason(const World& world);
     bool startTrade(World& world);
     void cancelTrade(World& world, int slot);
     void tick(World& world);

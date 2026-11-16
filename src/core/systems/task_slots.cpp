@@ -56,6 +56,18 @@ namespace TaskSlots {
         return diplomaticCount(world) < (UnlockSystem::hasSecondDiplomacySlot(world) ? 2 : 1);
     }
 
+    int slotCapacity(const World& world, TaskCategory category) {
+        switch (category) {
+            case TaskCategory::Administrative:
+                return UnlockSystem::hasSecondStockSlot(world) ? 2 : 1;
+            case TaskCategory::Military:
+                return UnlockSystem::hasSecondMilitarySlot(world) ? 2 : 1;
+            case TaskCategory::Diplomatic:
+                return UnlockSystem::hasSecondDiplomacySlot(world) ? 2 : 1;
+        }
+        return 1;
+    }
+
     void normalizeLoadedTasks(World& world) {
         // Repair saves made with the old independent-array bug. Keep tasks in
         // panel order and cancel overflow using the normal worker/refund rules.

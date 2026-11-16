@@ -115,8 +115,6 @@ canceled, returning workers and applying the normal cancellation refunds.
 - [ ] Implement castle construction as an administrative task consuming food, timber, iron, and gold, including progress, cancellation, effects, and persistence.
 - [ ] Implement spying as a distinct diplomatic task with costs, duration, outcomes, and persistence.
 - [ ] Review AI participation in worker pools, task slots, resource costs, and upkeep after play-testing; retain current difficulty settings meanwhile.
-- [ ] Consistently display task costs, assigned workers, expected duration, available slots, and reasons actions are blocked.
-- [ ] Display upcoming worker/slot milestones and announce unlocks.
 - [ ] Balance food for marches, iron/timber for recruitment, gold for diplomacy/upkeep, trade exchanges, and all-resource castle costs together.
 
 ## Screenshots

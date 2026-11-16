@@ -19,6 +19,70 @@ namespace DiplomacySystem {
         return daysPerUnit[count - 1];
     }
 
+    std::string scoutBlockReason(const World& world, int targetProvinceId, int workers) {
+        if (workers < 1) {
+            return "Assign a worker";
+        }
+        if (!TaskSlots::diplomaticAvailable(world)) {
+            return "No diplomatic slot";
+        }
+        if (workers > world.workerPool.availableDiplomaticWorkers) {
+            return "Not enough workers";
+        }
+        if (!canStartScout(world, targetProvinceId)) {
+            auto* target = const_cast<World&>(world).findProvince(targetProvinceId);
+            if (!target) {
+                return "No province";
+            }
+            if (target->owner == world.ctx.playerDynasty) {
+                return "Own province";
+            }
+            if (world.scoutedProvinces.count(targetProvinceId)) {
+                return "Already scouted";
+            }
+            if (!CombatSystem::isAdjacent(world, targetProvinceId)) {
+                return "Not adjacent";
+            }
+            return "No diplomatic slot";
+        }
+        return "";
+    }
+
+    std::string bribeBlockReason(const World& world, int targetProvinceId, int workers, int gold) {
+        if (workers < 1) {
+            return "Assign a worker";
+        }
+        if (!TaskSlots::diplomaticAvailable(world)) {
+            return "No diplomatic slot";
+        }
+        if (workers > world.workerPool.availableDiplomaticWorkers) {
+            return "Not enough workers";
+        }
+        if (gold < 1) {
+            return "Assign gold";
+        }
+        if (gold > world.resources.gold) {
+            return "Need " + std::to_string(gold) + " gold";
+        }
+        if (!canStartBribe(world, targetProvinceId)) {
+            auto* target = const_cast<World&>(world).findProvince(targetProvinceId);
+            if (!target) {
+                return "No province";
+            }
+            if (target->owner == world.ctx.playerDynasty) {
+                return "Own province";
+            }
+            if (target->name == "Constantinople") {
+                return "Constantinople";
+            }
+            if (!CombatSystem::isAdjacent(world, targetProvinceId)) {
+                return "Not adjacent";
+            }
+            return "No diplomatic slot";
+        }
+        return "";
+    }
+
     bool canStartBribe(const World& world, int targetProvinceId) {
         if (!TaskSlots::diplomaticAvailable(world)) {
             return false;

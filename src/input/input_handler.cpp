@@ -342,7 +342,7 @@ static void handleLandingClick(int x, int y, World& world, LandingState& state, 
                     if (world.pendingWorkers[i] < world.workerPool.availableStockWorkers)
                         world.pendingWorkers[i]++;
 
-                if (x >= baseX + 160 && x <= baseX + 240 && y >= rowY + 24 && y <= rowY + 44) {
+                if (x >= baseX + 174 && x <= baseX + 310 && y >= rowY + 24 && y <= rowY + 44) {
                     bool isActive = false;
                     int activeSlot = -1;
                     for (int s = 0; s < 2; s++) {
@@ -373,7 +373,7 @@ static void handleLandingClick(int x, int y, World& world, LandingState& state, 
             for (int i = 0; i < 3; i++) {
                 int rowY = y0 + (i * rowH);
 
-                if (x >= baseX + 160 && x <= baseX + 240 &&
+                if (x >= baseX + 168 && x <= baseX + 310 &&
                     y >= rowY + 18 && y <= rowY + 40) {
                     bool isActive = false;
                     int activeSlot = -1;

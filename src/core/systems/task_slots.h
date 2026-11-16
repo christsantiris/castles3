@@ -12,5 +12,6 @@ namespace TaskSlots {
     bool administrativeAvailable(const World& world);
     bool militaryAvailable(const World& world);
     bool diplomaticAvailable(const World& world);
+    int slotCapacity(const World& world, TaskCategory category);
     void normalizeLoadedTasks(World& world);
 }

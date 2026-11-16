@@ -18,6 +18,25 @@ namespace ResourceSystem {
         return daysToCollect[w - 1][p - 1];
     }
 
+    std::string collectBlockReason(const World& world, ResourceType res, int workers) {
+        if (workers < 1) {
+            return "Assign a worker";
+        }
+        if (!TaskSlots::administrativeAvailable(world)) {
+            return "No stock slot";
+        }
+        if (workers > world.workerPool.availableStockWorkers) {
+            return "Not enough workers";
+        }
+        if (world.countOwnedProvinces(world.ctx.playerDynasty, res) < 1) {
+            return "No province";
+        }
+        if (freeSlot(world.collectionTasks) < 0) {
+            return "No stock slot";
+        }
+        return "";
+    }
+
     int freeSlot(const CollectionTasksComponent& tasks) {
         for (int i = 0; i < 2; i++)
             if (!tasks.slots[i].active) return i;

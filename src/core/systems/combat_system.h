@@ -8,6 +8,8 @@ namespace CombatSystem {
     static const int daysPerUnit[] = {40, 20, 13, 10, 8, 7, 6, 5};
 
     int marchDays(int workers, bool neutral);
+    int marchFoodCost(const World& world);
+    std::string marchBlockReason(const World& world, int targetProvinceId, int workers);
     bool isAdjacent(const World& world, int targetProvinceId);
     bool canStartMarch(const World& world, int targetProvinceId);
     bool startMarch(World& world, int targetProvinceId, int workers);
