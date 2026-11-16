@@ -243,6 +243,8 @@ namespace CombatSystem {
             world.battle.playerWon = world.battle.aiHealth <= 0;
             world.battle.phase = BattlePhase::Resolved;
 
+            ArmyComponent playerBefore = playerArmy;
+            ArmyComponent enemyBefore = enemyArmy;
             auto applyLosses = [](ArmyComponent& army) {
                 army.infantry = army.infantry / 2;
                 army.archers = army.archers / 2;
@@ -257,12 +259,33 @@ namespace CombatSystem {
                 applyLosses(world.armies[world.ctx.playerDynasty]);
             }
 
+            if (world.battle.playerWon && opponent != "neutral" && world.armies.count(opponent)) {
+                world.battle.casualtySide = opponent;
+                world.battle.lostInfantry = enemyBefore.infantry - enemyArmy.infantry;
+                world.battle.lostArchers = enemyBefore.archers - enemyArmy.archers;
+                world.battle.lostKnights = enemyBefore.knights - enemyArmy.knights;
+            } else if (!world.battle.playerWon) {
+                world.battle.casualtySide = "You";
+                world.battle.lostInfantry = playerBefore.infantry - playerArmy.infantry;
+                world.battle.lostArchers = playerBefore.archers - playerArmy.archers;
+                world.battle.lostKnights = playerBefore.knights - playerArmy.knights;
+            }
+            world.battle.remainPlayerInfantry = playerArmy.infantry;
+            world.battle.remainPlayerArchers = playerArmy.archers;
+            world.battle.remainPlayerKnights = playerArmy.knights;
+            world.battle.remainEnemyInfantry = enemyArmy.infantry;
+            world.battle.remainEnemyArchers = enemyArmy.archers;
+            world.battle.remainEnemyKnights = enemyArmy.knights;
+            world.battle.enemyName = opponent;
+
             if (world.battle.playerWon) {
                 if (!defending) {
                     target->owner = world.ctx.playerDynasty;
                 }
+                world.battle.ownershipText = target->name + (defending ? " defended" : " conquered");
                 world.ctx.score += 150;
-                world.ctx.battleMessage = "Victory! " + target->name + (defending ? " defended" : " conquered");
+                world.battle.scoreReward = 150;
+                world.ctx.battleMessage = "Victory! " + world.battle.ownershipText;
                 world.scoutedProvinces.insert(world.battle.targetProvinceId);
                 if (!defending && target->name == "Constantinople") {
                     world.ctx.screen = GameScreen::Victory;
@@ -270,18 +293,48 @@ namespace CombatSystem {
             } else {
                 if (!world.battle.defenderDynasty.empty()) {
                     target->owner = world.battle.defenderDynasty;
-                    world.ctx.battleMessage = "Defeated! " + target->name + " lost!";
+                    world.battle.ownershipText = target->name + " lost";
+                    world.ctx.battleMessage = "Defeated! " + world.battle.ownershipText + "!";
                     if (world.isDefeated(world.ctx.playerDynasty)) {
                         world.ctx.screen = GameScreen::Defeat;
                     }
                 } else {
-                    world.ctx.battleMessage = "Defeated! " + target->name + " held";
+                    world.battle.ownershipText = target->name + " held";
+                    world.ctx.battleMessage = "Defeated! " + world.battle.ownershipText;
                 }
                 world.scoutedProvinces.insert(world.battle.targetProvinceId);
             }
             world.ctx.battleMessageTimer = 5;
             world.battle.statusText = world.battle.playerWon ? "Victory!" : "Defeated!";
         }
+    }
+
+    std::vector<std::string> battleResultLines(const BattleState& battle) {
+        std::vector<std::string> lines;
+        if (battle.phase != BattlePhase::Resolved || battle.ownershipText.empty()) {
+            return lines;
+        }
+        lines.push_back(battle.playerWon ? "Victory" : "Defeated");
+        lines.push_back(battle.ownershipText);
+        if (battle.scoreReward > 0) {
+            lines.push_back("Reward: " + std::to_string(battle.scoreReward) + " score");
+        } else {
+            lines.push_back("No reward");
+        }
+        if (battle.lostInfantry == 0 && battle.lostArchers == 0 && battle.lostKnights == 0) {
+            lines.push_back("No casualties");
+        } else {
+            lines.push_back(battle.casualtySide + " lost INF " + std::to_string(battle.lostInfantry) +
+                            " ARC " + std::to_string(battle.lostArchers) +
+                            " KNT " + std::to_string(battle.lostKnights));
+        }
+        lines.push_back("Your army INF " + std::to_string(battle.remainPlayerInfantry) +
+                        " ARC " + std::to_string(battle.remainPlayerArchers) +
+                        " KNT " + std::to_string(battle.remainPlayerKnights));
+        lines.push_back(battle.enemyName + " army INF " + std::to_string(battle.remainEnemyInfantry) +
+                        " ARC " + std::to_string(battle.remainEnemyArchers) +
+                        " KNT " + std::to_string(battle.remainEnemyKnights));
+        return lines;
     }
 
     void retreat(World& world) {

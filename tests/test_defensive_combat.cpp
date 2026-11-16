@@ -4,6 +4,8 @@
 #include "core/systems/save_load.h"
 #include <cstdlib>
 #include <filesystem>
+#include <fstream>
+#include <nlohmann/json.hpp>
 
 static World defensiveWorld() {
     World w;
@@ -86,6 +88,15 @@ TEST_CASE("successful defense applies casualties to enemy and retains province",
     REQUIRE(w.armies["Enemy"].knights == 1);
     REQUIRE(w.provinces[0].owner == "Player");
     REQUIRE(w.ctx.battleMessage.find("defended") != std::string::npos);
+    REQUIRE(w.ctx.score == 150);
+    auto lines = CombatSystem::battleResultLines(w.battle);
+    REQUIRE(lines.size() == 6);
+    REQUIRE(lines[0] == "Victory");
+    REQUIRE(lines[1] == "Home defended");
+    REQUIRE(lines[2] == "Reward: 150 score");
+    REQUIRE(lines[3] == "Enemy lost INF 4 ARC 1 KNT 2");
+    REQUIRE(lines[4] == "Your army INF 4 ARC 6 KNT 2");
+    REQUIRE(lines[5] == "Enemy army INF 4 ARC 1 KNT 1");
 }
 
 TEST_CASE("failed defense applies casualties to player and transfers province to attacker", "[combat][defense]") {
@@ -99,6 +110,14 @@ TEST_CASE("failed defense applies casualties to player and transfers province to
     REQUIRE(w.armies["Player"].infantry == 2);
     REQUIRE(w.armies["Enemy"].infantry == 8);
     REQUIRE(w.ctx.screen == GameScreen::Defeat);
+    REQUIRE(w.ctx.score == 0);
+    auto lines = CombatSystem::battleResultLines(w.battle);
+    REQUIRE(lines[0] == "Defeated");
+    REQUIRE(lines[1] == "Home lost");
+    REQUIRE(lines[2] == "No reward");
+    REQUIRE(lines[3] == "You lost INF 2 ARC 3 KNT 1");
+    REQUIRE(lines[4] == "Your army INF 2 ARC 3 KNT 1");
+    REQUIRE(lines[5] == "Enemy army INF 8 ARC 2 KNT 3");
 }
 
 TEST_CASE("new offensive battle clears the prior defensive role", "[combat][defense]") {
@@ -131,4 +150,43 @@ TEST_CASE("saved defensive battles retain their actual opponent and combat roles
     playRound(restored);
     REQUIRE(restored.battle.playerHealth == original.battle.playerHealth);
     REQUIRE(restored.battle.aiHealth == original.battle.aiHealth);
+}
+
+TEST_CASE("a resolved battle keeps its result through save and load", "[combat][defense][save]") {
+    auto w = defensiveWorld();
+    w.battle.aiHealth = 1;
+    w.battle.playerHealth = w.battle.playerMaxHealth = 10000;
+    playRound(w);
+    auto expected = CombatSystem::battleResultLines(w.battle);
+    auto path = std::filesystem::temp_directory_path() / "castles3-battle-result-test.json";
+    SaveLoad::save_game(w, path.string());
+    auto restored = defensiveWorld();
+    REQUIRE(SaveLoad::load_game(restored, path.string()));
+    REQUIRE(CombatSystem::battleResultLines(restored.battle) == expected);
+
+    std::ifstream in(path);
+    nlohmann::json saved;
+    in >> saved;
+    in.close();
+    saved["battle"].erase("ownershipText");
+    saved["battle"].erase("scoreReward");
+    saved["battle"].erase("casualtySide");
+    saved["battle"].erase("lostInfantry");
+    saved["battle"].erase("lostArchers");
+    saved["battle"].erase("lostKnights");
+    saved["battle"].erase("remainPlayerInfantry");
+    saved["battle"].erase("remainPlayerArchers");
+    saved["battle"].erase("remainPlayerKnights");
+    saved["battle"].erase("remainEnemyInfantry");
+    saved["battle"].erase("remainEnemyArchers");
+    saved["battle"].erase("remainEnemyKnights");
+    saved["battle"].erase("enemyName");
+    std::ofstream out(path);
+    out << saved.dump();
+    out.close();
+    auto legacy = defensiveWorld();
+    REQUIRE(SaveLoad::load_game(legacy, path.string()));
+    std::filesystem::remove(path);
+    REQUIRE(CombatSystem::battleResultLines(legacy.battle).empty());
+    REQUIRE(legacy.battle.statusText == "Victory!");
 }

@@ -1,4 +1,5 @@
 #include "battle_renderer.h"
+#include "../core/systems/combat_system.h"
 
 namespace BattleRenderer {
 
@@ -186,6 +187,22 @@ namespace BattleRenderer {
             drawFormation(renderer, font, battle.aiUnits,    AI_COL,    false);
         }
 
+        if (battle.phase == BattlePhase::Resolved) {
+            auto lines = CombatSystem::battleResultLines(battle);
+            if (!lines.empty()) {
+                int cardW = 700;
+                int cardH = 20 + (int)lines.size() * 22;
+                int cardX = (950 - cardW) / 2;
+                int cardY = 720 - cardH - 16;
+                drawRect(renderer, cardX, cardY, cardW, cardH, WOOD_DARK);
+                drawBorder(renderer, cardX, cardY, cardW, cardH, GOLD);
+                for (int i = 0; i < (int)lines.size(); i++) {
+                    SDL_Color color = i == 0 ? GOLD : WHITE;
+                    drawTextCentered(renderer, font, lines[i], cardX, cardY + 10 + (i * 22), cardW, color);
+                }
+            }
+        }
+
         // Bottom bar
         int barY = 720;
         int barH = 60;
@@ -214,6 +231,12 @@ namespace BattleRenderer {
         } else if (battle.phase == BattlePhase::Resolved) {
             drawButton(renderer, font, "CLOSE",   300, barY + 10, 100, 36,
                        {60, 35, 10, 255});
+        }
+
+        // Sprite counts track the fight animation. After resolution the card
+        // shows the armies actually left, which are not the surviving sprites.
+        if (battle.phase == BattlePhase::Resolved) {
+            return;
         }
 
         // Unit counts bottom right

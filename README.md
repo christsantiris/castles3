@@ -117,7 +117,6 @@ canceled, returning workers and applying the normal cancellation refunds.
 - [ ] Review AI participation in worker pools, task slots, resource costs, and upkeep after play-testing; retain current difficulty settings meanwhile.
 - [ ] Consistently display task costs, assigned workers, expected duration, available slots, and reasons actions are blocked.
 - [ ] Display upcoming worker/slot milestones and announce unlocks.
-- [ ] Align battle result displays with casualties, ownership changes, rewards, and remaining army strength.
 - [ ] Balance food for marches, iron/timber for recruitment, gold for diplomacy/upkeep, trade exchanges, and all-resource castle costs together.
 
 ## Screenshots

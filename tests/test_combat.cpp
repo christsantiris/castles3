@@ -149,6 +149,13 @@ TEST_CASE("stronger attacker wins battle", "[combat]") {
         CombatSystem::updateBattle(w, 1.0f);
     REQUIRE(w.battle.playerWon == true);
     REQUIRE(w.provinces[1].owner == "Player");
+    auto lines = CombatSystem::battleResultLines(w.battle);
+    REQUIRE(lines[1] == "TargetProvince conquered");
+    REQUIRE(lines[2] == "Reward: 150 score");
+    REQUIRE(lines[3] == "No casualties");
+    REQUIRE(lines[4] == "Your army INF 10 ARC 10 KNT 10");
+    REQUIRE(lines[5] == "neutral army INF 0 ARC 0 KNT 0");
+    REQUIRE(w.ctx.score == 150);
 }
 
 TEST_CASE("weaker attacker loses battle", "[combat]") {
@@ -162,6 +169,12 @@ TEST_CASE("weaker attacker loses battle", "[combat]") {
         CombatSystem::updateBattle(w, 1.0f);
     REQUIRE(w.battle.playerWon == false);
     REQUIRE(w.provinces[1].owner == "neutral");
+    auto lines = CombatSystem::battleResultLines(w.battle);
+    REQUIRE(lines[1] == "TargetProvince held");
+    REQUIRE(lines[2] == "No reward");
+    REQUIRE(lines[3] == "No casualties");
+    REQUIRE(lines[4] == "Your army INF 0 ARC 0 KNT 0");
+    REQUIRE(lines[5] == "neutral army INF 10 ARC 10 KNT 10");
 }
 
 TEST_CASE("attack strength calculated correctly", "[combat]") {

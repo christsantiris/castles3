@@ -199,6 +199,21 @@ struct BattleState {
     float transitionTimer = 0.0f;
     bool playerWon = false;
     std::string statusText = "";
+    // Filled when the battle resolves, so the result screen matches the
+    // casualties, ownership change, reward, and armies actually applied.
+    std::string ownershipText = "";
+    int scoreReward = 0;
+    std::string casualtySide = "";
+    int lostInfantry = 0;
+    int lostArchers = 0;
+    int lostKnights = 0;
+    int remainPlayerInfantry = 0;
+    int remainPlayerArchers = 0;
+    int remainPlayerKnights = 0;
+    int remainEnemyInfantry = 0;
+    int remainEnemyArchers = 0;
+    int remainEnemyKnights = 0;
+    std::string enemyName = "";
 };
 
 struct HallOfFameEntry {

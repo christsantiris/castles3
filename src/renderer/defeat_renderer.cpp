@@ -1,5 +1,6 @@
 #include "defeat_renderer.h"
 #include "../core/systems/date_system.h"
+#include "../core/systems/combat_system.h"
 
 namespace DefeatRenderer {
 
@@ -66,6 +67,14 @@ namespace DefeatRenderer {
 
         std::string scoreMsg = "Final Score: " + std::to_string(world.ctx.score);
         drawTextCentered(renderer, font, scoreMsg, panelX, panelY + 120, panelW, RED);
+
+        auto lines = CombatSystem::battleResultLines(world.battle);
+        int summaryY = panelY + 160;
+        for (int i = 0; i < (int)lines.size(); i++) {
+            SDL_Color color = i == 0 ? RED : WHITE;
+            drawTextCentered(renderer, font, lines[i], panelX, summaryY, panelW, color);
+            summaryY += 22;
+        }
 
         int btnY = panelY + panelH - 70;
         drawRect(renderer, panelX + 350, btnY, 200, 45, BG_MID);

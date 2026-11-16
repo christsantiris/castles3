@@ -1,5 +1,6 @@
 #include "victory_renderer.h"
 #include "../core/systems/date_system.h"
+#include "../core/systems/combat_system.h"
 
 namespace VictoryRenderer {
 
@@ -73,14 +74,26 @@ namespace VictoryRenderer {
         std::string scoreMsg = "Final Score: " + std::to_string(world.ctx.score);
         drawTextCentered(renderer, font, scoreMsg, panelX, panelY + 120, panelW, GOLD);
 
+        auto lines = CombatSystem::battleResultLines(world.battle);
+        int summaryY = panelY + 155;
+        for (int i = 0; i < (int)lines.size(); i++) {
+            SDL_Color color = i == 0 ? GOLD : WHITE;
+            drawTextCentered(renderer, font, lines[i], panelX, summaryY, panelW, color);
+            summaryY += 22;
+        }
+
         // Hall of Fame
-        int hofY = panelY + 170;
+        int hofY = lines.empty() ? panelY + 170 : summaryY + 12;
+        int btnY = panelY + panelH - 70;
         drawRect(renderer, panelX + 20, hofY - 10, panelW - 40, 30, WOOD_MID);
         drawBorder(renderer, panelX + 20, hofY - 10, panelW - 40, 30, GOLD);
         drawTextCentered(renderer, font, "HALL OF FAME", panelX, hofY - 4, panelW, GOLD);
 
         hofY += 30;
         for (int i = 0; i < (int)hof.entries.size(); i++) {
+            if (hofY + 36 >= btnY) {
+                break;
+            }
             auto& e = hof.entries[i];
             drawRect(renderer, panelX + 20, hofY, panelW - 40, 36, WOOD_MID);
             drawBorder(renderer, panelX + 20, hofY, panelW - 40, 36, GOLD);
@@ -95,8 +108,6 @@ namespace VictoryRenderer {
             hofY += 44;
         }
 
-        // Play Again button
-        int btnY = panelY + panelH - 70;
         drawRect(renderer, panelX + 350, btnY, 200, 45, {0, 100, 0, 255});
         drawBorder(renderer, panelX + 350, btnY, 200, 45, GOLD);
         drawTextCentered(renderer, font, "PLAY AGAIN", panelX + 350, btnY + 12, 200, GOLD);

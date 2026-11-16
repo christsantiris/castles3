@@ -1,5 +1,7 @@
 #pragma once
 #include "../world.h"
+#include <string>
+#include <vector>
 
 namespace CombatSystem {
 
@@ -16,6 +18,7 @@ namespace CombatSystem {
     void retreat(World& world);
     void pauseBattle(World& world);
     void resumeBattle(World& world);
+    std::vector<std::string> battleResultLines(const BattleState& battle);
     int attackStrength(const ArmyComponent& army);
     int defenseStrength(const ArmyComponent& army);
 }

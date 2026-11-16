@@ -195,7 +195,20 @@ void save_game(const World& world, const std::string& path) {
         {"roundInterval", world.battle.roundInterval},
         {"transitionTimer", world.battle.transitionTimer},
         {"playerWon", world.battle.playerWon},
-        {"statusText", world.battle.statusText}
+        {"statusText", world.battle.statusText},
+        {"ownershipText", world.battle.ownershipText},
+        {"scoreReward", world.battle.scoreReward},
+        {"casualtySide", world.battle.casualtySide},
+        {"lostInfantry", world.battle.lostInfantry},
+        {"lostArchers", world.battle.lostArchers},
+        {"lostKnights", world.battle.lostKnights},
+        {"remainPlayerInfantry", world.battle.remainPlayerInfantry},
+        {"remainPlayerArchers", world.battle.remainPlayerArchers},
+        {"remainPlayerKnights", world.battle.remainPlayerKnights},
+        {"remainEnemyInfantry", world.battle.remainEnemyInfantry},
+        {"remainEnemyArchers", world.battle.remainEnemyArchers},
+        {"remainEnemyKnights", world.battle.remainEnemyKnights},
+        {"enemyName", world.battle.enemyName}
     };
 
     json marchesJ = json::array();
@@ -380,6 +393,19 @@ bool load_game(World& world, const std::string& path) {
     world.battle.transitionTimer = bj.at("transitionTimer");
     world.battle.playerWon = bj.at("playerWon");
     world.battle.statusText = bj.at("statusText");
+    world.battle.ownershipText = bj.value("ownershipText", "");
+    world.battle.scoreReward = bj.value("scoreReward", 0);
+    world.battle.casualtySide = bj.value("casualtySide", "");
+    world.battle.lostInfantry = bj.value("lostInfantry", 0);
+    world.battle.lostArchers = bj.value("lostArchers", 0);
+    world.battle.lostKnights = bj.value("lostKnights", 0);
+    world.battle.remainPlayerInfantry = bj.value("remainPlayerInfantry", 0);
+    world.battle.remainPlayerArchers = bj.value("remainPlayerArchers", 0);
+    world.battle.remainPlayerKnights = bj.value("remainPlayerKnights", 0);
+    world.battle.remainEnemyInfantry = bj.value("remainEnemyInfantry", 0);
+    world.battle.remainEnemyArchers = bj.value("remainEnemyArchers", 0);
+    world.battle.remainEnemyKnights = bj.value("remainEnemyKnights", 0);
+    world.battle.enemyName = bj.value("enemyName", "");
 
     world.aiMarches.clear();
     for (const auto& mj : j.at("aiMarches")) {
