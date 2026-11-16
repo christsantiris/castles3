@@ -1,5 +1,6 @@
 #include <catch2/catch_test_macros.hpp>
 #include "core/world.h"
+#include "core/systems/combat_system.h"
 #include "core/systems/map_system.h"
 #include "core/systems/save_load.h"
 #include <filesystem>
@@ -106,6 +107,20 @@ TEST_CASE("real coastlines keep landmarks selectable and open sea empty", "[map]
     REQUIRE(selected->id == 12);
     REQUIRE(MapSystem::handleClick(world, 491, 449) == nullptr);
     REQUIRE_FALSE(world.provinces[12].isSelected);
+}
+
+TEST_CASE("Thrace and Anatolia can attack each other without Constantinople", "[map]") {
+    auto world = loadCoastlineMap();
+    world.ctx.playerDynasty = "Player";
+    world.provinces[4].owner = "Player";
+    REQUIRE(world.provinces[4].name == "Thrace");
+    REQUIRE(world.provinces[7].name == "Anatolia");
+    REQUIRE(world.provinces[0].owner != "Player");
+    REQUIRE(CombatSystem::isAdjacent(world, 7));
+
+    world.provinces[4].owner = "neutral";
+    world.provinces[7].owner = "Player";
+    REQUIRE(CombatSystem::isAdjacent(world, 4));
 }
 
 TEST_CASE("saved ownership restores onto current static coastline geometry", "[map][save]") {
