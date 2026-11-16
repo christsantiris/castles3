@@ -5,6 +5,21 @@
 
 namespace CombatSystem {
 
+    int marchDays(int workers, bool neutral) {
+        if (workers < 1) {
+            return 0;
+        }
+        int count = workers;
+        if (count > 8) {
+            count = 8;
+        }
+        int days = daysPerUnit[count - 1];
+        if (!neutral) {
+            days *= 2;
+        }
+        return days;
+    }
+
     bool isAdjacent(const World& world, int targetProvinceId) {
         for (auto& p : world.provinces) {
             if (p.owner != world.ctx.playerDynasty) continue;
@@ -62,7 +77,7 @@ namespace CombatSystem {
         task.targetProvinceId = targetProvinceId;
         task.workersAssigned = workers;
         task.daysAccumulated = 0;
-        task.daysRequired = daysPerUnit[std::min(workers, 8) - 1] * (isNeutral ? 1 : 2);
+        task.daysRequired = marchDays(workers, isNeutral);
 
         world.workerPool.availableMilitaryWorkers -= workers;
         world.pendingMilitaryWorkers = 0;

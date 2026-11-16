@@ -12,6 +12,17 @@ namespace TradeSystem {
 
     static const int daysPerUnit[] = {40, 20, 13, 10, 8, 7, 6, 5};
 
+    int tradeDays(int workers) {
+        if (workers < 1) {
+            return 0;
+        }
+        int count = workers;
+        if (count > 8) {
+            count = 8;
+        }
+        return daysPerUnit[count - 1];
+    }
+
     const char* resourceName(int index) {
         static const char* names[] = {"Food", "Timber", "Iron", "Gold"};
         return names[index];
@@ -89,7 +100,7 @@ namespace TradeSystem {
         task.dynasty = world.pendingTradeDynasty;
         task.workersAssigned = workers;
         task.daysAccumulated = 0;
-        task.daysRequired = daysPerUnit[std::min(workers, 8) - 1];
+        task.daysRequired = tradeDays(workers);
 
         world.workerPool.availableDiplomaticWorkers -= workers;
         adjustStock(world, task.offerRes, -task.qty);

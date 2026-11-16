@@ -6,6 +6,7 @@
 #include "../core/systems/trade_system.h"
 #include "../core/systems/task_slots.h"
 #include "../core/systems/diplomacy_system.h"
+#include "../core/systems/resource_system.h"
 
 namespace PanelRenderer {
 
@@ -53,6 +54,33 @@ namespace PanelRenderer {
         SDL_RenderCopy(r, t, nullptr, &rect);
         SDL_FreeSurface(s);
         SDL_DestroyTexture(t);
+    }
+
+    static std::string workerPaceText(int assigned, int available, int currentDays, int nextDays) {
+        if (assigned < 1) {
+            if (available < 1 || nextDays < 1) {
+                return "";
+            }
+            return "> " + std::to_string(nextDays) + "d";
+        }
+        if (currentDays < 1) {
+            return "";
+        }
+        std::string text = std::to_string(currentDays) + "d";
+        if (assigned >= available || nextDays < 1) {
+            return text;
+        }
+        if (nextDays == currentDays) {
+            return text + " = " + std::to_string(nextDays) + "d";
+        }
+        return text + " > " + std::to_string(nextDays) + "d";
+    }
+
+    static SDL_Color workerPaceColor(int assigned, int available, int currentDays, int nextDays) {
+        if (assigned >= 1 && assigned < available && nextDays == currentDays) {
+            return SDL_Color{150, 150, 150, 255};
+        }
+        return GOLD;
     }
 
     static void drawTextCentered(SDL_Renderer* r, TTF_Font* font, const std::string& text,
@@ -156,6 +184,16 @@ namespace PanelRenderer {
 
             std::string label = std::string(resNames[i]) + ": " + std::to_string(stockValues[i]);
             drawText(r, font, label, x + 6, y + 4, labelColor);
+            int owned = world.countOwnedProvinces(world.ctx.playerDynasty, resTypes[i]);
+            int assigned = world.pendingWorkers[i];
+            int available = world.workerPool.availableStockWorkers;
+            int nextWorkers = assigned < 1 ? 1 : assigned + 1;
+            int currentDays = ResourceSystem::collectionDays(assigned, owned);
+            int nextDays = ResourceSystem::collectionDays(nextWorkers, owned);
+            std::string pace = workerPaceText(assigned, available, currentDays, nextDays);
+            if (!pace.empty()) {
+                drawText(r, font, pace, x + 200, y + 4, workerPaceColor(assigned, available, currentDays, nextDays));
+            }
 
             std::string wLabel = "W:" + std::to_string(world.pendingWorkers[i]);
             drawText(r, font, wLabel, x + 6, y + 26, textColor);
@@ -273,6 +311,15 @@ namespace PanelRenderer {
 
         std::string wLabel = "Workers: " + std::to_string(world.pendingMilitaryWorkers);
         drawText(r, font, wLabel, x, y + 8, WHITE);
+        int assigned = world.pendingMilitaryWorkers;
+        int available = world.workerPool.availableMilitaryWorkers;
+        int nextWorkers = assigned < 1 ? 1 : assigned + 1;
+        int currentDays = RecruitSystem::recruitmentDays(assigned);
+        int nextDays = RecruitSystem::recruitmentDays(nextWorkers);
+        std::string pace = workerPaceText(assigned, available, currentDays, nextDays);
+        if (!pace.empty()) {
+            drawText(r, font, pace, x + 178, y + 8, workerPaceColor(assigned, available, currentDays, nextDays));
+        }
 
         drawRect(r, x + 120, y + 6, 22, 22, {120, 0, 0, 255});
         drawBorder(r, x + 120, y + 6, 22, 22, GOLD);
@@ -327,6 +374,17 @@ namespace PanelRenderer {
                 if (!marching) {
                     std::string wLabel = "Military: " + std::to_string(world.pendingMilitaryWorkers);
                     drawText(r, font, wLabel, PANEL_X + 10, infoY + 135, WHITE);
+                    bool neutral = selected->owner == "neutral";
+                    int marchAssigned = world.pendingMilitaryWorkers;
+                    int marchAvailable = world.workerPool.availableMilitaryWorkers;
+                    int marchNext = marchAssigned < 1 ? 1 : marchAssigned + 1;
+                    int marchCurrent = CombatSystem::marchDays(marchAssigned, neutral);
+                    int marchNextDays = CombatSystem::marchDays(marchNext, neutral);
+                    std::string marchPace = workerPaceText(marchAssigned, marchAvailable, marchCurrent, marchNextDays);
+                    if (!marchPace.empty()) {
+                        drawText(r, font, marchPace, PANEL_X + 222, infoY + 135,
+                                 workerPaceColor(marchAssigned, marchAvailable, marchCurrent, marchNextDays));
+                    }
 
                     drawRect(r, PANEL_X + 170, infoY + 133, 20, 20, {120, 0, 0, 255});
                     drawBorder(r, PANEL_X + 170, infoY + 133, 20, 20, GOLD);
@@ -358,6 +416,16 @@ namespace PanelRenderer {
                 } else if (!isScouted) {
                     std::string scoutWLabel = "Workers: " + std::to_string(world.pendingDiplomaticWorkers);
                     drawText(r, font, scoutWLabel, PANEL_X + 10, infoY + 208, WHITE);
+                    int scoutAssigned = world.pendingDiplomaticWorkers;
+                    int scoutAvailable = world.workerPool.availableDiplomaticWorkers;
+                    int scoutNext = scoutAssigned < 1 ? 1 : scoutAssigned + 1;
+                    int scoutCurrent = DiplomacySystem::diplomaticDays(scoutAssigned);
+                    int scoutNextDays = DiplomacySystem::diplomaticDays(scoutNext);
+                    std::string scoutPace = workerPaceText(scoutAssigned, scoutAvailable, scoutCurrent, scoutNextDays);
+                    if (!scoutPace.empty()) {
+                        drawText(r, font, scoutPace, PANEL_X + 222, infoY + 208,
+                                 workerPaceColor(scoutAssigned, scoutAvailable, scoutCurrent, scoutNextDays));
+                    }
 
                     drawRect(r, PANEL_X + 170, infoY + 206, 20, 20, {120, 0, 0, 255});
                     drawBorder(r, PANEL_X + 170, infoY + 206, 20, 20, GOLD);
@@ -387,6 +455,16 @@ namespace PanelRenderer {
                 } else if (selected->name != "Constantinople") {
                     std::string brWLabel = "Workers: " + std::to_string(world.pendingDiplomaticWorkers);
                     drawText(r, font, brWLabel, PANEL_X + 10, infoY + 278, WHITE);
+                    int bribeAssigned = world.pendingDiplomaticWorkers;
+                    int bribeAvailable = world.workerPool.availableDiplomaticWorkers;
+                    int bribeNext = bribeAssigned < 1 ? 1 : bribeAssigned + 1;
+                    int bribeCurrent = DiplomacySystem::diplomaticDays(bribeAssigned);
+                    int bribeNextDays = DiplomacySystem::diplomaticDays(bribeNext);
+                    std::string bribePace = workerPaceText(bribeAssigned, bribeAvailable, bribeCurrent, bribeNextDays);
+                    if (!bribePace.empty()) {
+                        drawText(r, font, bribePace, PANEL_X + 222, infoY + 278,
+                                 workerPaceColor(bribeAssigned, bribeAvailable, bribeCurrent, bribeNextDays));
+                    }
 
                     drawRect(r, PANEL_X + 170, infoY + 276, 20, 20, {120, 0, 0, 255});
                     drawBorder(r, PANEL_X + 170, infoY + 276, 20, 20, GOLD);
@@ -587,6 +665,16 @@ namespace PanelRenderer {
         // Diplomat worker picker
         std::string wLabel = "Diplomats: " + std::to_string(world.pendingDiplomaticWorkers);
         drawText(r, font, wLabel, x, tradeY + 4, WHITE);
+        int tradeAssigned = world.pendingDiplomaticWorkers;
+        int tradeAvailable = world.workerPool.availableDiplomaticWorkers;
+        int tradeNext = tradeAssigned < 1 ? 1 : tradeAssigned + 1;
+        int tradeCurrent = TradeSystem::tradeDays(tradeAssigned);
+        int tradeNextDays = TradeSystem::tradeDays(tradeNext);
+        std::string tradePace = workerPaceText(tradeAssigned, tradeAvailable, tradeCurrent, tradeNextDays);
+        if (!tradePace.empty()) {
+            drawText(r, font, tradePace, x + 226, tradeY + 4,
+                     workerPaceColor(tradeAssigned, tradeAvailable, tradeCurrent, tradeNextDays));
+        }
         drawRect(r, x + 170, tradeY, 22, 22, {120, 0, 0, 255});
         drawBorder(r, x + 170, tradeY, 22, 22, GOLD);
         drawTextCentered(r, font, "-", x + 170, tradeY + 4, 22, WHITE);

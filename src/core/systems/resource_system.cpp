@@ -3,6 +3,21 @@
 
 namespace ResourceSystem {
 
+    int collectionDays(int workers, int ownedProvinces) {
+        if (workers < 1 || ownedProvinces < 1) {
+            return 0;
+        }
+        int w = workers;
+        if (w > 8) {
+            w = 8;
+        }
+        int p = ownedProvinces;
+        if (p > 5) {
+            p = 5;
+        }
+        return daysToCollect[w - 1][p - 1];
+    }
+
     int freeSlot(const CollectionTasksComponent& tasks) {
         for (int i = 0; i < 2; i++)
             if (!tasks.slots[i].active) return i;
@@ -21,14 +36,11 @@ namespace ResourceSystem {
         if (workers < 1) return false;
         if (workers > world.workerPool.availableStockWorkers) return false;
 
-        int w = std::min(workers, 8) - 1;
-        int p = std::min(owned, 5) - 1;
-
         auto& task = world.collectionTasks.slots[slot];
         task.active = true;
         task.resource = res;
         task.workersAssigned = workers;
-        task.daysRequired = daysToCollect[w][p];
+        task.daysRequired = collectionDays(workers, owned);
         task.daysAccumulated = 0;
 
         world.workerPool.availableStockWorkers -= workers;

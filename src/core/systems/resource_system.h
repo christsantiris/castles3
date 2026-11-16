@@ -14,6 +14,7 @@ namespace ResourceSystem {
         { 5,  3,  3,  2,  1},
     };
 
+    int collectionDays(int workers, int ownedProvinces);
     int freeSlot(const CollectionTasksComponent& tasks);
     bool startTask(World& world, ResourceType res, int workers);
     void cancelTask(World& world, int slot);

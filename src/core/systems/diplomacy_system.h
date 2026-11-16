@@ -3,6 +3,7 @@
 
 namespace DiplomacySystem {
 
+    int diplomaticDays(int workers);
     bool canStartBribe(const World& world, int targetProvinceId);
     bool startBribe(World& world, int targetProvinceId, int workers, int gold);
     void cancelBribe(World& world, int slot);

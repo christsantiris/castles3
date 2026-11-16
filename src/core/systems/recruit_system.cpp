@@ -4,6 +4,17 @@
 
 namespace RecruitSystem {
 
+    int recruitmentDays(int workers) {
+        if (workers < 1) {
+            return 0;
+        }
+        int count = workers;
+        if (count > 8) {
+            count = 8;
+        }
+        return daysPerUnit[count - 1];
+    }
+
     bool canAfford(const World& world, UnitType unit) {
         switch (unit) {
             case UnitType::Infantry: return world.resources.iron   >= 3;
@@ -49,7 +60,7 @@ namespace RecruitSystem {
         task.active = true;
         task.unitType = unit;
         task.workersAssigned = workers;
-        task.daysRequired = daysPerUnit[std::min(workers, 8) - 1];
+        task.daysRequired = recruitmentDays(workers);
         task.daysAccumulated = 0;
 
         world.workerPool.availableMilitaryWorkers -= workers;

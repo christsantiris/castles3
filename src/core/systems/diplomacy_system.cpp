@@ -8,6 +8,17 @@ namespace DiplomacySystem {
 
     static const int daysPerUnit[] = {20, 10, 7, 5, 4, 3, 3, 2};
 
+    int diplomaticDays(int workers) {
+        if (workers < 1) {
+            return 0;
+        }
+        int count = workers;
+        if (count > 8) {
+            count = 8;
+        }
+        return daysPerUnit[count - 1];
+    }
+
     bool canStartBribe(const World& world, int targetProvinceId) {
         if (!TaskSlots::diplomaticAvailable(world)) {
             return false;
@@ -45,7 +56,7 @@ namespace DiplomacySystem {
         task.workersAssigned = workers;
         task.goldAmount = gold;
         task.daysAccumulated = 0;
-        task.daysRequired = daysPerUnit[std::min(workers, 8) - 1];
+        task.daysRequired = diplomaticDays(workers);
 
         world.resources.gold -= gold;
         world.workerPool.availableDiplomaticWorkers -= workers;
@@ -102,7 +113,7 @@ namespace DiplomacySystem {
         task.targetProvinceId = targetProvinceId;
         task.workersAssigned = workers;
         task.daysAccumulated = 0;
-        task.daysRequired = daysPerUnit[std::min(workers, 8) - 1];
+        task.daysRequired = diplomaticDays(workers);
 
         world.workerPool.availableDiplomaticWorkers -= workers;
         world.pendingDiplomaticWorkers = 0;
