@@ -37,13 +37,12 @@ struct ArmyComponent {
 enum class ResourceType { Food, Timber, Iron, Gold, None };
 
 struct ResourceStockComponent {
-    int food   = 3;
-    int timber = 3;
-    int iron   = 3;
+    int food   = 5;
+    int timber = 5;
+    int iron   = 5;
+    int gold   = 5;
 #ifdef DEBUG
-    int gold   = 15;
-#else
-    int gold   = 3;
+    gold       = 15;
 #endif
 };
 
